@@ -1,0 +1,37 @@
+import Link from 'next/link'
+
+import Image from '../../image'
+
+export default () => {
+  return (
+    <div className="logo ml-3 mr-1 sm:mr-3">
+      <div className="w-full flex items-start">
+        <Link
+          href="/"
+          className="min-w-max sm:mr-3"
+        >
+          <div className="block dark:hidden">
+            <Image
+              src="/logos/logo.png"
+              className="w-6 sm:w-8 h-6 sm:h-8"
+            />
+          </div>
+          <div className="hidden dark:block">
+            <Image
+              src="/logos/logo_white.png"
+              className="w-6 sm:w-8 h-6 sm:h-8"
+            />
+          </div>
+        </Link>
+        <div className="hidden sm:block">
+          <Link
+            href="/"
+            className="uppercase text-base font-extrabold"
+          >
+            {process.env.NEXT_PUBLIC_APP_NAME}
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,55 @@
+{
+  "name": "axelar-services-portal",
+  "version": "0.0.1",
+  "description": "Axelar services portal UI",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "dev-testnet": "env-cmd -f .env.testnet next dev",
+    "build-testnet": "env-cmd -f .env.testnet next build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axelarnetwork/services-portal.git"
+  },
+  "author": "axelar.network",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axelarnetwork/services-portal/issues"
+  },
+  "homepage": "https://github.com/axelarnetwork/services-portal#readme",
+  "dependencies": {
+    "@axelar-network/axelarjs-sdk": "0.11.8",
+    "@material-tailwind/react": "^1.2.5",
+    "@redux-devtools/extension": "^3.2.3",
+    "env-cmd": "^10.1.0",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "next": "^13.1.1",
+    "next-secure-headers": "^2.2.0",
+    "nprogress": "^0.2.0",
+    "numeral": "^2.0.6",
+    "react": "18.2.0",
+    "react-copy-to-clipboard": "^5.1.0",
+    "react-dom": "18.2.0",
+    "react-gtm-module": "^2.0.11",
+    "react-icons": "^4.7.1",
+    "react-loader-spinner": "^5.3.4",
+    "react-redux": "^8.0.5",
+    "react-reveal": "^1.2.2",
+    "react-table": "^7.8.0",
+    "redux": "^4.2.0",
+    "web3": "^1.8.1",
+    "web3modal": "^1.9.11"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.20",
+    "postcss-color-function": "^4.1.0",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-import": "^15.1.0",
+    "postcss-preset-env": "^7.8.3",
+    "tailwindcss": "^3.2.4"
+  }
+}

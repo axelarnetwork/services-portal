@@ -4,7 +4,7 @@
 .dropdown {
   @apply hidden z-50;
   .dropdown-title {
-    @apply py-2 px-3 text-sm font-semibold font-sans uppercase;
+    @apply py-2 px-3 text-sm font-semibold uppercase;
   }
   .dropdown-title-trending {
     @apply py-1 px-2.5;

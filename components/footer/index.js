@@ -32,7 +32,7 @@ export default () => {
               href={`${process.env.NEXT_PUBLIC_DOC_URL}/dev/axelarjs-sdk/intro`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 text-xs font-medium"
+              className="text-blue-500 text-sm font-medium"
             >
               SDK v{
                 dependencies['@axelar-network/axelarjs-sdk']

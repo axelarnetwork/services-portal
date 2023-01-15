@@ -7,11 +7,14 @@ import { providers } from 'ethers'
 import Logo from './logo'
 import DropdownNavigations from './navigations/dropdown'
 import Navigations from './navigations'
+import EnsProfile from '../ens-profile'
+import Wallet from '../wallet'
 import Theme from './theme'
 import SubNavbar from './sub-navbar'
+import Copy from '../copy'
 import { chains as getChains, assets as getAssets } from '../../lib/api/config'
 import { assets as getAssetsPrice } from '../../lib/api/assets'
-import { equals_ignore_case } from '../../lib/utils'
+import { equals_ignore_case, ellipse } from '../../lib/utils'
 import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, RPCS } from '../../reducers/types'
 
 export default () => {
@@ -21,6 +24,7 @@ export default () => {
     cosmos_chains,
     assets,
     rpc_providers,
+    wallet,
   } = useSelector(state =>
     (
       {
@@ -28,6 +32,7 @@ export default () => {
         cosmos_chains: state.cosmos_chains,
         assets: state.assets,
         rpc_providers: state.rpc_providers,
+        wallet: state.wallet,
       }
     ),
     shallowEqual,
@@ -44,6 +49,14 @@ export default () => {
   const {
     rpcs,
   } = { ...rpc_providers }
+  const {
+    wallet_data,
+  } = { ...wallet }
+  const {
+    default_chain_id,
+    web3_provider,
+    address,
+  } = { ...wallet_data }
 
   const router = useRouter()
   const {
@@ -111,7 +124,7 @@ export default () => {
                   const {
                     id,
                     contracts,
-                  } = { ...id }
+                  } = { ...a }
 
                   const chain =
                     _.head(
@@ -126,7 +139,7 @@ export default () => {
                     }
                   }
 
-                  return a.id
+                  return id
                 })
 
             if (denoms.length > 0) {
@@ -276,10 +289,51 @@ export default () => {
             <Logo />
             <DropdownNavigations />
           </div>
-          <div className="flex items-center justify-center">
+          <div className="w-full flex items-center justify-center mx-0 sm:mx-4 xl:mx-8">
             <Navigations />
           </div>
           <div className="flex items-center justify-end">
+            {
+              web3_provider &&
+              address &&
+              (
+                <div className="hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2">
+                  <EnsProfile
+                    address={address}
+                    fallback={
+                      address &&
+                      (
+                        <Copy
+                          value={address}
+                          title={
+                            <span className="text-slate-600 dark:text-slate-200 text-sm font-semibold">
+                              <span className="xl:hidden">
+                                {ellipse(
+                                  address,
+                                  6,
+                                )}
+                              </span>
+                              <span className="hidden xl:block">
+                                {ellipse(
+                                  address,
+                                  6,
+                                )}
+                              </span>
+                            </span>
+                          }
+                        />
+                      )
+                    }
+                  />
+                </div>
+              )
+            }
+            <div className="ml-2 mr-2 sm:mr-8">
+              <Wallet
+                mainController={true}
+                connectChainId={default_chain_id}
+              />
+            </div>
             <Theme />
           </div>
         </div>

@@ -12,7 +12,7 @@ export default () => {
   } = { ...router }
 
   return (
-    <div className="hidden xl:flex items-center xl:space-x-6 mx-auto">
+    <div className="w-full hidden xl:flex items-center justify-start xl:space-x-6 mx-auto">
       {menus
         .map(m => {
           const {

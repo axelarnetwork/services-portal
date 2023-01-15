@@ -5,7 +5,7 @@ import Image from '../../image'
 export default () => {
   return (
     <div className="logo ml-3 mr-1 sm:mr-3">
-      <div className="w-full flex items-start">
+      <div className="w-full flex items-center">
         <Link
           href="/"
           className="min-w-max sm:mr-3"
@@ -26,7 +26,7 @@ export default () => {
         <div className="hidden sm:block">
           <Link
             href="/"
-            className="uppercase text-base font-extrabold"
+            className="whitespace-nowrap uppercase text-base font-bold"
           >
             {process.env.NEXT_PUBLIC_APP_NAME}
           </Link>

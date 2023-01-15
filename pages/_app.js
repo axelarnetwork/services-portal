@@ -119,6 +119,7 @@ export default (
             { ...pageProps }
           />
         </Layout>
+        <div className="bg-slate-50" />
       </Provider>
     </>
   )

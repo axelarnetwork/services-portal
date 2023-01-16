@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export default (
   {
     alt = '',
@@ -5,7 +7,7 @@ export default (
   },
 ) => {
   return (
-    <img
+    <Image
       alt={alt}
       { ...rest }
     />

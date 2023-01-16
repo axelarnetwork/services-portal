@@ -13,12 +13,16 @@ export default () => {
           <div className="block dark:hidden">
             <Image
               src="/logos/logo.png"
+              width={32}
+              height={32}
               className="w-6 sm:w-8 h-6 sm:h-8"
             />
           </div>
           <div className="hidden dark:block">
             <Image
               src="/logos/logo_white.png"
+              width={32}
+              height={32}
               className="w-6 sm:w-8 h-6 sm:h-8"
             />
           </div>

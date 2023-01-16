@@ -124,7 +124,9 @@ export default () => {
                   <div>
                     <Image
                       src={image}
-                      className="rounded-xl"
+                      width={256}
+                      height={134.4}
+                      className="w-full rounded-xl"
                     />
                     <h3 className="text-blue-600 dark:text-white text-xl sm:text-2xl font-extrabold mt-8">
                       {title}

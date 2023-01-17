@@ -30,6 +30,7 @@ export default (
 
   const router = useRouter()
   const {
+    pathname,
     asPath,
   } = { ...router }
 
@@ -57,6 +58,7 @@ export default (
     meta(
       asPath,
       data,
+      pathname,
     )
 
   const {

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import _ from 'lodash'
@@ -53,11 +52,6 @@ export default () => {
     web3_provider,
     address,
   } = { ...wallet_data }
-
-  const router = useRouter()
-  const {
-    pathname,
-  } = { ...router }
 
   // chains
   useEffect(
@@ -334,7 +328,7 @@ export default () => {
 
       init()
     },
-    [evm_chains_data, pathname],
+    [evm_chains_data],
   )
 
   return (
@@ -384,7 +378,7 @@ export default () => {
                 </div>
               )
             }
-            <div className="ml-2 mr-2 sm:mr-8">
+            <div className="mx-2 sm:ml-3 sm:mr-6">
               <Wallet
                 mainController={true}
                 connectChainId={default_chain_id}

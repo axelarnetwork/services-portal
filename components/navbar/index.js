@@ -14,14 +14,14 @@ import SubNavbar from './sub-navbar'
 import Copy from '../copy'
 import { chains as getChains, assets as getAssets } from '../../lib/api/config'
 import { assets as getAssetsPrice } from '../../lib/api/assets'
+import { getContracts } from '../../lib/api/contracts'
 import { equals_ignore_case, ellipse } from '../../lib/utils'
-import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, RPCS } from '../../reducers/types'
+import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, CONSTANT_ADDRESS_DEPLOYER, GATEWAY_ADDRESSES_DATA, GAS_SERVICE_ADDRESSES_DATA, RPCS } from '../../reducers/types'
 
 export default () => {
   const dispatch = useDispatch()
   const {
     evm_chains,
-    cosmos_chains,
     assets,
     rpc_providers,
     wallet,
@@ -29,7 +29,6 @@ export default () => {
     (
       {
         evm_chains: state.evm_chains,
-        cosmos_chains: state.cosmos_chains,
         assets: state.assets,
         rpc_providers: state.rpc_providers,
         wallet: state.wallet,
@@ -40,9 +39,6 @@ export default () => {
   const {
     evm_chains_data,
   } = { ...evm_chains }
-  const {
-    cosmos_chains_data,
-  } = { ...cosmos_chains }
   const {
     assets_data,
   } = { ...assets }
@@ -211,16 +207,76 @@ export default () => {
     [],
   )
 
+  // contracts
+  useEffect(
+    () => {
+      const getData = async () => {
+        const {
+          constant_address_deployer,
+          gateway_contracts,
+          gas_service_contracts,
+        } = { ...await getContracts() }
+
+        if (constant_address_deployer) {
+          dispatch(
+            {
+              type: CONSTANT_ADDRESS_DEPLOYER,
+              value: constant_address_deployer,
+            }
+          )
+        }
+
+        if (gateway_contracts) {
+          dispatch(
+            {
+              type: GATEWAY_ADDRESSES_DATA,
+              value:
+                Object.entries(gateway_contracts)
+                  .map(([k, v]) => {
+                    const {
+                      address,
+                    } = { ...v }
+
+                    return {
+                      chain: k,
+                      address,
+                    }
+                  }),
+            }
+          )
+        }
+
+        if (gas_service_contracts) {
+          dispatch(
+            {
+              type: GAS_SERVICE_ADDRESSES_DATA,
+              value:
+                Object.entries(gas_service_contracts)
+                  .map(([k, v]) => {
+                    const {
+                      address,
+                    } = { ...v }
+
+                    return {
+                      chain: k,
+                      address,
+                    }
+                  }),
+            }
+          )
+        }
+      }
+
+      getData()
+    },
+    [],
+  )
+
   // rpcs
   useEffect(
     () => {
       const init = async => {
-        if (
-          evm_chains_data &&
-          [
-            '/',
-          ].includes(pathname)
-        ) {
+        if (evm_chains_data) {
           const _rpcs = {}
 
           for (const chain_data of evm_chains_data) {

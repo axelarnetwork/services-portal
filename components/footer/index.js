@@ -26,16 +26,16 @@ export default () => {
     <div className={`${theme} footer flex flex-col md:flex-row items-center space-y-2.5 sm:space-y-0 p-3`}>
       <div className="w-full md:w-1/2 lg:w-1/4 min-w-max flex items-center justify-center md:justify-start space-x-2">
         {
-          dependencies?.['@axelar-network/axelarjs-sdk'] &&
+          dependencies?.['@axelar-network/axelar-gmp-sdk-solidity'] &&
           (
             <a
-              href={`${process.env.NEXT_PUBLIC_DOC_URL}/dev/axelarjs-sdk/intro`}
+              href="https://github.com/axelarnetwork/axelar-gmp-sdk-solidity"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 text-sm font-medium"
             >
               SDK v{
-                dependencies['@axelar-network/axelarjs-sdk']
+                dependencies['@axelar-network/axelar-gmp-sdk-solidity']
                   .replace(
                     '^',
                     '',

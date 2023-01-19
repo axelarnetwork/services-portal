@@ -4,6 +4,9 @@ import preferences from './preferences'
 import evm_chains from './evm-chains'
 import cosmos_chains from './cosmos-chains'
 import assets from './assets'
+import constant_address_deployer from './constant-address-deployer'
+import gateway_addresses from './gateway-addresses'
+import gas_service_addresses from './gas-service-addresses'
 import ens from './ens'
 import rpc_providers from './rpc-providers'
 import wallet from './wallet'
@@ -15,6 +18,9 @@ export default combineReducers(
     evm_chains,
     cosmos_chains,
     assets,
+    constant_address_deployer,
+    gateway_addresses,
+    gas_service_addresses,
     ens,
     rpc_providers,
     wallet,

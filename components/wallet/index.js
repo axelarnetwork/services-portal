@@ -150,6 +150,8 @@ export default (
           const signer = web3Provider.getSigner()
           const address = await signer.getAddress()
 
+          signer.address = address
+
           const {
             chainId,
           } = { ...network }

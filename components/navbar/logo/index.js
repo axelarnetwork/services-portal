@@ -36,7 +36,7 @@ export default () => {
           <div className="hidden sm:block">
             <Link
               href="/"
-              className="whitespace-nowrap uppercase text-base font-bold"
+              className="whitespace-nowrap uppercase text-base font-semibold"
             >
               {process.env.NEXT_PUBLIC_APP_NAME}
             </Link>

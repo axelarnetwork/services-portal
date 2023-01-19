@@ -1,23 +1,28 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { useSelector, shallowEqual } from 'react-redux'
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
-import { Contract, ContractFactory } from 'ethers'
+import { Contract, ContractFactory, VoidSigner } from 'ethers'
 import { getContractAddress } from 'ethers/lib/utils'
 import { predictContractConstant, deployUpgradable } from '@axelar-network/axelar-gmp-sdk-solidity'
 import ERC20MintableBurnable from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json'
 import UpgradableProxy from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/upgradables/Proxy.sol/Proxy.json'
 import ConstAddressDeployer from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/ConstAddressDeployer.sol/ConstAddressDeployer.json'
 
-import { deploy_contract, is_contract_deployed, get_salt_from_key } from '../../lib/contract/utils'
+import Wallet from '../wallet'
+import { get_chain } from '../../lib/chain/utils'
+import { deploy_contract, is_contract_deployed, get_salt_from_key, get_contract_address_by_chain } from '../../lib/contract/utils'
 import Deployer from '../../lib/contract/json/Deployer.json'
 import RemoteAddressValidator from '../../lib/contract/json/RemoteAddressValidator.json'
 import TokenLinker from '../../lib/contract/json/TokenLinker.json'
 import ITokenLinker from '../../lib/contract/json/ITokenLinker.json'
 import { parse_error } from '../../lib/utils'
+import { TOKEN_LINKERS_DATA } from '../../reducers/types'
 
 export default () => {
+  const dispatch = useDispatch()
   const {
     preferences,
     evm_chains,
@@ -26,7 +31,9 @@ export default () => {
     const_address_deployer,
     gateway_addresses,
     gas_service_addresses,
+    rpc_providers,
     wallet,
+    token_linkers,
   } = useSelector(state =>
     (
       {
@@ -37,7 +44,9 @@ export default () => {
         const_address_deployer: state.constant_address_deployer,
         gateway_addresses: state.gateway_addresses,
         gas_service_addresses: state.gas_service_addresses,
+        rpc_providers: state.rpc_providers,
         wallet: state.wallet,
+        token_linkers: state.token_linkers,
       }
     ),
     shallowEqual,
@@ -64,23 +73,34 @@ export default () => {
     gas_service_addresses_data,
   } = { ...gas_service_addresses }
   const {
+    rpcs,
+  } = { ...rpc_providers }
+  const {
     wallet_data,
   } = { ...wallet }
   const {
+    token_linkers_data,
+  } = { ...token_linkers }
+  const {
     chain_id,
+    web3_provider,
     address,
     signer,
   } = { ...wallet_data }
 
-  useEffect(
-    () => {
-      // deployToken()
-      deployTokenLinker()
-    },
-    [evm_chains_data, constant_address_deployer, gateway_addresses_data, gas_service_addresses_data, signer],
-  )
+  const router = useRouter()
+  const {
+    query,
+  } = { ...router }
+  const {
+    token_address,
+  } = { ...query }
 
-  /* deployment */
+  const [tokenAddress, setTokenAddress] = useState('')
+
+
+
+  /*** deployment ***/
   const deployToken = async (
     name,
     symbol,
@@ -199,55 +219,46 @@ export default () => {
       gas_service_addresses_data &&
       signer
     ) {
-      const deployer_address =
-        await predictContractConstant(
-          constant_address_deployer,
-          signer,
-          Deployer,
-          'deployer',
-        )
+      const token_linker = await getTokenLinker()
 
-      const token_linker_address =
-        getContractAddress(
-          {
-            from: deployer_address,
-            nonce: 1,
-          },
-        )
-
-      const chain_data =
-        evm_chains_data
-          .find(c =>
-            c?.chain_id === chain_id
-          )
+      const {
+        deployer_address,
+        token_linker_address,
+        deployed,
+      } = { ...token_linker }
 
       const {
         id,
         chain_name,
-      } = { ...chain_data }
+      } = {
+        ...(
+          get_chain(
+            chain_id,
+            evm_chains_data,
+          )
+        ),
+      }
 
       const chain =
         chain_name ||
         id
 
       const gateway_address =
-        gateway_addresses_data
-          .find(d =>
-            d?.chain === id
-          )?.address
+        get_contract_address_by_chain(
+          id,
+          gateway_addresses_data,
+        )
 
       const gas_service_address =
-        gas_service_addresses_data
-          .find(d =>
-            d?.chain === id
-          )?.address
+        get_contract_address_by_chain(
+          id,
+          gas_service_addresses_data,
+        )
 
       response =
         {
+          ...token_linker,
           chain,
-          constant_address_deployer,
-          deployer_address,
-          token_linker_address,
           gateway_address,
           gas_service_address,
         }
@@ -257,13 +268,7 @@ export default () => {
         token_linker_address &&
         gateway_address &&
         gas_service_address &&
-        !(
-          await is_contract_deployed(
-            token_linker_address,
-            TokenLinker,
-            signer,
-          )
-        )
+        !deployed
       ) {
         let remote_address_validator_address
 
@@ -313,33 +318,107 @@ export default () => {
                 bytecode,
               ],
             )
+
+            response =
+              {
+                ...response,
+                remote_address_validator_address,
+                deployed:
+                  await is_contract_deployed(
+                    token_linker_address,
+                    TokenLinker,
+                    signer,
+                  ),
+              }
           } catch (error) {}
         }
-
-        response =
-          {
-            ...response,
-            remote_address_validator_address,
-          }
-      }
-
-      response = {
-        ...response,
-        deployed:
-          await is_contract_deployed(
-            token_linker_address,
-            TokenLinker,
-            signer,
-          ),
       }
     }
 
     return response
   }
-  /* deployment */
+  /*** deployment ***/
 
-  /* getter */
-  const getTokenLinker = token_address =>
+
+
+  /***** getter *****/
+  const getSupportedEvmChains = (
+    chains_data = evm_chains_data,
+  ) => {
+    return (
+      (chains_data || [])
+        .filter(c => {
+          const {
+            id,
+            chain_id,
+            deprecated,
+          } = { ...c }
+
+          return (
+            id &&
+            chain_id &&
+            !deprecated &&
+            get_contract_address_by_chain(
+              id,
+              gateway_addresses_data,
+            ) &&
+            get_contract_address_by_chain(
+              id,
+              gas_service_addresses_data,
+            )
+          )
+        })
+    )
+  }
+
+  const getTokenLinker = async (
+    _signer = signer,
+    nonce = 1,
+  ) => {
+    let response
+
+    if (
+      constant_address_deployer &&
+      _signer
+    ) {
+      try {
+        const deployer_address =
+          await predictContractConstant(
+            constant_address_deployer,
+            _signer,
+            Deployer,
+            'deployer',
+          )
+
+        const token_linker_address =
+          getContractAddress(
+            {
+              from: deployer_address,
+              nonce,
+            },
+          )
+
+        const deployed =
+          await is_contract_deployed(
+            token_linker_address,
+            TokenLinker,
+            _signer,
+          )
+
+        response =
+          {
+            constant_address_deployer,
+            deployer_address,
+            token_linker_address,
+            deployed,
+          }
+      } catch (error) {}
+    }
+
+    return response
+  }
+
+  const getTokenLinkerContract = token_address =>
     signer &&
     token_address &&
     new Contract(
@@ -429,9 +508,11 @@ export default () => {
 
     return response
   }
-  /* getter */
+  /***** getter *****/
 
-  /* setter */
+
+
+  /***** setter *****/
   const registerToken = async (
     token_linker,
     token_address,
@@ -576,7 +657,70 @@ export default () => {
 
     return response
   }
-  /* setter */
+  /***** setter *****/
+
+
+
+  // load token linkers of supported chains
+  useEffect(
+    () => {
+      if (
+        evm_chains_data &&
+        constant_address_deployer &&
+        gateway_addresses_data &&
+        gas_service_addresses_data &&
+        rpcs
+      ) {
+        if (signer) {
+          getSupportedEvmChains()
+            .forEach(async c => {
+              const {
+                id,
+              } = { ...c }
+
+              const token_linker =
+                await getTokenLinker(
+                  c.chain_id === chain_id ?
+                    signer :
+                    new VoidSigner(
+                      address,
+                      rpcs[c.chain_id],
+                    ),
+                )
+
+              if (token_linker) {
+                dispatch(
+                  {
+                    type: TOKEN_LINKERS_DATA,
+                    value:
+                      {
+                        [id]: token_linker,
+                      },
+                  }
+                )
+              }
+            })
+        }
+        else {
+          dispatch(
+            {
+              type: TOKEN_LINKERS_DATA,
+              value: null,
+            }
+          )
+        }
+      }
+    },
+    [evm_chains_data, constant_address_deployer, gateway_addresses_data, gas_service_addresses_data, rpcs, signer],
+  )
+
+  // setup token address from url params
+  useEffect(
+    () => {
+      setTokenAddress(address)
+    },
+    [address],
+  )
 
   return (
     <div className="space-y-8">

@@ -5,7 +5,9 @@ export default (
       title: 'Interchain Token',
       path: '/interchain-token',
       others_paths:
-        [],
+        [
+          '/interchain-token/[token_address]',
+        ],
       description: 'Easily deploy your own cross-chain-enabled ERC-20 token.',
       image: '/images/ogimage.png',
       tags:

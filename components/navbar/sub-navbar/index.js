@@ -1,13 +1,32 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useSelector, shallowEqual } from 'react-redux'
 
 import ServicesInputSearch from '../../dashboard/input-search'
+import InterchainTokenInputAddress from '../../interchain-token/input-token-address'
 import Copy from '../../copy'
 import Image from '../../image'
 import services from '../../../config/services'
 import { number_format, equals_ignore_case, ellipse } from '../../../lib/utils'
 
 export default () => {
+  const {
+    wallet,
+  } = useSelector(state =>
+    (
+      {
+        wallet: state.wallet,
+      }
+    ),
+    shallowEqual,
+  )
+  const {
+    wallet_data,
+  } = { ...wallet }
+  const {
+    signer,
+  } = { ...wallet_data }
+
   const router = useRouter()
   const {
     pathname,
@@ -27,9 +46,10 @@ export default () => {
     case '/':
       title = 'All Services'
 
-      right = (
-        <ServicesInputSearch />
-      )
+      right =
+        (
+          <ServicesInputSearch />
+        )
 
       break
     default:
@@ -53,6 +73,18 @@ export default () => {
         title = service.title
       }
 
+      switch (pathname) {
+        case '/interchain-token':
+        case '/interchain-token/[token_address]':
+          right =
+            signer &&
+            (
+              <InterchainTokenInputAddress />
+            )
+
+          break
+      }
+
       break
   }
 
@@ -62,7 +94,14 @@ export default () => {
         {
           title &&
           (
-            <h1 className="uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-semibold">
+            <h1
+              className="flex items-center uppercase text-slate-800 dark:text-slate-200 text-base sm:text-xl font-black"
+              style={
+                {
+                  height: '46px',
+                }
+              }
+            >
               {title}
             </h1>
           )

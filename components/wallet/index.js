@@ -40,6 +40,7 @@ export default (
     onSwitch,
     children,
     className = '',
+    childrenClassName = 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 border-4 border-slate-200 dark:border-slate-700 rounded-lg whitespace-nowrap uppercase text-slate-700 hover:text-slate-800 dark:text-slate-200 dark:hover:text-slate-100 font-semibold py-1.5 px-2.5',
   },
 ) => {
   const dispatch = useDispatch()
@@ -360,7 +361,7 @@ export default (
               {
                 children ||
                 (
-                  <div className="bg-slate-100 hover:bg-zinc-200 dark:bg-slate-800 dark:hover:bg-zinc-800 rounded-xl whitespace-nowrap uppercase py-1 px-2.5">
+                  <div className={childrenClassName}>
                     Switch Network
                   </div>
                 )
@@ -374,7 +375,7 @@ export default (
               {
                 children ||
                 (
-                  <div className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 rounded-xl whitespace-nowrap uppercase text-white py-1 px-2.5">
+                  <div className={childrenClassName}>
                     Disconnect
                   </div>
                 )
@@ -388,7 +389,7 @@ export default (
             {
               children ||
               (
-                <div className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-xl whitespace-nowrap uppercase text-white py-1 px-2.5">
+                <div className={childrenClassName}>
                   Connect Wallet
                 </div>
               )

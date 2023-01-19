@@ -9,7 +9,6 @@ import services from '../../config/services'
 
 export default () => {
   const router = useRouter()
-
   const {
     query,
   } = { ...router }
@@ -22,6 +21,7 @@ export default () => {
 
   useEffect(
     () => {
+      console.log(search)
       setInputSearch(search)
     },
     [search],
@@ -37,11 +37,10 @@ export default () => {
               tags,
             } = { ...s }
 
-            return (
-              !inputSearch ||
+            const words =
               _.concat(
                 title,
-                inputSearch.length > 1 ?
+                inputSearch?.length > 1 ?
                   tags :
                   [],
               )
@@ -55,14 +54,60 @@ export default () => {
                   .split(' ')
               )
               .filter(w => w)
-              .findIndex(w =>
-                w
-                  .toLowerCase()
-                  .startsWith(
-                    inputSearch
-                      .toLowerCase()
-                  )
-              ) > -1
+              .map(w =>
+                w.toLowerCase()
+              )
+
+            const search_words =
+              (inputSearch || '')
+                .split(' ')
+                .filter(w => w)
+                .flatMap(w =>
+                  w
+                    .replace(
+                      /[^a-zA-Z0-9]/g,
+                      ' ',
+                    )
+                    .split(' ')
+                )
+                .filter(w => w)
+                .map(w =>
+                  w.toLowerCase()
+                )
+
+            return (
+              !inputSearch ||
+              (
+                search_words.length > 1 ?
+                  _.sum(
+                    search_words
+                      .map(w =>
+                        words.includes(w) ?
+                          1 :
+                          words
+                            .findIndex(_w =>
+                              _w.startsWith(w)
+                            ) > -1 ?
+                            0.5 :
+                            words
+                              .findIndex(_w =>
+                                _w.includes(w)
+                              ) > -1 ?
+                              0.1 :
+                              0
+                      )
+                  ) /
+                  search_words
+                    .length > 0.5 :
+                  words
+                    .findIndex(w =>
+                      w
+                        .startsWith(
+                          _.head(search_words) ||
+                          ''
+                        )
+                    ) > -1
+              )
             )
           })
       )
@@ -123,7 +168,7 @@ export default () => {
                     </div>
                     <div className="flex items-center justify-between space-x-2 mt-2">
                       <div className="flex items-center text-blue-500 dark:text-blue-600 space-x-1">
-                        <span className="text-base font-semibold">
+                        <span className="text-base font-bold">
                           Go to app
                         </span>
                         <BsArrowRightShort

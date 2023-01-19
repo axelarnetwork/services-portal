@@ -33,20 +33,21 @@ export default () => {
 
       break
     default:
-      const service = services
-        .find(s =>
-          equals_ignore_case(
-            s?.path,
-            pathname,
-          ) ||
-          (s?.others_paths || [])
-            .findIndex(p =>
-              equals_ignore_case(
-                p,
-                pathname,
-              )
-            ) > -1
-        )
+      const service =
+        services
+          .find(s =>
+            equals_ignore_case(
+              s?.path,
+              pathname,
+            ) ||
+            (s?.others_paths || [])
+              .findIndex(p =>
+                equals_ignore_case(
+                  p,
+                  pathname,
+                )
+              ) > -1
+          )
 
       if (service) {
         title = service.title

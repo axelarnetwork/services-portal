@@ -8,6 +8,11 @@ export const COSMOS_CHAINS_DATA = 'cosmos_chains_data'
 // assets
 export const ASSETS_DATA = 'assets_data'
 
+// contracts
+export const CONSTANT_ADDRESS_DEPLOYER = 'constant_address_deployer'
+export const GATEWAY_ADDRESSES_DATA = 'gateway_addresses_data'
+export const GAS_SERVICE_ADDRESSES_DATA = 'gas_service_addresses_data'
+
 // ens
 export const ENS_DATA = 'ens_data'
 

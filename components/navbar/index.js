@@ -6,6 +6,7 @@ import { providers } from 'ethers'
 import Logo from './logo'
 import DropdownNavigations from './navigations/dropdown'
 import Navigations from './navigations'
+import Chains from './chains'
 import EnsProfile from '../ens-profile'
 import Wallet from '../wallet'
 import Theme from './theme'
@@ -344,10 +345,19 @@ export default () => {
           </div>
           <div className="flex items-center justify-end">
             {
+              evm_chains_data?.length > 0 &&
+              web3_provider &&
+              (
+                <div className="ml-2">
+                  <Chains />
+                </div>
+              )
+            }
+            {
               web3_provider &&
               address &&
               (
-                <div className="hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2">
+                <div className="hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2 mr-1">
                   <EnsProfile
                     address={address}
                     fallback={

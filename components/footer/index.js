@@ -19,6 +19,7 @@ export default () => {
   } = { ...preferences }
 
   const {
+    version,
     dependencies,
   } = { ..._package }
 
@@ -36,6 +37,25 @@ export default () => {
             >
               SDK v{
                 dependencies['@axelar-network/axelar-gmp-sdk-solidity']
+                  .replace(
+                    '^',
+                    '',
+                  )
+              }
+            </a>
+          )
+        }
+        {
+          version &&
+          (
+            <a
+              href="https://github.com/axelarnetwork/services-portal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 text-sm font-medium"
+            >
+              UI v{
+                version
                   .replace(
                     '^',
                     '',

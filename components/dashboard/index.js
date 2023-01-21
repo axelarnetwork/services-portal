@@ -21,7 +21,6 @@ export default () => {
 
   useEffect(
     () => {
-      console.log(search)
       setInputSearch(search)
     },
     [search],

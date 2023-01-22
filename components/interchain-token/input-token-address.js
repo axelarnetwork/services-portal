@@ -131,7 +131,21 @@ export default () => {
           debounceTimeout={500}
           size="small"
           type="text"
-          placeholder="Input your token address on chain"
+          placeholder={
+            `Input your token address${
+              get_chain(
+                selectedChain,
+                evm_chains_data,
+              ) ?
+                ` on ${
+                  get_chain(
+                    selectedChain,
+                    evm_chains_data,
+                  ).name
+                }` :
+                ''
+            }`
+          }
           value={input}
           onChange={e =>
             setInput(

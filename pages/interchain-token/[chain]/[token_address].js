@@ -1,4 +1,4 @@
-import InterchainToken from '../../components/interchain-token'
+import InterchainToken from '../../../components/interchain-token'
 
 export default () => {
   return (

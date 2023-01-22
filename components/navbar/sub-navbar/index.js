@@ -75,7 +75,7 @@ export default () => {
 
       switch (pathname) {
         case '/interchain-token':
-        case '/interchain-token/[token_address]':
+        case '/interchain-token/[chain]/[token_address]':
           right =
             signer &&
             (

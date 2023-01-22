@@ -4,6 +4,7 @@ import _ from 'lodash'
 import Web3Modal from 'web3modal'
 import { providers, utils } from 'ethers'
 
+import { get_chain } from '../../lib/chain/utils'
 import { WALLET_DATA, WALLET_RESET } from '../../reducers/types'
 
 const providerOptions = {}
@@ -216,7 +217,10 @@ export default (
               params:
                 [
                   {
-                    chainId: utils.hexValue(connectChainId),
+                    chainId:
+                      utils.hexValue(
+                        connectChainId
+                      ),
                   },
                 ],
             },
@@ -232,10 +236,10 @@ export default (
               provider_params,
             } = {
               ...(
-                (evm_chains_data || [])
-                  .find(c =>
-                    c.chain_id === connectChainId
-                  )
+                get_chain(
+                  connectChainId,
+                  evm_chains_data,
+                )
               ),
             }
 

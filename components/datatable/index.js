@@ -178,7 +178,7 @@ export default (
                             )
                           )
                         }
-                        className={`${c.className} ${i === 0 ? 'rounded-tl' : i === hg.headers.length - 1 ? 'rounded-tr' : ''}`}
+                        className={`${i === 0 ? 'rounded-tl' : i === hg.headers.length - 1 ? 'rounded-tr' : ''} ${c.className || ''}`}
                       >
                         <div className={`flex flex-row items-center ${c.headerClassName?.includes('justify-') ? '' : 'justify-start'} ${c.headerClassName || ''}`}>
                           <span>

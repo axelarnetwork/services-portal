@@ -24,5 +24,6 @@ export const WALLET_DATA = 'wallet_data'
 export const WALLET_RESET = 'wallet_reset'
 export const CHAIN_ID = 'chain_id'
 
-// token linkers
+// interchain token
 export const TOKEN_LINKERS_DATA = 'token_linkers_data'
+export const TOKEN_ADDRESSES_DATA = 'token_addresses_data'

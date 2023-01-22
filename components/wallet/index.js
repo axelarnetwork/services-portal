@@ -353,13 +353,15 @@ export default (
           connectChainId !== chain_id ?
             <button
               disabled={disabled}
-              onClick={() => {
-                switchChain()
+              onClick={
+                () => {
+                  switchChain()
 
-                if (onSwitch) {
-                  onSwitch()
+                  if (onSwitch) {
+                    onSwitch()
+                  }
                 }
-              }}
+              }
               className={className}
             >
               {

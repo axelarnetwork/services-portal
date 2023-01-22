@@ -72,9 +72,10 @@ export default () => {
 
   useEffect(
     () => {
-      if (typeof input !== 'string') {
-        setInput(token_address)
-      }
+      setInput(
+        token_address ||
+        ''
+      )
     },
     [token_address],
   )

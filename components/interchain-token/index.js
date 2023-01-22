@@ -12,6 +12,7 @@ import ConstAddressDeployer from '@axelar-network/axelar-gmp-sdk-solidity/artifa
 import { Blocks, Oval } from 'react-loader-spinner'
 import { Tooltip } from '@material-tailwind/react'
 import { BsFileEarmarkCheckFill, BsFillFileEarmarkArrowUpFill } from 'react-icons/bs'
+import { HiOutlineSwitchHorizontal } from 'react-icons/hi'
 import { BiMessage } from 'react-icons/bi'
 import { IoClose } from 'react-icons/io5'
 
@@ -1166,6 +1167,10 @@ export default () => {
                             )
                         }`
 
+                      const must_switch_network =
+                        chain_data?.chain_id &&
+                        chain_data.chain_id !== chain_id
+
                       return (
                         <div
                           key={i}
@@ -1338,29 +1343,38 @@ export default () => {
                                         )
                                       }
                                     </div> :
-                                    <button
-                                      disabled={
-                                        tokenLinkerDeployStatus &&
-                                        tokenLinkerDeployStatus.status !== 'failed'
-                                      }
-                                      onClick={
-                                        () =>
-                                          deployTokenLinker(id)
-                                      }
-                                      className={
-                                        `bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full ${
-                                          tokenLinkerDeployStatus?.chain &&
-                                          tokenLinkerDeployStatus.chain !== id &&
-                                          tokenLinkerDeployStatus.status !== 'failed' ?
-                                            'cursor-not-allowed' :
-                                            'cursor-pointer'
-                                        } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
-                                      }
-                                    >
-                                      <span className="uppercase text-sm">
-                                        Deploy
-                                      </span>
-                                    </button>
+                                    must_switch_network ?
+                                      <Wallet
+                                        connectChainId={chain_data.chain_id}
+                                        className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                      >
+                                        <span className="uppercase text-sm">
+                                          Switch network
+                                        </span>
+                                      </Wallet> :
+                                      <button
+                                        disabled={
+                                          tokenLinkerDeployStatus &&
+                                          tokenLinkerDeployStatus.status !== 'failed'
+                                        }
+                                        onClick={
+                                          () =>
+                                            deployTokenLinker(id)
+                                        }
+                                        className={
+                                          `bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full ${
+                                            tokenLinkerDeployStatus?.chain &&
+                                            tokenLinkerDeployStatus.chain !== id &&
+                                            tokenLinkerDeployStatus.status !== 'failed' ?
+                                              'cursor-not-allowed' :
+                                              'cursor-pointer'
+                                          } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
+                                        }
+                                      >
+                                        <span className="uppercase text-sm">
+                                          Deploy
+                                        </span>
+                                      </button>
                               }
                             </div>
                           </div>
@@ -1459,6 +1473,10 @@ export default () => {
                                   token_linker_address,
                                 )
                             }`
+
+                          const must_switch_network =
+                            c?.chain_id &&
+                            c.chain_id !== chain_id
 
                           return {
                             Header:
@@ -1606,32 +1624,49 @@ export default () => {
                                           deployed === false ?
                                             <Tooltip
                                               placement="top"
-                                              content="Deploy"
+                                              content={
+                                                must_switch_network ?
+                                                  'Switch network' :
+                                                  'Deploy'
+                                              }
                                               className="z-50 bg-black text-white text-xs"
                                             >
-                                              <button
-                                                disabled={
-                                                  tokenLinkerDeployStatus &&
-                                                  tokenLinkerDeployStatus.status !== 'failed'
-                                                }
-                                                onClick={
-                                                  () =>
-                                                    deployTokenLinker(id)
-                                                }
-                                                className={
-                                                  `w-full ${
-                                                    tokenLinkerDeployStatus?.chain &&
-                                                    tokenLinkerDeployStatus.chain !== id &&
-                                                    tokenLinkerDeployStatus.status !== 'failed' ?
-                                                      'cursor-not-allowed' :
-                                                      'cursor-pointer'
-                                                  } flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500`
-                                                }
-                                              >
-                                                <BsFillFileEarmarkArrowUpFill
-                                                  size={14}
-                                                />
-                                              </button>
+                                              {
+                                                must_switch_network ?
+                                                  <div>
+                                                    <Wallet
+                                                      connectChainId={c.chain_id}
+                                                      className="w-full cursor-pointer rounded flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500"
+                                                    >
+                                                      <HiOutlineSwitchHorizontal
+                                                        size={14}
+                                                      />
+                                                    </Wallet>
+                                                  </div> :
+                                                  <button
+                                                    disabled={
+                                                      tokenLinkerDeployStatus &&
+                                                      tokenLinkerDeployStatus.status !== 'failed'
+                                                    }
+                                                    onClick={
+                                                      () =>
+                                                        deployTokenLinker(id)
+                                                    }
+                                                    className={
+                                                      `w-full ${
+                                                        tokenLinkerDeployStatus?.chain &&
+                                                        tokenLinkerDeployStatus.chain !== id &&
+                                                        tokenLinkerDeployStatus.status !== 'failed' ?
+                                                          'cursor-not-allowed' :
+                                                          'cursor-pointer'
+                                                      } flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500`
+                                                    }
+                                                  >
+                                                    <BsFillFileEarmarkArrowUpFill
+                                                      size={14}
+                                                    />
+                                                  </button>
+                                              }
                                             </Tooltip> :
                                             <Tooltip
                                               placement="top"

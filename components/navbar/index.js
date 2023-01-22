@@ -357,7 +357,7 @@ export default () => {
               web3_provider &&
               address &&
               (
-                <div className="hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2 mr-1">
+                <div className="min-w-max hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2 mr-1">
                   <EnsProfile
                     address={address}
                     fallback={

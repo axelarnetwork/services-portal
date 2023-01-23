@@ -1,9 +1,7 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import _ from 'lodash'
-import moment from 'moment'
 import { Contract, ContractFactory, VoidSigner, constants, utils } from 'ethers'
 import { predictContractConstant, deployUpgradable } from '@axelar-network/axelar-gmp-sdk-solidity'
 import ERC20MintableBurnable from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json'
@@ -16,6 +14,7 @@ import { HiOutlineSwitchHorizontal } from 'react-icons/hi'
 import { BiMessage } from 'react-icons/bi'
 import { IoClose } from 'react-icons/io5'
 
+import RegisterTokenButton from './register-token-button'
 import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
@@ -25,7 +24,6 @@ import { deploy_contract, is_contract_deployed, get_salt_from_key, get_contract_
 import Deployer from '../../lib/contract/json/Deployer.json'
 import RemoteAddressValidator from '../../lib/contract/json/RemoteAddressValidator.json'
 import TokenLinker from '../../lib/contract/json/TokenLinker.json'
-import ITokenLinker from '../../lib/contract/json/ITokenLinker.json'
 import { ellipse, loader_color, parse_error } from '../../lib/utils'
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from '../../reducers/types'
 
@@ -151,6 +149,8 @@ export default () => {
             symbol,
             decimals,
             token_address: contract?.address,
+            status: 'success',
+            message: 'Deploy token successful',
           }
       } catch (error) {
         response =
@@ -641,7 +641,7 @@ export default () => {
     token_linker_address &&
     new Contract(
       token_linker_address,
-      ITokenLinker.abi,
+      TokenLinker.abi,
       _signer,
     )
 
@@ -1156,6 +1156,8 @@ export default () => {
                         address_path,
                       } = { ...explorer }
 
+                      const _chain_id = chain_data?.chain_id
+
                       const address_url =
                         url &&
                         address_path &&
@@ -1168,24 +1170,63 @@ export default () => {
                         }`
 
                       const must_switch_network =
-                        chain_data?.chain_id &&
-                        chain_data.chain_id !== chain_id
+                        _chain_id &&
+                        _chain_id !== chain_id
 
                       return (
                         <div
                           key={i}
                           className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
                         >
-                          <div className="flex items-center space-x-2.5">
-                            <Image
-                              src={image}
-                              width={32}
-                              height={32}
-                              className="w-8 h-8 rounded-full"
-                            />
-                            <span className="text-lg font-bold">
-                              {name}
-                            </span>
+                          <div className="flex items-center justify-between space-x-2.5">
+                            <div className="flex items-center space-x-2.5">
+                              <Image
+                                src={image}
+                                width={32}
+                                height={32}
+                                className="w-8 h-8 rounded-full"
+                              />
+                              <span className="text-lg font-bold">
+                                {name}
+                              </span>
+                            </div>
+                            {
+                              deployed &&
+                              (
+                                <Tooltip
+                                  placement="bottom"
+                                  content="Register token"
+                                  className="z-50 bg-black text-white text-xs"
+                                >
+                                  <div>
+                                    <RegisterTokenButton
+                                      chainData={chain_data}
+                                      supportedEvmChains={getSupportedEvmChains()}
+                                      deployToken={deployToken}
+                                      tokenLinker={
+                                        getTokenLinkerContract(
+                                          _chain_id === chain_id ?
+                                            signer :
+                                            address ?
+                                              new VoidSigner(
+                                                address,
+                                                rpcs?.[_chain_id],
+                                              ) :
+                                              rpcs?.[_chain_id],
+                                          token_linker_address,
+                                        )
+                                      }
+                                      registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                      provider={
+                                        _chain_id === chain_id ?
+                                          signer :
+                                          rpcs?.[_chain_id]
+                                      }
+                                    />
+                                  </div>
+                                </Tooltip>
+                              )
+                            }
                           </div>
                           <div>
                             <div className="h-full flex flex-col justify-between space-y-5">
@@ -1193,7 +1234,7 @@ export default () => {
                                 <div className="text-slate-400 dark:text-slate-500 text-sm">
                                   TokenLinker address
                                 </div>
-                                <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 px-1.5 pr-1">
+                                <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
                                   {
                                     address_url ?
                                       <a
@@ -1345,7 +1386,7 @@ export default () => {
                                     </div> :
                                     must_switch_network ?
                                       <Wallet
-                                        connectChainId={chain_data.chain_id}
+                                        connectChainId={_chain_id}
                                         className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
                                       >
                                         <span className="uppercase text-sm">
@@ -1454,6 +1495,8 @@ export default () => {
                             address_path,
                           } = { ...explorer }
 
+                          const _chain_id = c?.chain_id
+
                           const {
                             token_linker_address,
                             deployed,
@@ -1475,8 +1518,8 @@ export default () => {
                             }`
 
                           const must_switch_network =
-                            c?.chain_id &&
-                            c.chain_id !== chain_id
+                            _chain_id &&
+                            _chain_id!== chain_id
 
                           return {
                             Header:
@@ -1635,7 +1678,7 @@ export default () => {
                                                 must_switch_network ?
                                                   <div>
                                                     <Wallet
-                                                      connectChainId={c.chain_id}
+                                                      connectChainId={_chain_id}
                                                       className="w-full cursor-pointer rounded flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500"
                                                     >
                                                       <HiOutlineSwitchHorizontal

@@ -62,6 +62,11 @@ export default () => {
             ) ||
             _.head(
               evm_chains_data
+                .filter(c =>
+                  c?.id &&
+                  c.chain_id &&
+                  !c.deprecated
+                )
             )
           )?.id
         )
@@ -133,7 +138,7 @@ export default () => {
           size="small"
           type="text"
           placeholder={
-            `Input your token address${
+            `Input your native token address${
               get_chain(
                 selectedChain,
                 evm_chains_data,
@@ -148,14 +153,15 @@ export default () => {
             }`
           }
           value={input}
-          onChange={e =>
-            setInput(
-              (e.target.value || '')
-                .trim()
-                .split(' ')
-                .filter(s => s)
-                .join('')
-            )
+          onChange={
+            e =>
+              setInput(
+                (e.target.value || '')
+                  .trim()
+                  .split(' ')
+                  .filter(s => s)
+                  .join('')
+              )
           }
           className="w-full bg-transparent text-base ml-0.5"
         />

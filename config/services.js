@@ -17,7 +17,6 @@ export default (
           'Cross Chain',
         ],
       navbar_visible: true,
-      coming_soon: true,
     },
     {
       id: 'gmp-express',

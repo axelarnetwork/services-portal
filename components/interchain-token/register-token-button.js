@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
 import _ from 'lodash'
@@ -55,6 +56,22 @@ const getSteps = (
     }
   })
 
+const getDefaultRemoteChains = (
+  supportedEvmChains = [],
+  chainData,
+) =>
+  supportedEvmChains
+    .filter(c =>
+      c?.chain_name &&
+      (
+        !chainData ||
+        c.id !== chainData.id
+      )
+    )
+    .map(c =>
+      c.chain_name
+    )
+
 export default (
   {
     chainData,
@@ -91,6 +108,11 @@ export default (
     signer,
   } = { ...wallet_data }
 
+  const router = useRouter()
+  const {
+    pathname,
+  } = { ...router }
+
   const [hidden, setHidden] = useState(true)
   const [preExistingToken, setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
   const [_preExistingToken, _setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
@@ -101,6 +123,7 @@ export default (
   const [tokenAddress, setTokenAddress] = useState(null)
   const [validTokenAddress, setValidTokenAddress] = useState(null)
   const [tokenData, setTokenData] = useState(null)
+  const [remoteChains, setRemoteChains] = useState(null)
 
   const [validating, setValidating] = useState(false)
   const [validateResponse, setValidateResponse] = useState(null)
@@ -151,6 +174,12 @@ export default (
     setTokenAddress(null)
     setValidTokenAddress(null)
     setTokenData(null)
+    setRemoteChains(
+      getDefaultRemoteChains(
+        supportedEvmChains,
+        chainData,
+      )
+    )
 
     setValidating(false)
     setValidateResponse(null)
@@ -245,11 +274,14 @@ export default (
     //     signer,
     //   )
 
-    await sleep(5 * 1000)
+    await sleep(3 * 1000)
     const response = {
       status: 'success',
       message: 'Deploy token successful',
       token_address: '0xfC3B4feb754d8082F745940347600D373f03dcaC',
+      name: 'Axelar',
+      symbol: 'AXL',
+      decimals: 6,
     }
 
     const {
@@ -260,6 +292,7 @@ export default (
     switch (code) {
       case 'user_rejected':
         setDeployResponse(null)
+
         break
       default:
         if (token_address) {
@@ -273,10 +306,51 @@ export default (
         }
 
         setDeployResponse(response)
+
         break
     }
 
     setDeploying(false)
+  }
+
+  const _registerTokenAndDeployRemoteTokens = async () => {
+    setRegistering(true)
+
+    // const response =
+    //   tokenLinker &&
+    //   registerTokenAndDeployRemoteTokens &&
+    //   tokenAddress &&
+    //   await registerTokenAndDeployRemoteTokens(
+    //     tokenLinker,
+    //     tokenAddress,
+    //     remoteChains,
+    //   )
+
+    await sleep(3 * 1000)
+    const response = {
+      status: 'success',
+      message: 'Deploy token successful',
+      receipt: {
+        hash: '0x6719c120b28ec0a916c7a1fee65cedaf7086f9c7b295a388ae9fb2559396bae7',
+      },
+    }
+
+    const {
+      code,
+    } = { ...response }
+
+    switch (code) {
+      case 'user_rejected':
+        setRegisterResponse(null)
+
+        break
+      default:
+        setRegisterResponse(response)
+
+        break
+    }
+
+    setRegistering(false)
   }
 
   const {
@@ -287,6 +361,7 @@ export default (
   const {
     url,
     contract_path,
+    transaction_path,
   } = { ...explorer }
 
   const _chain_id = chainData?.chain_id
@@ -309,6 +384,22 @@ export default (
         )
     }`
 
+  const {
+    receipt,
+  } = { ...registerResponse }
+
+  const transaction_url =
+    url &&
+    transaction_path &&
+    receipt?.hash &&
+    `${url}${
+      transaction_path
+        .replace(
+          '{tx}',
+          receipt.hash,
+        )
+    }`
+
   const must_switch_network =
     _chain_id &&
     _chain_id !== chain_id
@@ -322,6 +413,7 @@ export default (
     <Modal
       hidden={hidden}
       disabled={disabled}
+      tooltip="Register token"
       onClick={
         () =>
           setHidden(false)
@@ -842,7 +934,7 @@ export default (
                             <span>
                               {
                                 deploying ?
-                                  'Deploying' :
+                                  'Deploying your token' :
                                   deployResponse.message
                               }
                             </span>
@@ -883,7 +975,213 @@ export default (
                   </div> :
                   steps[currentStep]?.id === 'register_token' ?
                     <div className="w-full space-y-5">
-                      
+                      <div className="w-full flex flex-col space-y-3">
+                        <div className="border border-slate-200 dark:border-slate-800 rounded-lg space-y-3 py-3.5 px-3">
+                          <div className="flex items-center space-x-2.5">
+                            <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                              Token:
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-base font-bold mr-2.5">
+                                {tokenData?.name}
+                              </span>
+                              {
+                                tokenData?.symbol &&
+                                (
+                                  <div className="bg-slate-100 dark:bg-slate-800 rounded-lg text-base font-semibold py-0.5 px-2">
+                                    {tokenData.symbol}
+                                  </div>
+                                )
+                              }
+                            </div>
+                          </div>
+                          {
+                            tokenData?.decimals &&
+                            (
+                              <div className="flex items-center space-x-2.5">
+                                <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                                  Decimals:
+                                </div>
+                                <span className="text-base font-semibold">
+                                  {tokenData.decimals}
+                                </span>
+                              </div>
+                            )
+                          }
+                        </div>
+                        {
+                          tokenAddress &&
+                          (
+                            <div className="w-full space-y-1">
+                              <div className="text-slate-400 dark:text-slate-500 text-sm">
+                                Token address
+                              </div>
+                              <div className="border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-2.5 pr-1.5">
+                                {
+                                  contract_url ?
+                                    <a
+                                      href={contract_url}
+                                      target="_blank"
+                                      rel="noopenner noreferrer"
+                                      className="text-blue-500 dark:text-blue-200 text-sm sm:text-base font-semibold"
+                                    >
+                                      {ellipse(
+                                        tokenAddress,
+                                        16,
+                                      )}
+                                    </a> :
+                                    <span className="text-slate-500 dark:text-slate-200 text-sm sm:text-base font-medium">
+                                      {ellipse(
+                                        tokenAddress,
+                                        16,
+                                      )}
+                                    </span>
+                                }
+                                <Copy
+                                  value={tokenAddress}
+                                />
+                              </div>
+                            </div>
+                          )
+                        }
+                        <div className="w-full space-y-1">
+                          <div className="text-slate-400 dark:text-slate-500 text-sm">
+                            Chains to deploy remote tokens
+                          </div>
+                          <div className="flex flex-wrap items-center">
+                            {
+                              supportedEvmChains
+                                .filter(c =>
+                                  c?.chain_name &&
+                                  c.id !== chainData?.id
+                                )
+                                .map((c, i) => {
+                                  const {
+                                    chain_name,
+                                    name,
+                                    image,
+                                  } = { ...c }
+
+                                  const selected =
+                                    remoteChains
+                                      .includes(
+                                        chain_name
+                                      )
+
+                                  return (
+                                    <button
+                                      key={i}
+                                      disabled={disabled}
+                                      onClick={
+                                        () =>
+                                          setRemoteChains(
+                                            selected ?
+                                              remoteChains
+                                                .filter(_c =>
+                                                  _c !== chain_name
+                                                ) :
+                                              _.uniq(
+                                                _.concat(
+                                                  remoteChains,
+                                                  chain_name,
+                                                )
+                                              )
+                                          )
+                                      }
+                                      title={name}
+                                      className={
+                                        `border-2 ${
+                                          selected ?
+                                            'border-blue-600 dark:border-blue-700' :
+                                            'border-transparent'
+                                        } rounded-full mr-1.5 p-0.5`
+                                      }
+                                    >
+                                      <Image
+                                        src={image}
+                                        width={24}
+                                        height={24}
+                                        className={
+                                          `w-6 h-6 ${
+                                            selected ?
+                                              '' :
+                                              'opacity-70 hover:opacity-100'
+                                          } rounded-full`
+                                        }
+                                      />
+                                    </button>
+                                  )
+                                })
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      {
+                        (
+                          registering ||
+                          registerResponse
+                        ) &&
+                        (
+                          <div className="space-y-2">
+                            <div
+                              className={
+                                `${
+                                  registering ?
+                                    'bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50' :
+                                    registerResponse.status === 'failed' ?
+                                      'bg-red-50 dark:bg-red-900 dark:bg-opacity-50' :
+                                      'bg-green-50 dark:bg-green-900 dark:bg-opacity-50'
+                                } rounded-lg flex items-center ${
+                                  registering ?
+                                    'text-blue-500 dark:text-blue-600' :
+                                    registerResponse.status === 'failed' ?
+                                      'text-red-500 dark:text-red-600' :
+                                      'text-green-500 dark:text-green-500'
+                                } text-sm py-1.5 px-2.5`
+                              }
+                            >
+                              {
+                                registering ?
+                                  <Oval
+                                    width={16}
+                                    height={16}
+                                    color={
+                                      loader_color('light')
+                                    }
+                                  /> :
+                                  registerResponse.status === 'failed' ?
+                                    <BiX
+                                      size={18}
+                                      className="mt-0.5"
+                                    /> :
+                                    <BiCheck
+                                      size={18}
+                                    />
+                              }
+                              <span className="mx-0.5">
+                                {
+                                  registering ?
+                                    'Registering your token' :
+                                    registerResponse.message
+                                }
+                              </span>
+                              {
+                                transaction_url &&
+                                (
+                                  <a
+                                    href={transaction_url}
+                                    target="_blank"
+                                    rel="noopenner noreferrer"
+                                    className="font-semibold ml-auto mr-0.5"
+                                  >
+                                    Receipt
+                                  </a>
+                                )
+                              }
+                            </div>
+                          </div>
+                        )
+                      }
                     </div> :
                     null
             }
@@ -996,10 +1294,20 @@ export default (
                         <button
                           disabled={disabled}
                           onClick={
-                            () =>
+                            () => {
+                              if (!remoteChains) {
+                                setRemoteChains(
+                                  getDefaultRemoteChains(
+                                    supportedEvmChains,
+                                    chainData,
+                                  )
+                                )
+                              }
+
                               setCurrentStep(
                                 currentStep + 1
                               )
+                            }
                           }
                           className={
                             `${
@@ -1070,7 +1378,57 @@ export default (
                           }
                         </button> :
                   steps[currentStep]?.id === 'register_token' ?
-                    <div /> :
+                    must_switch_network ?
+                      <Wallet
+                        connectChainId={_chain_id}
+                        className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                      >
+                        Switch network
+                      </Wallet> :
+                      registerResponse?.status === 'success' ?
+                        <button
+                          disabled={disabled}
+                          onClick={
+                            () => {
+                              router
+                                .push(
+                                  `${pathname}/${chainData.id}/${tokenAddress}`,
+                                  undefined,
+                                  {
+                                    shallow: true,
+                                  },
+                                )
+
+                              reset()
+                            }
+                          }
+                          className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                        >
+                          Done
+                        </button> :
+                        <button
+                          disabled={disabled}
+                          onClick={
+                            () =>
+                              _registerTokenAndDeployRemoteTokens()
+                          }
+                          className={
+                            `${disabled ?
+                                'bg-blue-300 dark:bg-blue-400 cursor-not-allowed' :
+                                'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                            } rounded-lg flex items-center justify-center ${
+                              disabled ?
+                                'text-slate-50' :
+                                'text-white'
+                            } text-base font-medium py-1 px-2.5`
+                          }
+                        >
+                          {
+                            registerResponse?.status === 'failed' ?
+                              'Retry' :
+                              'Register'
+                          }
+                        </button> :
                     currentStep >= steps.length - 1 ?
                       <div /> :
                       <button

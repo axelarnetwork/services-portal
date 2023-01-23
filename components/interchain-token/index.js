@@ -242,7 +242,8 @@ export default () => {
           )
         }
 
-        await transaction.wait()
+        await transaction
+          .wait()
       } catch (error) {
         return (
           {
@@ -756,11 +757,23 @@ export default () => {
           await transaction
             .wait()
 
+        const {
+          status,
+        } = { ...receipt }
+
+        const failed = !status
+
         response =
           {
             ...response,
-            status: 'success',
-            message: 'Register token successful',
+            status:
+              failed ?
+                'failed' :
+                'success',
+            message:
+              failed ?
+                'Failed to register token' :
+                'Register token successful',
             receipt,
           }
       } catch (error) {
@@ -806,11 +819,23 @@ export default () => {
           await transaction
             .wait()
 
+        const {
+          status,
+        } = { ...receipt }
+
+        const failed = !status
+
         response =
           {
             ...response,
-            status: 'success',
-            message: 'Deploy remote tokens successful',
+            status:
+              failed ?
+                'failed' :
+                'success',
+            message:
+              failed ?
+                'Failed to deploy remote tokens' :
+                'Deploy remote tokens successful',
             receipt,
           }
       } catch (error) {
@@ -856,11 +881,23 @@ export default () => {
           await transaction
             .wait()
 
+        const {
+          status,
+        } = { ...receipt }
+
+        const failed = !status
+
         response =
           {
             ...response,
-            status: 'success',
-            message: 'Register token and deploy remote tokens successful',
+            status:
+              failed ?
+                'failed' :
+                'success',
+            message:
+              failed ?
+                'Failed to register token and deploy remote tokens' :
+                'Register token and deploy remote tokens successful',
             receipt,
           }
       } catch (error) {
@@ -1193,38 +1230,30 @@ export default () => {
                             {
                               deployed &&
                               (
-                                <Tooltip
-                                  placement="bottom"
-                                  content="Register token"
-                                  className="z-50 bg-black text-white text-xs"
-                                >
-                                  <div>
-                                    <RegisterTokenButton
-                                      chainData={chain_data}
-                                      supportedEvmChains={getSupportedEvmChains()}
-                                      deployToken={deployToken}
-                                      tokenLinker={
-                                        getTokenLinkerContract(
-                                          _chain_id === chain_id ?
-                                            signer :
-                                            address ?
-                                              new VoidSigner(
-                                                address,
-                                                rpcs?.[_chain_id],
-                                              ) :
-                                              rpcs?.[_chain_id],
-                                          token_linker_address,
-                                        )
-                                      }
-                                      registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
-                                      provider={
-                                        _chain_id === chain_id ?
-                                          signer :
-                                          rpcs?.[_chain_id]
-                                      }
-                                    />
-                                  </div>
-                                </Tooltip>
+                                <RegisterTokenButton
+                                  chainData={chain_data}
+                                  supportedEvmChains={getSupportedEvmChains()}
+                                  deployToken={deployToken}
+                                  tokenLinker={
+                                    getTokenLinkerContract(
+                                      _chain_id === chain_id ?
+                                        signer :
+                                        address ?
+                                          new VoidSigner(
+                                            address,
+                                            rpcs?.[_chain_id],
+                                          ) :
+                                          rpcs?.[_chain_id],
+                                      token_linker_address,
+                                    )
+                                  }
+                                  registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                  provider={
+                                    _chain_id === chain_id ?
+                                      signer :
+                                      rpcs?.[_chain_id]
+                                  }
+                                />
                               )
                             }
                           </div>
@@ -1440,7 +1469,7 @@ export default () => {
                                 className="w-full h-0.5 bg-slate-200 dark:bg-slate-800"
                               />
                               <div className="whitespace-nowrap text-slate-500 dark:text-slate-500 text-xs font-medium">
-                                Remote Chains
+                                Tokens
                               </div>
                             </div>
                           ),

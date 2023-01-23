@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
+import { Tooltip } from '@material-tailwind/react'
 import { FiX } from 'react-icons/fi'
 
 import Portal from '../portal'
@@ -9,6 +10,7 @@ export default (
     id = 'portal',
     hidden,
     disabled,
+    tooltip,
     onClick,
     buttonTitle,
     buttonClassName,
@@ -115,8 +117,8 @@ export default (
     [hidden],
   )
 
-  return (
-    <>
+  const buttonComponent =
+    (
       <button
         type="button"
         disabled={disabled}
@@ -128,6 +130,21 @@ export default (
       >
         {buttonTitle}
       </button>
+    )
+
+  return (
+    <>
+      {
+        tooltip ?
+          <Tooltip
+            placement="bottom"
+            content={tooltip}
+            className="z-50 bg-black text-white text-xs"
+          >
+            {buttonComponent}
+          </Tooltip> :
+          buttonComponent
+      }
       {
         open &&
         (

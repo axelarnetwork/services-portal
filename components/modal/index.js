@@ -11,6 +11,7 @@ export default (
     hidden,
     disabled,
     tooltip,
+    placement = 'top',
     onClick,
     buttonTitle,
     buttonClassName,
@@ -137,7 +138,7 @@ export default (
       {
         tooltip ?
           <Tooltip
-            placement="bottom"
+            placement={placement}
             content={tooltip}
             className="z-50 bg-black text-white text-xs"
           >

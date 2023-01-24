@@ -933,14 +933,19 @@ export default () => {
                 id,
               } = { ...c }
 
+              const _chain_id = c.chain_id
+
+              const provider =
+                _chain_id === chain_id ?
+                  signer :
+                  new VoidSigner(
+                    address,
+                    rpcs[_chain_id],
+                  )
+
               const token_linker =
                 await getTokenLinker(
-                  c.chain_id === chain_id ?
-                    signer :
-                    new VoidSigner(
-                      address,
-                      rpcs[c.chain_id],
-                    ),
+                  provider,
                 )
 
               if (token_linker) {
@@ -1012,7 +1017,7 @@ export default () => {
 
             const _chain_id = chain_data?.chain_id
 
-            const token_linker =
+            const token_linker_contract =
               getTokenLinkerContract(
                 _chain_id === chain_id ?
                   signer :
@@ -1027,7 +1032,7 @@ export default () => {
 
             const response =
               await getNativeTokenId(
-                token_linker,
+                token_linker_contract,
                 tokenAddress,
               )
 
@@ -1048,12 +1053,12 @@ export default () => {
   // load token addresses of supported chains
   useEffect(
     () => {
-      if (evm_chains_data) {
-        if (
-          rpcs &&
-          token_linkers_data &&
-          tokenId
-        ) {
+      if (
+        evm_chains_data &&
+        rpcs &&
+        token_linkers_data
+      ) {
+        if (tokenId) {
           getSupportedEvmChains()
             .forEach(async c => {
               const {
@@ -1073,7 +1078,7 @@ export default () => {
 
                 const _chain_id = chain_data?.chain_id
 
-                const token_linker =
+                const token_linker_contract =
                   getTokenLinkerContract(
                     _chain_id === chain_id ?
                       signer :
@@ -1088,7 +1093,7 @@ export default () => {
 
                 const response =
                   await getTokenAddress(
-                    token_linker,
+                    token_linker_contract,
                     tokenId,
                   )
 
@@ -1150,182 +1155,205 @@ export default () => {
               <div className="w-full xl:px-1">
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
                   {
-                    _.orderBy(
-                      Object.entries(token_linkers_data)
-                        .map(([k, v]) => {
-                          const index =
-                            evm_chains_data
-                              .findIndex(c =>
-                                c?.id === k
+                    getSupportedEvmChains()
+                      .map(c => {
+                        const {
+                          id,
+                        } = { ...c }
+
+                        return {
+                          chain: id,
+                          chain_data: c,
+                          ...(
+                            token_linkers_data[id]
+                          ),
+                        }
+                      })
+                      .map((tl, i) => {
+                        const {
+                          chain_data,
+                          token_linker_address,
+                          deployed,
+                        } = { ...tl }
+                        const {
+                          id,
+                          name,
+                          image,
+                          explorer,
+                        } = { ...chain_data }
+                        const {
+                          url,
+                          address_path,
+                        } = { ...explorer }
+
+                        const _chain_id = chain_data?.chain_id
+
+                        const address_url =
+                          url &&
+                          address_path &&
+                          token_linker_address &&
+                          `${url}${
+                            address_path
+                              .replace(
+                                '{address}',
+                                token_linker_address,
                               )
+                          }`
 
-                          return {
-                            chain: k,
-                            index:
-                              index < 0 ?
-                                Number.MAX_VALUE :
-                                index,
-                            chain_data: evm_chains_data[index],
-                            ...v,
-                          }
-                        }),
-                      [
-                        'index',
-                      ],
-                      [
-                        'asc',
-                      ],
-                    )
-                    .map((tl, i) => {
-                      const {
-                        chain_data,
-                        token_linker_address,
-                        deployed,
-                      } = { ...tl }
-                      const {
-                        id,
-                        name,
-                        image,
-                        explorer,
-                      } = { ...chain_data }
-                      const {
-                        url,
-                        address_path,
-                      } = { ...explorer }
+                        const must_switch_network =
+                          _chain_id &&
+                          _chain_id !== chain_id
 
-                      const _chain_id = chain_data?.chain_id
-
-                      const address_url =
-                        url &&
-                        address_path &&
-                        `${url}${
-                          address_path
-                            .replace(
-                              '{address}',
-                              token_linker_address,
-                            )
-                        }`
-
-                      const must_switch_network =
-                        _chain_id &&
-                        _chain_id !== chain_id
-
-                      return (
-                        <div
-                          key={i}
-                          className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
-                        >
-                          <div className="flex items-center justify-between space-x-2.5">
-                            <div className="flex items-center space-x-2.5">
-                              <Image
-                                src={image}
-                                width={32}
-                                height={32}
-                                className="w-8 h-8 rounded-full"
-                              />
-                              <span className="text-lg font-bold">
-                                {name}
-                              </span>
-                            </div>
-                            {
-                              deployed &&
-                              (
-                                <RegisterTokenButton
-                                  chainData={chain_data}
-                                  supportedEvmChains={getSupportedEvmChains()}
-                                  deployToken={deployToken}
-                                  tokenLinker={
-                                    getTokenLinkerContract(
+                        return (
+                          <div
+                            key={i}
+                            className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                          >
+                            <div className="flex items-center justify-between space-x-2.5">
+                              <div className="flex items-center space-x-2.5">
+                                <Image
+                                  src={image}
+                                  width={32}
+                                  height={32}
+                                  className="w-8 h-8 rounded-full"
+                                />
+                                <span className="text-lg font-bold">
+                                  {name}
+                                </span>
+                              </div>
+                              {
+                                deployed &&
+                                (
+                                  <RegisterTokenButton
+                                    tooltip="Register token"
+                                    placement="bottom"
+                                    chainData={chain_data}
+                                    supportedEvmChains={
+                                      getSupportedEvmChains()
+                                        .filter(c =>
+                                          (
+                                            !token_linkers_data ||
+                                            token_linkers_data[c.id]?.deployed
+                                          ) &&
+                                          (
+                                            !token_addresses_data ||
+                                            !token_addresses_data[c.id] ||
+                                            token_addresses_data[c.id] === constants.AddressZero
+                                          )
+                                        )
+                                    }
+                                    tokenLinker={
+                                      getTokenLinkerContract(
+                                        _chain_id === chain_id ?
+                                          signer :
+                                          address ?
+                                            new VoidSigner(
+                                              address,
+                                              rpcs?.[_chain_id],
+                                            ) :
+                                            rpcs?.[_chain_id],
+                                        token_linker_address,
+                                      )
+                                    }
+                                    deployToken={deployToken}
+                                    registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                    provider={
                                       _chain_id === chain_id ?
                                         signer :
-                                        address ?
-                                          new VoidSigner(
-                                            address,
-                                            rpcs?.[_chain_id],
-                                          ) :
-                                          rpcs?.[_chain_id],
-                                      token_linker_address,
-                                    )
-                                  }
-                                  registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
-                                  provider={
-                                    _chain_id === chain_id ?
-                                      signer :
-                                      rpcs?.[_chain_id]
-                                  }
-                                />
-                              )
-                            }
-                          </div>
-                          <div>
-                            <div className="h-full flex flex-col justify-between space-y-5">
-                              <div className="space-y-1">
-                                <div className="text-slate-400 dark:text-slate-500 text-sm">
-                                  TokenLinker address
+                                        rpcs?.[_chain_id]
+                                    }
+                                  />
+                                )
+                              }
+                            </div>
+                            <div>
+                              <div className="h-full flex flex-col justify-between space-y-5">
+                                <div className="space-y-1">
+                                  <div className="text-slate-400 dark:text-slate-500 text-sm">
+                                    TokenLinker address
+                                  </div>
+                                  <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                                    {
+                                      address_url ?
+                                        <a
+                                          href={address_url}
+                                          target="_blank"
+                                          rel="noopenner noreferrer"
+                                          className="sm:h-5 text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                        >
+                                          {ellipse(
+                                            token_linker_address,
+                                            10,
+                                          )}
+                                        </a> :
+                                        <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                          {ellipse(
+                                            token_linker_address,
+                                            10,
+                                          )}
+                                        </span>
+                                    }
+                                    {
+                                      token_linker_address &&
+                                      (
+                                        <Copy
+                                          value={token_linker_address}
+                                        />
+                                      )
+                                    }
+                                  </div>
                                 </div>
-                                <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
-                                  {
+                                {
+                                  deployed ?
                                     address_url ?
                                       <a
                                         href={address_url}
                                         target="_blank"
                                         rel="noopenner noreferrer"
-                                        className="text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
                                       >
-                                        {ellipse(
-                                          token_linker_address,
-                                          10,
-                                        )}
+                                        <BsFileEarmarkCheckFill
+                                          size={16}
+                                        />
+                                        <span className="uppercase text-sm font-semibold">
+                                          Deployed
+                                        </span>
                                       </a> :
-                                      <span className="text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
-                                        {ellipse(
-                                          token_linker_address,
-                                          10,
-                                        )}
-                                      </span>
-                                  }
-                                  <Copy
-                                    value={token_linker_address}
-                                  />
-                                </div>
-                              </div>
-                              {
-                                deployed ?
-                                  address_url ?
-                                    <a
-                                      href={address_url}
-                                      target="_blank"
-                                      rel="noopenner noreferrer"
-                                      className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
-                                    >
-                                      <BsFileEarmarkCheckFill
-                                        size={16}
-                                      />
-                                      <span className="uppercase text-sm font-semibold">
-                                        Deployed
-                                      </span>
-                                    </a> :
-                                    <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
-                                      <BsFileEarmarkCheckFill
-                                        size={16}
-                                      />
-                                      <span className="uppercase text-sm font-medium">
-                                        Deployed
-                                      </span>
-                                    </div> :
-                                  tokenLinkerDeployStatus?.chain === id ?
-                                    <div
-                                      className={
-                                        `${
-                                          [
-                                            'failed',
-                                          ]
-                                          .includes(
-                                            tokenLinkerDeployStatus.status
-                                          ) ?
-                                            'bg-red-500 dark:bg-red-600' :
-                                            'bg-blue-500 dark:bg-blue-600'
-                                        } w-full ${
+                                      <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                        <BsFileEarmarkCheckFill
+                                          size={16}
+                                        />
+                                        <span className="uppercase text-sm font-medium">
+                                          Deployed
+                                        </span>
+                                      </div> :
+                                    tokenLinkerDeployStatus?.chain === id ?
+                                      <div
+                                        className={
+                                          `${
+                                            [
+                                              'failed',
+                                            ]
+                                            .includes(
+                                              tokenLinkerDeployStatus.status
+                                            ) ?
+                                              'bg-red-500 dark:bg-red-600' :
+                                              'bg-blue-500 dark:bg-blue-600'
+                                          } w-full ${
+                                            [
+                                              'switching',
+                                              'pending',
+                                              'waiting',
+                                            ]
+                                            .includes(
+                                              tokenLinkerDeployStatus.status
+                                            ) ?
+                                              'cursor-wait' :
+                                              'cursor-default'
+                                          } rounded flex items-center justify-center text-white font-medium p-1.5`
+                                        }
+                                      >
+                                        {
                                           [
                                             'switching',
                                             'pending',
@@ -1333,22 +1361,74 @@ export default () => {
                                           ]
                                           .includes(
                                             tokenLinkerDeployStatus.status
-                                          ) ?
-                                            'cursor-wait' :
-                                            'cursor-default'
-                                        } rounded flex items-center justify-center text-white font-medium p-1.5`
-                                      }
-                                    >
-                                      {
-                                        [
-                                          'switching',
-                                          'pending',
-                                          'waiting',
-                                        ]
-                                        .includes(
-                                          tokenLinkerDeployStatus.status
-                                        ) &&
-                                        (
+                                          ) &&
+                                          (
+                                            <div className="mr-1.5">
+                                              <Oval
+                                                width={14}
+                                                height={14}
+                                                color="white"
+                                              />
+                                            </div>
+                                          )
+                                        }
+                                        <span
+                                          className={
+                                            `text-sm ${
+                                              [
+                                                'failed',
+                                              ]
+                                              .includes(
+                                                tokenLinkerDeployStatus.status
+                                              ) ?
+                                                'ml-1 mr-0.5' :
+                                                ''
+                                            }`
+                                          }
+                                        >
+                                          {tokenLinkerDeployStatus.message}
+                                        </span>
+                                        {
+                                          [
+                                            'failed',
+                                          ]
+                                          .includes(
+                                            tokenLinkerDeployStatus.status
+                                          ) &&
+                                          (
+                                            <div className="flex items-center space-x-1 ml-auto">
+                                              {
+                                                tokenLinkerDeployStatus.error_message &&
+                                                (
+                                                  <Tooltip
+                                                    placement="top"
+                                                    content={tokenLinkerDeployStatus.error_message}
+                                                    className="z-50 bg-black text-white text-xs"
+                                                  >
+                                                    <div>
+                                                      <BiMessage
+                                                        size={14}
+                                                      />
+                                                    </div>
+                                                  </Tooltip>
+                                                )
+                                              }
+                                              <button
+                                                onClick={
+                                                  () => setTokenLinkerDeployStatus(null)
+                                                }
+                                                className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
+                                              >
+                                                <IoClose
+                                                  size={12}
+                                                />
+                                              </button>
+                                            </div>
+                                          )
+                                        }
+                                      </div> :
+                                      !token_linker_address ?
+                                        <div className="bg-blue-500 dark:bg-blue-600 w-full cursor-wait rounded flex items-center justify-center text-white font-medium p-1.5">
                                           <div className="mr-1.5">
                                             <Oval
                                               width={14}
@@ -1356,161 +1436,291 @@ export default () => {
                                               color="white"
                                             />
                                           </div>
-                                        )
-                                      }
-                                      <span
-                                        className={
-                                          `text-sm ${
-                                            [
-                                              'failed',
-                                            ]
-                                            .includes(
-                                              tokenLinkerDeployStatus.status
-                                            ) ?
-                                              'ml-1 mr-0.5' :
-                                              ''
-                                          }`
-                                        }
-                                      >
-                                        {tokenLinkerDeployStatus.message}
-                                      </span>
-                                      {
-                                        [
-                                          'failed',
-                                        ]
-                                        .includes(
-                                          tokenLinkerDeployStatus.status
-                                        ) &&
-                                        (
-                                          <div className="flex items-center space-x-1 ml-auto">
-                                            {
-                                              tokenLinkerDeployStatus.error_message &&
-                                              (
-                                                <Tooltip
-                                                  placement="top"
-                                                  content={tokenLinkerDeployStatus.error_message}
-                                                  className="z-50 bg-black text-white text-xs"
-                                                >
-                                                  <div>
-                                                    <BiMessage
-                                                      size={14}
-                                                    />
-                                                  </div>
-                                                </Tooltip>
-                                              )
+                                          <span>
+                                            Loading
+                                          </span>
+                                        </div> :
+                                        must_switch_network ?
+                                          <Wallet
+                                            connectChainId={_chain_id}
+                                            className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                          >
+                                            <span className="uppercase text-sm">
+                                              Switch network
+                                            </span>
+                                          </Wallet> :
+                                          <button
+                                            disabled={
+                                              tokenLinkerDeployStatus &&
+                                              tokenLinkerDeployStatus.status !== 'failed'
                                             }
-                                            <button
-                                              onClick={
-                                                () => setTokenLinkerDeployStatus(null)
-                                              }
-                                              className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
-                                            >
-                                              <IoClose
-                                                size={12}
-                                              />
-                                            </button>
-                                          </div>
-                                        )
-                                      }
-                                    </div> :
-                                    must_switch_network ?
-                                      <Wallet
-                                        connectChainId={_chain_id}
-                                        className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                                      >
-                                        <span className="uppercase text-sm">
-                                          Switch network
-                                        </span>
-                                      </Wallet> :
-                                      <button
-                                        disabled={
-                                          tokenLinkerDeployStatus &&
-                                          tokenLinkerDeployStatus.status !== 'failed'
-                                        }
-                                        onClick={
-                                          () =>
-                                            deployTokenLinker(id)
-                                        }
-                                        className={
-                                          `bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full ${
-                                            tokenLinkerDeployStatus?.chain &&
-                                            tokenLinkerDeployStatus.chain !== id &&
-                                            tokenLinkerDeployStatus.status !== 'failed' ?
-                                              'cursor-not-allowed' :
-                                              'cursor-pointer'
-                                          } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
-                                        }
-                                      >
-                                        <span className="uppercase text-sm">
-                                          Deploy
-                                        </span>
-                                      </button>
-                              }
+                                            onClick={
+                                              () =>
+                                                deployTokenLinker(id)
+                                            }
+                                            className={
+                                              `bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full ${
+                                                tokenLinkerDeployStatus?.chain &&
+                                                tokenLinkerDeployStatus.chain !== id &&
+                                                tokenLinkerDeployStatus.status !== 'failed' ?
+                                                  'cursor-not-allowed' :
+                                                  'cursor-pointer'
+                                              } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
+                                            }
+                                          >
+                                            <span className="uppercase text-sm">
+                                              Deploy
+                                            </span>
+                                          </button>
+                                }
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )
-                    })
+                        )
+                      })
                   }
                 </div>
               </div> :
               <div className="w-full xl:px-1">
-                <Datatable
-                  columns={
-                    _.concat(
-                      {
-                        Header:
-                          (
-                            <div className="w-full space-y-2">
-                              <div className="whitespace-nowrap text-slate-500 dark:text-slate-500 text-xs font-medium">
-                                Contracts
-                              </div>
-                              <div
-                                className="w-full h-0.5 bg-slate-200 dark:bg-slate-800"
-                              />
-                              <div className="whitespace-nowrap text-slate-500 dark:text-slate-500 text-xs font-medium">
-                                Tokens
-                              </div>
-                            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+                  {
+                    getSupportedEvmChains()
+                      .map(c => {
+                        const {
+                          id,
+                        } = { ...c }
+
+                        return {
+                          chain: id,
+                          chain_data: c,
+                          ...(
+                            token_linkers_data[id]
                           ),
-                        accessor: 'id',
-                        disableSortBy: true,
-                        Cell: props => {
-                          const {
-                            row,
-                            value,
-                          } = { ...props }
-                          const {
-                            original,
-                          } = { ...row }
+                        }
+                      })
+                      .map((tl, i) => {
+                        const {
+                          chain_data,
+                          token_linker_address,
+                          deployed,
+                        } = { ...tl }
+                        const {
+                          id,
+                          chain_name,
+                          name,
+                          image,
+                          explorer,
+                        } = { ...chain_data }
+                        const {
+                          url,
+                          address_path,
+                        } = { ...explorer }
 
-                          const chain_data =
-                            get_chain(
-                              value,
-                              evm_chains_data,
-                            )
-
-                          const {
-                            name,
-                            image,
-                          } = { ...chain_data }
-
-                          return (
-                            <div className="w-full flex items-center space-x-1.5">
-                              <Image
-                                src={image}
-                                width={20}
-                                height={20}
-                                className="w-5 h-5 rounded-full"
-                              />
-                              <span className="whitespace-nowrap normal-case text-black dark:text-white text-xs font-bold">
-                                {name}
-                              </span>
-                            </div>
+                        const _chain_data =
+                          get_chain(
+                            chain,
+                            evm_chains_data,
                           )
-                        },
-                        headerClassName: 'w-20 lg:w-full',
-                      },
+
+                        const _id = _chain_data?.id
+                        const _chain_id = _chain_data?.chain_id
+
+                        const is_native = id === _id
+
+                        const _tokenAddress =
+                          is_native ?
+                            tokenAddress :
+                            token_addresses_data?.[id]
+
+                        const registered_or_deployed_remote =
+                          token_addresses_data?.[id] &&
+                          token_addresses_data[id] !== constants.AddressZero
+
+                        const address_url =
+                          url &&
+                          address_path &&
+                          registered_or_deployed_remote &&
+                          `${url}${
+                            address_path
+                              .replace(
+                                '{address}',
+                                _tokenAddress,
+                              )
+                          }`
+
+                        return (
+                          <div
+                            key={i}
+                            className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                          >
+                            <div className="flex items-center justify-between space-x-2.5">
+                              <div className="flex items-center space-x-2.5">
+                                <Image
+                                  src={image}
+                                  width={32}
+                                  height={32}
+                                  className="w-8 h-8 rounded-full"
+                                />
+                                <span className="text-lg font-bold">
+                                  {name}
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="h-full flex flex-col justify-between space-y-5">
+                                <div className="space-y-1">
+                                  <div className="text-slate-400 dark:text-slate-500 text-sm">
+                                    Token address
+                                  </div>
+                                  <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                                    {
+                                      address_url ?
+                                        <a
+                                          href={address_url}
+                                          target="_blank"
+                                          rel="noopenner noreferrer"
+                                          className="sm:h-5 text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                        >
+                                          {ellipse(
+                                            _tokenAddress,
+                                            10,
+                                          )}
+                                        </a> :
+                                        <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                          {ellipse(
+                                            _tokenAddress,
+                                            10,
+                                          )}
+                                        </span>
+                                    }
+                                    {
+                                      _tokenAddress &&
+                                      (
+                                        <Copy
+                                          value={_tokenAddress}
+                                        />
+                                      )
+                                    }
+                                  </div>
+                                </div>
+                                {
+                                  registered_or_deployed_remote ?
+                                    address_url ?
+                                      <a
+                                        href={address_url}
+                                        target="_blank"
+                                        rel="noopenner noreferrer"
+                                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                                      >
+                                        <BsFileEarmarkCheckFill
+                                          size={16}
+                                        />
+                                        <span className="uppercase text-sm font-semibold">
+                                          {
+                                            is_native ?
+                                              'Registered' :
+                                              'Deployed'
+                                          }
+                                        </span>
+                                      </a> :
+                                      <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                        <BsFileEarmarkCheckFill
+                                          size={16}
+                                        />
+                                        <span className="uppercase text-sm font-medium">
+                                          {
+                                            is_native ?
+                                              'Registered' :
+                                              'Deployed'
+                                          }
+                                        </span>
+                                      </div> :
+                                    !token_linker_address ||
+                                    (
+                                      deployed &&
+                                      !token_addresses_data?.[id]
+                                    ) ?
+                                      <div className="bg-blue-500 dark:bg-blue-600 w-full cursor-wait rounded flex items-center justify-center text-white font-medium p-1.5">
+                                        <div className="mr-1.5">
+                                          <Oval
+                                            width={14}
+                                            height={14}
+                                            color="white"
+                                          />
+                                        </div>
+                                        <span>
+                                          Loading
+                                        </span>
+                                      </div> :
+                                      !deployed ?
+                                        <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                                          <span className="text-sm font-medium">
+                                            No TokenLinker
+                                          </span>
+                                        </div> :
+                                        <RegisterTokenButton
+                                          buttonTitle={
+                                            is_native ?
+                                              'Register token' :
+                                              'Deploy remote tokens'
+                                          }
+                                          buttonClassName="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                          chainData={_chain_data}
+                                          supportedEvmChains={
+                                            getSupportedEvmChains()
+                                              .filter(c =>
+                                                (
+                                                  !token_linkers_data ||
+                                                  token_linkers_data[c.id]?.deployed
+                                                ) &&
+                                                (
+                                                  !token_addresses_data ||
+                                                  !token_addresses_data[c.id] ||
+                                                  token_addresses_data[c.id] === constants.AddressZero
+                                                )
+                                              )
+                                          }
+                                          isNative={is_native}
+                                          fixedTokenAddress={tokenAddress}
+                                          initialRemoteChains={
+                                            [
+                                              chain_name,
+                                            ]
+                                            .filter(c => c)
+                                          }
+                                          tokenId={tokenId}
+                                          tokenLinker={
+                                            getTokenLinkerContract(
+                                              _chain_id === chain_id ?
+                                                signer :
+                                                address ?
+                                                  new VoidSigner(
+                                                    address,
+                                                    rpcs?.[_chain_id],
+                                                  ) :
+                                                  rpcs?.[_chain_id],
+                                              token_linker_address,
+                                            )
+                                          }
+                                          deployRemoteTokens={deployRemoteTokens}
+                                          registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                          provider={
+                                            _chain_id === chain_id ?
+                                              signer :
+                                              rpcs?.[_chain_id]
+                                          }
+                                        />
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })
+                  }
+                </div>
+                {/*
+                  <Datatable
+                    columns={
                       getSupportedEvmChains()
                         .map(c => {
                           const {
@@ -1548,7 +1758,7 @@ export default () => {
 
                           const must_switch_network =
                             _chain_id &&
-                            _chain_id!== chain_id
+                            _chain_id !== chain_id
 
                           return {
                             Header:
@@ -1768,16 +1978,14 @@ export default () => {
                             },
                             headerClassName: 'w-20 lg:w-full justify-start',
                           }
-                        }),
-                    )
-                  }
-                  data={
-                    getSupportedEvmChains()
-                  }
-                  noPagination={true}
-                  defaultPageSize={100}
-                  className="no-border"
-                />
+                        })
+                    }
+                    data={[]}
+                    noPagination={true}
+                    defaultPageSize={100}
+                    className="no-border"
+                  />
+                */}
               </div>
       }
     </div>

@@ -20,6 +20,8 @@ const DEFAULT_PRE_EXISTING_TOKEN = true
 
 const getSteps = (
   preExistingToken = DEFAULT_PRE_EXISTING_TOKEN,
+  isNative = true,
+  existingToken = false,
 ) =>
   [
     {
@@ -44,11 +46,25 @@ const getSteps = (
           'Validate your ERC20 token' :
           'Deploy new ERC20 token',
     },
-    {
-      id: 'register_token',
-      title: 'Register ERC20 token',
-    },
+    isNative ?
+      {
+        id: 'register_token',
+        title: 'Register ERC20 token',
+      } :
+      {
+        id: 'deploy_remote_tokens',
+        title: 'Deploy remote tokens',
+      },
   ]
+  .filter(s =>
+    !existingToken ||
+    ![
+      'select_pre_existing_token',
+    ]
+    .includes(
+      s?.id
+    )
+  )
   .map((s, i) => {
     return {
       ...s,
@@ -74,10 +90,24 @@ const getDefaultRemoteChains = (
 
 export default (
   {
+    buttonTitle =
+      (
+        <MdAdd
+          size={18}
+        />
+      ),
+    buttonClassName = 'hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:bg-opacity-50 rounded-full text-blue-500 dark:text-blue-600 p-1.5',
+    tooltip,
+    placement = 'top',
     chainData,
     supportedEvmChains = [],
-    deployToken,
+    isNative = true,
+    fixedTokenAddress = null,
+    initialRemoteChains,
+    tokenId,
     tokenLinker,
+    deployToken,
+    deployRemoteTokens,
     registerTokenAndDeployRemoteTokens,
     provider,
   },
@@ -86,12 +116,12 @@ export default (
     preferences,
     wallet,
     token_linkers,
-    token_addresses,
   } = useSelector(state =>
     (
       {
         preferences: state.preferences,
         wallet: state.wallet,
+        token_linkers: state.token_linkers,
       }
     ),
     shallowEqual,
@@ -102,6 +132,9 @@ export default (
   const {
     wallet_data,
   } = { ...wallet }
+  const {
+    token_linkers_data,
+  } = { ...token_linkers }
   const {
     chain_id,
     address,
@@ -117,7 +150,14 @@ export default (
   const [preExistingToken, setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
   const [_preExistingToken, _setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
   const [currentStep, setCurrentStep] = useState(0)
-  const [steps, setSteps] = useState(getSteps())
+  const [steps, setSteps] =
+    useState(
+      getSteps(
+        DEFAULT_PRE_EXISTING_TOKEN,
+        isNative,
+        !!fixedTokenAddress,
+      )
+    )
 
   const [inputTokenAddress, setInputTokenAddress] = useState(null)
   const [tokenAddress, setTokenAddress] = useState(null)
@@ -129,6 +169,8 @@ export default (
   const [validateResponse, setValidateResponse] = useState(null)
   const [deploying, setDeploying] = useState(false)
   const [deployResponse, setDeployResponse] = useState(null)
+  const [deployingRemote, setDeployingRemote] = useState(false)
+  const [deployRemoteResponse, setDeployRemoteResponse] = useState(null)
   const [registering, setRegistering] = useState(false)
   const [registerResponse, setRegisterResponse] = useState(null)
 
@@ -137,6 +179,8 @@ export default (
       setSteps(
         getSteps(
           preExistingToken,
+          isNative,
+          !!fixedTokenAddress,
         )
       )
     },
@@ -148,10 +192,19 @@ export default (
       setSteps(
         getSteps(
           _preExistingToken,
+          isNative,
+          !!fixedTokenAddress,
         )
       )
     },
     [_preExistingToken],
+  )
+
+  useEffect(
+    () => {
+      setInputTokenAddress(fixedTokenAddress)
+    },
+    [fixedTokenAddress],
   )
 
   useEffect(
@@ -167,7 +220,11 @@ export default (
     _setPreExistingToken(DEFAULT_PRE_EXISTING_TOKEN)
     setCurrentStep(0)
     setSteps(
-      getSteps()
+      getSteps(
+        DEFAULT_PRE_EXISTING_TOKEN,
+        isNative,
+        !!fixedTokenAddress,
+      )
     )
 
     setInputTokenAddress(null)
@@ -175,6 +232,7 @@ export default (
     setValidTokenAddress(null)
     setTokenData(null)
     setRemoteChains(
+      initialRemoteChains ||
       getDefaultRemoteChains(
         supportedEvmChains,
         chainData,
@@ -185,6 +243,8 @@ export default (
     setValidateResponse(null)
     setDeploying(false)
     setDeployResponse(null)
+    setDeployingRemote(false)
+    setDeployRemoteResponse(null)
     setRegistering(false)
     setRegisterResponse(null)
   }
@@ -313,6 +373,46 @@ export default (
     setDeploying(false)
   }
 
+  const _deployRemoteTokens = async () => {
+    setDeployingRemote(true)
+
+    // const response =
+    //   tokenLinker &&
+    //   tokenId &&
+    //   deployRemoteTokens &&
+    //   await deployRemoteTokens(
+    //     tokenLinker,
+    //     tokenId,
+    //     remoteChains,
+    //   )
+
+    await sleep(3 * 1000)
+    const response = {
+      status: 'success',
+      message: 'Deploy remote token successful',
+      receipt: {
+        hash: '0x6719c120b28ec0a916c7a1fee65cedaf7086f9c7b295a388ae9fb2559396bae7',
+      },
+    }
+
+    const {
+      code,
+    } = { ...response }
+
+    switch (code) {
+      case 'user_rejected':
+        setDeployRemoteResponse(null)
+
+        break
+      default:
+        setDeployRemoteResponse(response)
+
+        break
+    }
+
+    setDeployingRemote(false)
+  }
+
   const _registerTokenAndDeployRemoteTokens = async () => {
     setRegistering(true)
 
@@ -386,7 +486,13 @@ export default (
 
   const {
     receipt,
-  } = { ...registerResponse }
+  } = {
+    ...(
+      tokenId ?
+        deployRemoteResponse :
+        registerResponse
+    ),
+  }
 
   const transaction_url =
     url &&
@@ -407,28 +513,40 @@ export default (
   const disabled =
     validating ||
     deploying ||
+    deployingRemote ||
     registering
+
+  const registeringOrDeployingRemote =
+    steps[currentStep]?.id === 'deploy_remote_tokens' ?
+      deployingRemote :
+      registering
+
+  const registerOrDeployRemoteResponse =
+    steps[currentStep]?.id === 'deploy_remote_tokens' ?
+      deployRemoteResponse :
+      registerResponse
 
   return (
     <Modal
       hidden={hidden}
       disabled={disabled}
-      tooltip="Register token"
+      tooltip={tooltip}
+      placement={placement}
       onClick={
         () =>
           setHidden(false)
       }
-      buttonTitle={
-        <MdAdd
-          size={18}
-        />
-      }
-      buttonClassName="hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:bg-opacity-50 rounded-full text-blue-500 dark:text-blue-600 p-1.5"
+      buttonTitle={buttonTitle}
+      buttonClassName={buttonClassName}
       title={
         <div className="flex items-center justify-between normal-case space-x-2">
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium">
-              Register token on
+              {
+                !isNative ?
+                  'Deploy remote tokens from' :
+                  'Register native token on'
+              }
             </span>
             <Image
               src={image}
@@ -656,7 +774,10 @@ export default (
                               Token address
                             </div>
                             <DebounceInput
-                              disabled={disabled}
+                              disabled={
+                                disabled ||
+                                !!fixedTokenAddress
+                              }
                               debounceTimeout={500}
                               size="small"
                               type="text"
@@ -973,7 +1094,13 @@ export default (
                       )
                     }
                   </div> :
-                  steps[currentStep]?.id === 'register_token' ?
+                  [
+                    'register_token',
+                    'deploy_remote_tokens',
+                  ]
+                  .includes(
+                    steps[currentStep]?.id
+                  ) ?
                     <div className="w-full space-y-5">
                       <div className="w-full flex flex-col space-y-3">
                         <div className="border border-slate-200 dark:border-slate-800 rounded-lg space-y-3 py-3.5 px-3">
@@ -1044,104 +1171,114 @@ export default (
                             </div>
                           )
                         }
-                        <div className="w-full space-y-1">
-                          <div className="text-slate-400 dark:text-slate-500 text-sm">
-                            Chains to deploy remote tokens
-                          </div>
-                          <div className="flex flex-wrap items-center">
-                            {
-                              supportedEvmChains
-                                .filter(c =>
-                                  c?.chain_name &&
-                                  c.id !== chainData?.id
-                                )
-                                .map((c, i) => {
-                                  const {
-                                    chain_name,
-                                    name,
-                                    image,
-                                  } = { ...c }
+                        {
+                          supportedEvmChains
+                            .filter(c =>
+                              c?.id !== chainData?.id
+                            )
+                            .length > 0 &&
+                          (
+                            <div className="w-full space-y-1">
+                              <div className="text-slate-400 dark:text-slate-500 text-sm">
+                                Chains to deploy remote tokens
+                              </div>
+                              <div className="flex flex-wrap items-center">
+                                {
+                                  supportedEvmChains
+                                    .filter(c =>
+                                      c?.chain_name &&
+                                      c.id !== chainData?.id
+                                    )
+                                    .map((c, i) => {
+                                      const {
+                                        chain_name,
+                                        name,
+                                        image,
+                                      } = { ...c }
 
-                                  const selected =
-                                    remoteChains
-                                      .includes(
-                                        chain_name
-                                      )
-
-                                  return (
-                                    <button
-                                      key={i}
-                                      disabled={disabled}
-                                      onClick={
-                                        () =>
-                                          setRemoteChains(
-                                            selected ?
-                                              remoteChains
-                                                .filter(_c =>
-                                                  _c !== chain_name
-                                                ) :
-                                              _.uniq(
-                                                _.concat(
-                                                  remoteChains,
-                                                  chain_name,
-                                                )
-                                              )
+                                      const selected =
+                                        (remoteChains || [])
+                                          .includes(
+                                            chain_name
                                           )
-                                      }
-                                      title={name}
-                                      className={
-                                        `border-2 ${
-                                          selected ?
-                                            'border-blue-600 dark:border-blue-700' :
-                                            'border-transparent'
-                                        } rounded-full mr-1.5 p-0.5`
-                                      }
-                                    >
-                                      <Image
-                                        src={image}
-                                        width={24}
-                                        height={24}
-                                        className={
-                                          `w-6 h-6 ${
-                                            selected ?
-                                              '' :
-                                              'opacity-70 hover:opacity-100'
-                                          } rounded-full`
-                                        }
-                                      />
-                                    </button>
-                                  )
-                                })
-                            }
-                          </div>
-                        </div>
+
+                                      return (
+                                        <button
+                                          key={i}
+                                          disabled={disabled}
+                                          onClick={
+                                            () =>
+                                              setRemoteChains(
+                                                selected ?
+                                                  remoteChains
+                                                    .filter(_c =>
+                                                      _c !== chain_name
+                                                    ) :
+                                                  _.uniq(
+                                                    _.concat(
+                                                      remoteChains,
+                                                      chain_name,
+                                                    )
+                                                    .filter(c => c)
+                                                  )
+                                              )
+                                          }
+                                          title={name}
+                                          className={
+                                            `border-2 ${
+                                              selected ?
+                                                'border-blue-600 dark:border-blue-700' :
+                                                'border-transparent'
+                                            } rounded-full mr-1.5 p-0.5`
+                                          }
+                                        >
+                                          <Image
+                                            src={image}
+                                            width={24}
+                                            height={24}
+                                            className={
+                                              `w-6 h-6 ${
+                                                selected ?
+                                                  '' :
+                                                  'opacity-70 hover:opacity-100'
+                                              } rounded-full`
+                                            }
+                                          />
+                                        </button>
+                                      )
+                                    })
+                                }
+                              </div>
+                            </div>
+                          )
+                        }
                       </div>
                       {
                         (
-                          registering ||
-                          registerResponse
+                          registeringOrDeployingRemote ||
+                          registerOrDeployRemoteResponse
                         ) &&
                         (
                           <div className="space-y-2">
                             <div
                               className={
                                 `${
-                                  registering ?
+                                  registeringOrDeployingRemote ?
                                     'bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50' :
-                                    registerResponse.status === 'failed' ?
+                                    registerOrDeployRemoteResponse.status === 'failed' ?
                                       'bg-red-50 dark:bg-red-900 dark:bg-opacity-50' :
                                       'bg-green-50 dark:bg-green-900 dark:bg-opacity-50'
                                 } rounded-lg flex items-center ${
-                                  registering ?
+                                  registeringOrDeployingRemote ?
                                     'text-blue-500 dark:text-blue-600' :
-                                    registerResponse.status === 'failed' ?
+                                    registerOrDeployRemoteResponse.status === 'failed' ?
                                       'text-red-500 dark:text-red-600' :
                                       'text-green-500 dark:text-green-500'
                                 } text-sm py-1.5 px-2.5`
                               }
                             >
                               {
-                                registering ?
+                                registeringOrDeployingRemote ?
                                   <Oval
                                     width={16}
                                     height={16}
@@ -1149,7 +1286,7 @@ export default (
                                       loader_color('light')
                                     }
                                   /> :
-                                  registerResponse.status === 'failed' ?
+                                  registerOrDeployRemoteResponse.status === 'failed' ?
                                     <BiX
                                       size={18}
                                       className="mt-0.5"
@@ -1160,9 +1297,11 @@ export default (
                               }
                               <span className="mx-0.5">
                                 {
-                                  registering ?
-                                    'Registering your token' :
-                                    registerResponse.message
+                                  registeringOrDeployingRemote ?
+                                    steps[currentStep]?.id === 'deploy_remote_tokens' ?
+                                      'Deploying remote tokens' :
+                                      'Registering your token' :
+                                    registerOrDeployRemoteResponse.message
                                 }
                               </span>
                               {
@@ -1297,6 +1436,7 @@ export default (
                             () => {
                               if (!remoteChains) {
                                 setRemoteChains(
+                                  initialRemoteChains ||
                                   getDefaultRemoteChains(
                                     supportedEvmChains,
                                     chainData,
@@ -1377,7 +1517,13 @@ export default (
                               'Deploy'
                           }
                         </button> :
-                  steps[currentStep]?.id === 'register_token' ?
+                  [
+                    'register_token',
+                    'deploy_remote_tokens',
+                  ]
+                  .includes(
+                    steps[currentStep]?.id
+                  ) ?
                     must_switch_network ?
                       <Wallet
                         connectChainId={_chain_id}
@@ -1385,7 +1531,7 @@ export default (
                       >
                         Switch network
                       </Wallet> :
-                      registerResponse?.status === 'success' ?
+                      registerOrDeployRemoteResponse?.status === 'success' ?
                         <button
                           disabled={disabled}
                           onClick={
@@ -1409,11 +1555,18 @@ export default (
                         <button
                           disabled={disabled}
                           onClick={
-                            () =>
-                              _registerTokenAndDeployRemoteTokens()
+                            () => {
+                              if (steps[currentStep]?.id === 'deploy_remote_tokens') {
+                                _deployRemoteTokens()
+                              }
+                              else {
+                                _registerTokenAndDeployRemoteTokens()
+                              }
+                            }
                           }
                           className={
-                            `${disabled ?
+                            `${
+                              disabled ?
                                 'bg-blue-300 dark:bg-blue-400 cursor-not-allowed' :
                                 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
                             } rounded-lg flex items-center justify-center ${
@@ -1424,9 +1577,11 @@ export default (
                           }
                         >
                           {
-                            registerResponse?.status === 'failed' ?
+                            registerOrDeployRemoteResponse?.status === 'failed' ?
                               'Retry' :
-                              'Register'
+                              steps[currentStep]?.id === 'deploy_remote_tokens' ?
+                                'Deploy' :
+                                'Register'
                           }
                         </button> :
                     currentStep >= steps.length - 1 ?

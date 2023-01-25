@@ -51,28 +51,33 @@ export default () => {
 
   useEffect(
     () => {
+      const supported_evm_chains_data =
+        (evm_chains_data || [])
+          .filter(c =>
+            c?.id &&
+            c.chain_id &&
+            !c.deprecated &&
+            token_linkers_data?.[c.id]?.deployed
+          )
+
       setSelectedChain(
         chain ||
         (
           evm_chains_data &&
+          token_linkers_data &&
           (
             get_chain(
               chain_id,
-              evm_chains_data,
+              supported_evm_chains_data,
             ) ||
             _.head(
-              evm_chains_data
-                .filter(c =>
-                  c?.id &&
-                  c.chain_id &&
-                  !c.deprecated
-                )
+              supported_evm_chains_data
             )
           )?.id
         )
       )
     },
-    [evm_chains_data, chain_id, chain],
+    [evm_chains_data, chain_id, token_linkers_data, chain],
   )
 
   useEffect(

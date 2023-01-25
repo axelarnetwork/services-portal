@@ -40,7 +40,8 @@ export default () => {
 
   let title,
     subtitle,
-    right
+    right,
+    path
 
   switch (pathname) {
     case '/':
@@ -71,6 +72,7 @@ export default () => {
 
       if (service) {
         title = service.title
+        path = service.path
       }
 
       switch (pathname) {
@@ -88,22 +90,33 @@ export default () => {
       break
   }
 
+  const titleComponent =
+    (
+      <h1
+        className="flex items-center uppercase text-slate-800 dark:text-slate-200 text-base sm:text-xl font-black"
+        style={
+          {
+            height: '46px',
+          }
+        }
+      >
+        {title}
+      </h1>
+    )
+
   return (
     <div className="w-full max-w-8xl flex flex-col sm:flex-row sm:items-center mx-auto pt-6 pb-2 px-3 sm:px-4 xl:px-1">
       <div className="flex flex-col space-y-1">
         {
           title &&
           (
-            <h1
-              className="flex items-center uppercase text-slate-800 dark:text-slate-200 text-base sm:text-xl font-black"
-              style={
-                {
-                  height: '46px',
-                }
-              }
-            >
-              {title}
-            </h1>
+            path ?
+              <Link
+                href={path}
+              >
+                {titleComponent}
+              </Link> :
+              titleComponent
           )
         }
         {

@@ -11,7 +11,7 @@ import { Blocks, Oval } from 'react-loader-spinner'
 import { Tooltip } from '@material-tailwind/react'
 import { BsFileEarmarkCheckFill, BsFillFileEarmarkArrowUpFill } from 'react-icons/bs'
 import { HiOutlineSwitchHorizontal } from 'react-icons/hi'
-import { BiMessage } from 'react-icons/bi'
+import { BiMessage, BiCheck } from 'react-icons/bi'
 import { IoClose } from 'react-icons/io5'
 
 import RegisterTokenButton from './register-token-button'
@@ -997,10 +997,8 @@ export default () => {
         if (
           evm_chains_data &&
           rpcs &&
-          token_linkers_data
+          token_linkers_data?.[selectedChain]
         ) {
-          setTokenId(null)
-
           const {
             token_linker_address,
           } = { ...token_linkers_data[selectedChain] }
@@ -1315,7 +1313,7 @@ export default () => {
                                         <BsFileEarmarkCheckFill
                                           size={16}
                                         />
-                                        <span className="uppercase text-sm font-semibold">
+                                        <span className="text-sm font-semibold">
                                           Deployed
                                         </span>
                                       </a> :
@@ -1323,7 +1321,7 @@ export default () => {
                                         <BsFileEarmarkCheckFill
                                           size={16}
                                         />
-                                        <span className="uppercase text-sm font-medium">
+                                        <span className="text-sm font-medium">
                                           Deployed
                                         </span>
                                       </div> :
@@ -1428,12 +1426,14 @@ export default () => {
                                         }
                                       </div> :
                                       !token_linker_address ?
-                                        <div className="bg-blue-500 dark:bg-blue-600 w-full cursor-wait rounded flex items-center justify-center text-white font-medium p-1.5">
+                                        <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
                                           <div className="mr-1.5">
                                             <Oval
                                               width={14}
                                               height={14}
-                                              color="white"
+                                              color={
+                                                loader_color(theme)
+                                              }
                                             />
                                           </div>
                                           <span>
@@ -1445,8 +1445,8 @@ export default () => {
                                             connectChainId={_chain_id}
                                             className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
                                           >
-                                            <span className="uppercase text-sm">
-                                              Switch network
+                                            <span className="text-sm">
+                                              Switch network to deploy
                                             </span>
                                           </Wallet> :
                                           <button
@@ -1468,7 +1468,7 @@ export default () => {
                                               } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
                                             }
                                           >
-                                            <span className="uppercase text-sm">
+                                            <span className="text-sm">
                                               Deploy
                                             </span>
                                           </button>
@@ -1498,11 +1498,13 @@ export default () => {
                           ),
                         }
                       })
+                      .filter(tl =>
+                        tl.deployed
+                      )
                       .map((tl, i) => {
                         const {
                           chain_data,
                           token_linker_address,
-                          deployed,
                         } = { ...tl }
                         const {
                           id,
@@ -1532,6 +1534,10 @@ export default () => {
                             tokenAddress :
                             token_addresses_data?.[id]
 
+                        const registered =
+                          token_addresses_data?.[chain] &&
+                          token_addresses_data[chain] !== constants.AddressZero
+
                         const registered_or_deployed_remote =
                           token_addresses_data?.[id] &&
                           token_addresses_data[id] !== constants.AddressZero
@@ -1539,7 +1545,10 @@ export default () => {
                         const address_url =
                           url &&
                           address_path &&
-                          registered_or_deployed_remote &&
+                          (
+                            is_native ||
+                            registered_or_deployed_remote
+                          ) &&
                           `${url}${
                             address_path
                               .replace(
@@ -1570,7 +1579,12 @@ export default () => {
                               <div className="h-full flex flex-col justify-between space-y-5">
                                 <div className="space-y-1">
                                   <div className="text-slate-400 dark:text-slate-500 text-sm">
-                                    Token address
+                                    {
+                                      is_native ||
+                                      registered_or_deployed_remote ?
+                                        'Token address' :
+                                        'Status'
+                                    }
                                   </div>
                                   <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
                                     {
@@ -1586,14 +1600,23 @@ export default () => {
                                             10,
                                           )}
                                         </a> :
-                                        <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
-                                          {ellipse(
-                                            _tokenAddress,
-                                            10,
-                                          )}
-                                        </span>
+                                        is_native ||
+                                        registered_or_deployed_remote ?
+                                          <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                            {ellipse(
+                                              _tokenAddress,
+                                              10,
+                                            )}
+                                          </span> :
+                                          <span className="sm:h-5 text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
+                                            Remote token not deployed
+                                          </span>
                                     }
                                     {
+                                      (
+                                        is_native ||
+                                        registered_or_deployed_remote
+                                      ) &&
                                       _tokenAddress &&
                                       (
                                         <Copy
@@ -1612,10 +1635,10 @@ export default () => {
                                         rel="noopenner noreferrer"
                                         className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
                                       >
-                                        <BsFileEarmarkCheckFill
+                                        <BiCheck
                                           size={16}
                                         />
-                                        <span className="uppercase text-sm font-semibold">
+                                        <span className="text-sm font-semibold">
                                           {
                                             is_native ?
                                               'Registered' :
@@ -1624,10 +1647,10 @@ export default () => {
                                         </span>
                                       </a> :
                                       <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
-                                        <BsFileEarmarkCheckFill
+                                        <BiCheck
                                           size={16}
                                         />
-                                        <span className="uppercase text-sm font-medium">
+                                        <span className="text-sm font-medium">
                                           {
                                             is_native ?
                                               'Registered' :
@@ -1637,25 +1660,31 @@ export default () => {
                                       </div> :
                                     !token_linker_address ||
                                     (
-                                      deployed &&
-                                      !token_addresses_data?.[id]
+                                      !token_addresses_data ||
+                                      (
+                                        tokenId &&
+                                        !token_addresses_data[id]
+                                      )
                                     ) ?
-                                      <div className="bg-blue-500 dark:bg-blue-600 w-full cursor-wait rounded flex items-center justify-center text-white font-medium p-1.5">
+                                      <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
                                         <div className="mr-1.5">
                                           <Oval
                                             width={14}
                                             height={14}
-                                            color="white"
+                                            color={
+                                              loader_color(theme)
+                                            }
                                           />
                                         </div>
                                         <span>
                                           Loading
                                         </span>
                                       </div> :
-                                      !deployed ?
+                                      !registered &&
+                                      !is_native ?
                                         <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
                                           <span className="text-sm font-medium">
-                                            No TokenLinker
+                                            Native token not registered
                                           </span>
                                         </div> :
                                         <RegisterTokenButton
@@ -1669,24 +1698,19 @@ export default () => {
                                           supportedEvmChains={
                                             getSupportedEvmChains()
                                               .filter(c =>
-                                                (
-                                                  !token_linkers_data ||
-                                                  token_linkers_data[c.id]?.deployed
-                                                ) &&
-                                                (
-                                                  !token_addresses_data ||
-                                                  !token_addresses_data[c.id] ||
-                                                  token_addresses_data[c.id] === constants.AddressZero
-                                                )
+                                                token_linkers_data[c.id]?.deployed &&
+                                                token_addresses_data?.[c.id] === constants.AddressZero
                                               )
                                           }
                                           isNative={is_native}
                                           fixedTokenAddress={tokenAddress}
                                           initialRemoteChains={
-                                            [
-                                              chain_name,
-                                            ]
-                                            .filter(c => c)
+                                            is_native ?
+                                              undefined :
+                                              [
+                                                chain_name,
+                                              ]
+                                              .filter(c => c)
                                           }
                                           tokenId={tokenId}
                                           tokenLinker={

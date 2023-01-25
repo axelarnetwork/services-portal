@@ -14,7 +14,7 @@ import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
 import ERC20 from '../../lib/contract/json/ERC20.json'
-import { ellipse, loader_color, sleep } from '../../lib/utils'
+import { ellipse, loader_color } from '../../lib/utils'
 
 const DEFAULT_PRE_EXISTING_TOKEN = true
 
@@ -159,7 +159,7 @@ export default (
       )
     )
 
-  const [inputTokenAddress, setInputTokenAddress] = useState(null)
+  const [inputTokenAddress, setInputTokenAddress] = useState(fixedTokenAddress)
   const [tokenAddress, setTokenAddress] = useState(null)
   const [validTokenAddress, setValidTokenAddress] = useState(null)
   const [tokenData, setTokenData] = useState(null)
@@ -209,9 +209,11 @@ export default (
 
   useEffect(
     () => {
-      validate()
+      if (!hidden) {
+        validate()
+      }
     },
-    [inputTokenAddress],
+    [hidden, inputTokenAddress],
   )
 
   const reset = () => {
@@ -227,7 +229,7 @@ export default (
       )
     )
 
-    setInputTokenAddress(null)
+    setInputTokenAddress(fixedTokenAddress)
     setTokenAddress(null)
     setValidTokenAddress(null)
     setTokenData(null)
@@ -324,25 +326,15 @@ export default (
   const _deployToken = async () => {
     setDeploying(true)
 
-    // const response =
-    //   deployToken &&
-    //   tokenData &&
-    //   await deployToken(
-    //     tokenData.name,
-    //     tokenData.symbol,
-    //     tokenData.decimals,
-    //     signer,
-    //   )
-
-    await sleep(3 * 1000)
-    const response = {
-      status: 'success',
-      message: 'Deploy token successful',
-      token_address: '0xfC3B4feb754d8082F745940347600D373f03dcaC',
-      name: 'Axelar',
-      symbol: 'AXL',
-      decimals: 6,
-    }
+    const response =
+      deployToken &&
+      tokenData &&
+      await deployToken(
+        tokenData.name,
+        tokenData.symbol,
+        tokenData.decimals,
+        signer,
+      )
 
     const {
       code,
@@ -376,24 +368,15 @@ export default (
   const _deployRemoteTokens = async () => {
     setDeployingRemote(true)
 
-    // const response =
-    //   tokenLinker &&
-    //   tokenId &&
-    //   deployRemoteTokens &&
-    //   await deployRemoteTokens(
-    //     tokenLinker,
-    //     tokenId,
-    //     remoteChains,
-    //   )
-
-    await sleep(3 * 1000)
-    const response = {
-      status: 'success',
-      message: 'Deploy remote token successful',
-      receipt: {
-        hash: '0x6719c120b28ec0a916c7a1fee65cedaf7086f9c7b295a388ae9fb2559396bae7',
-      },
-    }
+    const response =
+      tokenLinker &&
+      tokenId &&
+      deployRemoteTokens &&
+      await deployRemoteTokens(
+        tokenLinker,
+        tokenId,
+        remoteChains,
+      )
 
     const {
       code,
@@ -416,24 +399,15 @@ export default (
   const _registerTokenAndDeployRemoteTokens = async () => {
     setRegistering(true)
 
-    // const response =
-    //   tokenLinker &&
-    //   registerTokenAndDeployRemoteTokens &&
-    //   tokenAddress &&
-    //   await registerTokenAndDeployRemoteTokens(
-    //     tokenLinker,
-    //     tokenAddress,
-    //     remoteChains,
-    //   )
-
-    await sleep(3 * 1000)
-    const response = {
-      status: 'success',
-      message: 'Deploy token successful',
-      receipt: {
-        hash: '0x6719c120b28ec0a916c7a1fee65cedaf7086f9c7b295a388ae9fb2559396bae7',
-      },
-    }
+    const response =
+      tokenLinker &&
+      registerTokenAndDeployRemoteTokens &&
+      tokenAddress &&
+      await registerTokenAndDeployRemoteTokens(
+        tokenLinker,
+        tokenAddress,
+        remoteChains,
+      )
 
     const {
       code,
@@ -860,7 +834,7 @@ export default (
                                   disabled ||
                                   preExistingToken
                                 }
-                                debounceTimeout={500}
+                                debounceTimeout={2000}
                                 size="small"
                                 type="text"
                                 placeholder={
@@ -1403,10 +1377,21 @@ export default (
                         validateResponse?.status === 'failed'
                       }
                       onClick={
-                        () =>
+                        () => {
+                          if (!remoteChains) {
+                            setRemoteChains(
+                              initialRemoteChains ||
+                              getDefaultRemoteChains(
+                                supportedEvmChains,
+                                chainData,
+                              )
+                            )
+                          }
+
                           setCurrentStep(
                             currentStep + 1
                           )
+                        }
                       }
                       className={
                         `${

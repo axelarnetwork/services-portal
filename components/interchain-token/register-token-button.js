@@ -14,7 +14,7 @@ import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
 import ERC20 from '../../lib/contract/json/ERC20.json'
-import { ellipse, loader_color } from '../../lib/utils'
+import { ellipse, loader_color, sleep } from '../../lib/utils'
 
 const DEFAULT_PRE_EXISTING_TOKEN = true
 
@@ -471,12 +471,12 @@ export default (
   const transaction_url =
     url &&
     transaction_path &&
-    receipt?.hash &&
+    receipt?.transactionHash &&
     `${url}${
       transaction_path
         .replace(
           '{tx}',
-          receipt.hash,
+          receipt.transactionHash,
         )
     }`
 
@@ -1517,36 +1517,85 @@ export default (
                         Switch network
                       </Wallet> :
                       registerOrDeployRemoteResponse?.status === 'success' ?
-                        <button
-                          disabled={disabled}
-                          onClick={
-                            () => {
-                              router
-                                .push(
-                                  `${
-                                    pathname
-                                      .replace(
-                                        '/[chain]',
-                                        '',
-                                      )
-                                      .replace(
-                                        '/[token_address]',
-                                        '',
-                                      )
-                                  }/${chainData.id}/${tokenAddress}`,
-                                  undefined,
-                                  {
-                                    shallow: true,
-                                  },
-                                )
-
-                              reset()
+                        registerOrDeployRemoteResponse.chains?.length > 0 &&
+                        receipt?.transactionHash &&
+                        !disabled ?
+                          <a
+                            href={
+                              `${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp${
+                                registerOrDeployRemoteResponse.chains.length > 1 ?
+                                  '?txHash=' :
+                                  '/'
+                              }${receipt.transactionHash}`
                             }
-                          }
-                          className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
-                        >
-                          Done
-                        </button> :
+                            target="_blank"
+                            rel="noopenner noreferrer"
+                            onClick={
+                              async () => {
+                                reset()
+
+                                await sleep(1 * 1000)
+
+                                router
+                                  .push(
+                                    `${
+                                      pathname
+                                        .replace(
+                                          '/[chain]',
+                                          '',
+                                        )
+                                        .replace(
+                                          '/[token_address]',
+                                          '',
+                                        )
+                                    }/${chainData.id}/${tokenAddress}`,
+                                    undefined,
+                                    {
+                                      shallow: true,
+                                    },
+                                  )
+                              }
+                            }
+                            className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                          >
+                            Deployment{
+                              registerOrDeployRemoteResponse.chains.length > 1 ?
+                                's' :
+                                ''
+                            } started
+                          </a> :
+                          <button
+                            disabled={disabled}
+                            onClick={
+                              async () => {
+                                reset()
+
+                                await sleep(1 * 1000)
+
+                                router
+                                  .push(
+                                    `${
+                                      pathname
+                                        .replace(
+                                          '/[chain]',
+                                          '',
+                                        )
+                                        .replace(
+                                          '/[token_address]',
+                                          '',
+                                        )
+                                    }/${chainData.id}/${tokenAddress}`,
+                                    undefined,
+                                    {
+                                      shallow: true,
+                                    },
+                                  )
+                              }
+                            }
+                            className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                          >
+                            Done
+                          </button> :
                         <button
                           disabled={
                             disabled ||

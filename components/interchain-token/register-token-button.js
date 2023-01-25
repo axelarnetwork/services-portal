@@ -1548,7 +1548,13 @@ export default (
                           Done
                         </button> :
                         <button
-                          disabled={disabled}
+                          disabled={
+                            disabled ||
+                            (
+                              steps[currentStep]?.id === 'deploy_remote_tokens' &&
+                              remoteChains.length < 1
+                            )
+                          }
                           onClick={
                             () => {
                               if (steps[currentStep]?.id === 'deploy_remote_tokens') {
@@ -1561,11 +1567,19 @@ export default (
                           }
                           className={
                             `${
-                              disabled ?
+                              disabled ||
+                              (
+                                steps[currentStep]?.id === 'deploy_remote_tokens' &&
+                                remoteChains.length < 1
+                              ) ?
                                 'bg-blue-300 dark:bg-blue-400 cursor-not-allowed' :
                                 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
                             } rounded-lg flex items-center justify-center ${
-                              disabled ?
+                              disabled ||
+                              (
+                                steps[currentStep]?.id === 'deploy_remote_tokens' &&
+                                remoteChains.length < 1
+                              ) ?
                                 'text-slate-50' :
                                 'text-white'
                             } text-base font-medium py-1 px-2.5`

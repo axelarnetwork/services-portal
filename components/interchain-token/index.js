@@ -1081,16 +1081,23 @@ export default () => {
       signer &&
       token_linker &&
       token_address &&
-      Array.isArray(chains) &&
-      chains.length > 0
+      Array.isArray(chains)
     ) {
       try {
+        const register_only =
+          chains.length === 0
+
         const transaction =
-          await token_linker
-            .registerTokenAndDeployRemoteTokens(
-              token_address,
-              chains,
-            )
+          register_only ?
+            await token_linker
+              .registerToken(
+                token_address,
+              ) :
+            await token_linker
+              .registerTokenAndDeployRemoteTokens(
+                token_address,
+                chains,
+              )
 
         const receipt =
           await transaction
@@ -1111,8 +1118,16 @@ export default () => {
                 'success',
             message:
               failed ?
-                'Failed to register token and deploy remote tokens' :
-                'Register token and deploy remote tokens successful',
+                `Failed to register token${
+                  register_only ?
+                    '' :
+                    ' and deploy remote tokens'
+                }` :
+                `Register token${
+                  register_only ?
+                    '' :
+                    ' and deploy remote tokens'
+                } successful`,
             receipt,
           }
       } catch (error) {

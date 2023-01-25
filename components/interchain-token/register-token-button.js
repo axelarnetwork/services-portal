@@ -1523,7 +1523,17 @@ export default (
                             () => {
                               router
                                 .push(
-                                  `${pathname}/${chainData.id}/${tokenAddress}`,
+                                  `${
+                                    pathname
+                                      .replace(
+                                        '/[chain]',
+                                        '',
+                                      )
+                                      .replace(
+                                        '/[token_address]',
+                                        '',
+                                      )
+                                  }/${chainData.id}/${tokenAddress}`,
                                   undefined,
                                   {
                                     shallow: true,

@@ -3,9 +3,8 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import _ from 'lodash'
 import { Contract, ContractFactory, VoidSigner, constants, utils } from 'ethers'
-import { predictContractConstant, deployUpgradable } from '@axelar-network/axelar-gmp-sdk-solidity'
+import { predictContractConstant } from '@axelar-network/axelar-gmp-sdk-solidity'
 import ERC20MintableBurnable from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json'
-import UpgradableProxy from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/upgradables/Proxy.sol/Proxy.json'
 import ConstAddressDeployer from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/ConstAddressDeployer.sol/ConstAddressDeployer.json'
 import { Blocks, Oval } from 'react-loader-spinner'
 import { Tooltip } from '@material-tailwind/react'
@@ -21,9 +20,11 @@ import Wallet from '../wallet'
 import Datatable from '../datatable'
 import { get_chain, switch_chain } from '../../lib/chain/utils'
 import { deploy_contract, is_contract_deployed, get_salt_from_key, get_contract_address_by_chain } from '../../lib/contract/utils'
-import Deployer from '../../lib/contract/json/Deployer.json'
-import RemoteAddressValidator from '../../lib/contract/json/RemoteAddressValidator.json'
+import TokenLinkerProxy from '../../lib/contract/json/TokenLinkerProxy.json'
 import TokenLinker from '../../lib/contract/json/TokenLinker.json'
+import RemoteAddressValidatorProxy from '../../lib/contract/json/RemoteAddressValidatorProxy.json'
+import RemoteAddressValidator from '../../lib/contract/json/RemoteAddressValidator.json'
+import IUpgradable from '../../lib/contract/json/IUpgradable.json'
 import { ellipse, loader_color, parse_error } from '../../lib/utils'
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from '../../reducers/types'
 
@@ -165,8 +166,230 @@ export default () => {
     return response
   }
 
+  const deployUpgradable = async (
+    key = 'deployer',
+    contract_json,
+    contract_proxy_json,
+    args = [],
+    proxy_args = [],
+    setup_params = '0x',
+    _signer = signer,
+    callback,
+  ) => {
+    let contract
+
+    if (
+      constant_address_deployer &&
+      _signer &&
+      key &&
+      contract_json &&
+      contract_proxy_json
+    ) {
+      const contract_factory =
+        new ContractFactory(
+          contract_json.abi,
+          contract_json.bytecode,
+          _signer,
+        )
+
+      try {
+        if (callback) {
+          callback(
+            {
+              status: 'pending',
+              message: 'Please confirm',
+            },
+          )
+        }
+
+        const _contract =
+          await contract_factory
+            .deploy(
+              ...args,
+            )
+
+        if (callback) {
+          callback(
+            {
+              status: 'waiting',
+              message: 'Waiting for confirmation',
+            },
+          )
+        }
+
+        await _contract.deployed()
+
+        const proxy =
+          await deployAndInitContractConstant(
+            key,
+            contract_proxy_json,
+            proxy_args,
+            [
+              _contract.address,
+              _signer.address,
+              setup_params,
+            ],
+            _signer,
+            callback ?
+              response =>
+                callback(
+                  response,
+                ) :
+              undefined,
+          )
+
+        contract =
+          new Contract(
+            proxy.address,
+            contract_json.abi,
+            _signer,
+          )
+      } catch (error) {}
+    }
+
+    return contract
+  }
+
+  const upgradeUpgradable = async (
+    proxy_contract_address,
+    contract_json,
+    args = [],
+    setup_params = '0x',
+    _signer = signer,
+    callback,
+  ) => {
+    let response
+
+    if (
+      _signer &&
+      proxy_contract_address &&
+      contract_json
+    ) {
+      response = {
+        ...response,
+        proxy_contract_address,
+      }
+
+      const proxy =
+        new Contract(
+          proxy_contract_address,
+          IUpgradable.abi,
+          _signer,
+        )
+
+      const contract_factory =
+        new ContractFactory(
+          contract_json.abi,
+          contract_json.bytecode,
+          _signer,
+        )
+
+      try {
+        if (callback) {
+          callback(
+            {
+              status: 'pending',
+              message: 'Please confirm',
+            },
+          )
+        }
+
+        const contract =
+          await contract_factory
+            .deploy(
+              ...args,
+            )
+
+        if (callback) {
+          callback(
+            {
+              status: 'waiting',
+              message: 'Waiting for confirmation',
+            },
+          )
+        }
+
+        await contract.deployed()
+
+        const contract_address = contract.address
+
+        response = {
+          ...response,
+          contract_address,
+        }
+
+        const contract_code =
+          await _signer.provider
+            .getCode(
+              contract_address,
+            )
+
+        if (callback) {
+          callback(
+            {
+              status: 'pending',
+              message: 'Please confirm',
+            },
+          )
+        }
+
+        const transaction =
+          await proxy
+            .upgrade(
+              contract_address,
+              utils.keccak256(
+                contract_code
+              ),
+              setup_params,
+            )
+
+        if (callback) {
+          callback(
+            {
+              status: 'waiting',
+              message: 'Waiting for confirmation',
+            },
+          )
+        }
+
+        const receipt =
+          await transaction
+            .wait()
+
+        const {
+          status,
+        } = { ...receipt }
+
+        const failed = !status
+
+        response =
+          {
+            ...response,
+            status:
+              failed ?
+                'failed' :
+                'success',
+            message:
+              failed ?
+                'Failed to upgrade contract' :
+                'Upgrade contract successful',
+            receipt,
+          }
+      } catch (error) {
+        response =
+          {
+            status: 'failed',
+            ...parse_error(error),
+          }
+      }
+    }
+
+    return response
+  }
+
   const deployAndInitContractConstant = async (
     key = 'deployer',
+    contract_json,
     args = [],
     init_args = [],
     _signer = signer,
@@ -177,12 +400,13 @@ export default () => {
     if (
       constant_address_deployer &&
       _signer &&
-      key
+      key &&
+      contract_json
     ) {
       const contract_factory =
         new ContractFactory(
-          Deployer.abi,
-          Deployer.bytecode,
+          contract_json.abi,
+          contract_json.bytecode,
         )
 
       const bytecode =
@@ -211,7 +435,7 @@ export default () => {
       contract =
         new Contract(
           _address,
-          Deployer.abi,
+          contract_json.abi,
           _signer,
         )
 
@@ -224,6 +448,15 @@ export default () => {
         )?.data
 
       try {
+        if (callback) {
+          callback(
+            {
+              status: 'pending',
+              message: 'Please confirm',
+            },
+          )
+        }
+
         const transaction =
           await deployer
             .connect(_signer)
@@ -276,7 +509,6 @@ export default () => {
         )
 
       const {
-        deployer_address,
         token_linker_address,
         deployed,
       } = { ...token_linker }
@@ -318,7 +550,6 @@ export default () => {
         }
 
       if (
-        deployer_address &&
         token_linker_address &&
         gateway_address &&
         gas_service_address &&
@@ -331,7 +562,7 @@ export default () => {
             await predictContractConstant(
               constant_address_deployer,
               _signer,
-              UpgradableProxy,
+              RemoteAddressValidatorProxy,
               'remoteAddressValidator',
             )
         } catch (error) {
@@ -345,72 +576,66 @@ export default () => {
 
         if (remote_address_validator_address) {
           try {
-            if (callback) {
-              callback(
-                {
-                  status: 'pending',
-                  message: 'Please confirm',
-                },
-              )
-            }
-
-            /*
-            await deployUpgradable(
-              constant_address_deployer,
-              _signer,
-              RemoteAddressValidator,
-              UpgradableProxy,
-              [
-                token_linker_address,
-                [],
-                [],
-              ],
-              [],
-              [],
-              'remoteAddressValidator',
-            )
-            */
-
-            const contract_factory =
-              new ContractFactory(
-                TokenLinker.abi,
-                TokenLinker.bytecode,
-              )
-
-            const bytecode =
-              contract_factory
-                .getDeployTransaction(
+            const token_linker_contract =
+              await deployUpgradable(
+                'tokenLinker',
+                TokenLinker,
+                TokenLinkerProxy,
+                [
                   gateway_address,
                   gas_service_address,
                   remote_address_validator_address,
                   chain,
-                )?.data
-
-            const _response =
-              await deployAndInitContractConstant(
-                'deployer',
-                [],
-                [
-                  bytecode,
                 ],
+                [],
+                [],
                 _signer,
                 callback ?
-                  updated_status => {
+                  response =>
                     callback(
-                      updated_status,
-                    )
-                  } :
+                      response,
+                    ) :
                   undefined,
               )
 
-            const {
-              status,
-            } = { ..._response }
+            const remote_address_validator_contract =
+              token_linker_contract?.address &&
+              await deployUpgradable(
+                'remoteAddressValidator',
+                RemoteAddressValidator,
+                RemoteAddressValidatorProxy,
+                [
+                  token_linker_contract.address,
+                  [],
+                  [],
+                ], 
+                [],
+                [],
+                _signer,
+                callback ?
+                  response =>
+                    callback(
+                      response,
+                    ) :
+                  undefined,
+              )
 
-            if (status === 'failed') {
-              response = _response
-            }
-            else {
+            const failed = !remote_address_validator_contract?.address
+
+            response =
+              {
+                ...response,
+                status:
+                  failed ?
+                    'failed' :
+                    'success',
+                message:
+                  failed ?
+                    'Failed to deploy contract' :
+                    'Deploy contract successful',
+              }
+
+            if (!failed) {
               response =
                 {
                   ...response,
@@ -582,7 +807,6 @@ export default () => {
 
   const getTokenLinker = async (
     _signer = signer,
-    nonce = 1,
   ) => {
     let response
 
@@ -591,20 +815,12 @@ export default () => {
       _signer
     ) {
       try {
-        const deployer_address =
+        const token_linker_address =
           await predictContractConstant(
             constant_address_deployer,
             _signer,
-            Deployer,
-            'deployer',
-          )
-
-        const token_linker_address =
-          utils.getContractAddress(
-            {
-              from: deployer_address,
-              nonce,
-            },
+            TokenLinkerProxy,
+            'tokenLinker',
           )
 
         const deployed =
@@ -617,7 +833,6 @@ export default () => {
         response =
           {
             constant_address_deployer,
-            deployer_address,
             token_linker_address,
             deployed,
           }
@@ -1223,7 +1438,7 @@ export default () => {
                                 deployed &&
                                 (
                                   <RegisterTokenButton
-                                    tooltip="Register token"
+                                    tooltip="Register native token"
                                     placement="bottom"
                                     chainData={chain_data}
                                     supportedEvmChains={
@@ -1277,14 +1492,14 @@ export default () => {
                                           href={address_url}
                                           target="_blank"
                                           rel="noopenner noreferrer"
-                                          className="sm:h-5 text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                          className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
                                         >
                                           {ellipse(
                                             token_linker_address,
                                             10,
                                           )}
                                         </a> :
-                                        <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                        <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
                                           {ellipse(
                                             token_linker_address,
                                             10,
@@ -1593,7 +1808,7 @@ export default () => {
                                           href={address_url}
                                           target="_blank"
                                           rel="noopenner noreferrer"
-                                          className="sm:h-5 text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                          className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
                                         >
                                           {ellipse(
                                             _tokenAddress,
@@ -1602,13 +1817,13 @@ export default () => {
                                         </a> :
                                         is_native ||
                                         registered_or_deployed_remote ?
-                                          <span className="sm:h-5 text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                          <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
                                             {ellipse(
                                               _tokenAddress,
                                               10,
                                             )}
                                           </span> :
-                                          <span className="sm:h-5 text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
+                                          <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
                                             Remote token not deployed
                                           </span>
                                     }

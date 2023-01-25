@@ -57,14 +57,15 @@ export default () => {
       type="text"
       placeholder="Search..."
       value={input}
-      onChange={e =>
-        setInput(
-          (e.target.value || '')
-            .trim()
-            .split(' ')
-            .filter(s => s)
-            .join(' ')
-        )
+      onChange={
+        e =>
+          setInput(
+            (e.target.value || '')
+              .trim()
+              .split(' ')
+              .filter(s => s)
+              .join(' ')
+          )
       }
       className="w-full sm:w-80 bg-transparent border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl text-lg py-2 px-3"
     />

@@ -12,10 +12,12 @@ export default (
 ) => {
  const {
     evm_chains,
+    token_linkers,
   } = useSelector(state =>
     (
       {
         evm_chains: state.evm_chains,
+        token_linkers: state.token_linkers,
       }
     ),
     shallowEqual,
@@ -23,23 +25,30 @@ export default (
   const {
     evm_chains_data,
   } = { ...evm_chains }
+  const {
+    token_linkers_data,
+  } = { ...token_linkers }
 
   const [menus, setMenus] = useState(null)
 
   useEffect(
     () => {
-      if (evm_chains_data) {
+      if (
+        evm_chains_data &&
+        token_linkers_data
+      ) {
         setMenus(
           evm_chains_data
             .filter(c =>
               c?.id &&
               !c.deprecated &&
-              c.gateway_address
+              c.gateway_address &&
+              token_linkers_data[c.id]?.deployed
             )
         )
       }
     },
-    [evm_chains_data],
+    [evm_chains_data, token_linkers_data],
   )
 
   return (

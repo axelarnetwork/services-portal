@@ -152,12 +152,14 @@ export default (
 ) => {
   const {
     preferences,
+    evm_chains,
     wallet,
     token_linkers,
   } = useSelector(state =>
     (
       {
         preferences: state.preferences,
+        evm_chains: state.evm_chains,
         wallet: state.wallet,
         token_linkers: state.token_linkers,
       }
@@ -167,6 +169,9 @@ export default (
   const {
     theme,
   } = { ...preferences }
+  const {
+    evm_chains_data,
+  } = { ...evm_chains }
   const {
     wallet_data,
   } = { ...wallet }

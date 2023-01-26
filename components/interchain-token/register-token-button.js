@@ -13,8 +13,10 @@ import Modal from '../modal'
 import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
+import { searchGMP } from '../../lib/api/gmp'
+import { get_chain } from '../../lib/chain/utils'
 import ERC20 from '../../lib/contract/json/ERC20.json'
-import { ellipse, loader_color, sleep } from '../../lib/utils'
+import { equals_ignore_case, ellipse, name as get_name, loader_color, sleep } from '../../lib/utils'
 
 const DEFAULT_PRE_EXISTING_TOKEN = true
 
@@ -22,6 +24,7 @@ const getSteps = (
   preExistingToken = DEFAULT_PRE_EXISTING_TOKEN,
   isNative = true,
   existingToken = false,
+  hasDeployRemoteTokens = false,
 ) =>
   [
     {
@@ -43,27 +46,62 @@ const getSteps = (
       id: 'input_token',
       title:
         preExistingToken ?
-          'Validate your ERC20 token' :
-          'Deploy new ERC20 token',
+          `Validate${
+            !isNative ||
+            hasDeployRemoteTokens ?
+              '' :
+              ' your ERC20'
+          } token` :
+          `Deploy${
+            !isNative ||
+            hasDeployRemoteTokens ?
+              '' :
+              ' new'
+          } ERC20 token`,
     },
     isNative ?
       {
         id: 'register_token',
-        title: 'Register ERC20 token',
+        title:
+          `Register${
+            !isNative ||
+            hasDeployRemoteTokens ?
+              '' :
+              ' ERC20'
+          } token`,
       } :
       {
         id: 'deploy_remote_tokens',
         title: 'Deploy remote tokens',
       },
+    {
+      id: 'remote_deployments',
+      title:
+        `${
+          !isNative ||
+          hasDeployRemoteTokens ?
+            'D' :
+            'Remote d'
+        }eployments`,
+    },
   ]
   .filter(s =>
-    !existingToken ||
-    ![
+    [
       'select_pre_existing_token',
     ]
     .includes(
       s?.id
-    )
+    ) ?
+      !existingToken :
+      [
+        'remote_deployments',
+      ]
+      .includes(
+        s?.id
+      ) ?
+        !isNative ||
+        hasDeployRemoteTokens :
+        true
   )
   .map((s, i) => {
     return {
@@ -164,6 +202,7 @@ export default (
   const [validTokenAddress, setValidTokenAddress] = useState(null)
   const [tokenData, setTokenData] = useState(null)
   const [remoteChains, setRemoteChains] = useState(null)
+  const [calls, setCalls] = useState(null)
 
   const [validating, setValidating] = useState(false)
   const [validateResponse, setValidateResponse] = useState(null)
@@ -202,6 +241,20 @@ export default (
 
   useEffect(
     () => {
+      setSteps(
+        getSteps(
+          preExistingToken,
+          isNative,
+          !!fixedTokenAddress,
+          remoteChains?.length > 0,
+        )
+      )
+    },
+    [remoteChains],
+  )
+
+  useEffect(
+    () => {
       setInputTokenAddress(fixedTokenAddress)
     },
     [fixedTokenAddress],
@@ -214,6 +267,45 @@ export default (
       }
     },
     [hidden, inputTokenAddress],
+  )
+
+  useEffect(
+    () => {
+      const update = async () => {
+        const {
+          receipt,
+          chains,
+        } = {
+          ...(
+            tokenId ?
+              deployRemoteResponse :
+              registerResponse
+          ),
+        }
+        const {
+          transactionHash,
+        } = { ...receipt }
+
+        if (
+          transactionHash &&
+          chains?.length > 0
+        ) {
+          updateCalls(
+            transactionHash,
+          )
+        }
+      }
+
+      const interval =
+        setInterval(
+          () =>
+            update(),
+          0.25 * 60 * 1000,
+        )
+
+      return () => clearInterval(interval)
+    },
+    [deployRemoteResponse, registerResponse],
   )
 
   const reset = () => {
@@ -240,6 +332,7 @@ export default (
         chainData,
       )
     )
+    setCalls(null)
 
     setValidating(false)
     setValidateResponse(null)
@@ -427,6 +520,27 @@ export default (
     setRegistering(false)
   }
 
+  const updateCalls = async (
+    txHash,
+  ) => {
+    if (txHash) {
+      try {
+        const response =
+          await searchGMP(
+            {
+              txHash,
+            },
+          )
+
+        const {
+          data,
+        } = { ...response }
+
+        setCalls(data)
+      } catch (error) {}
+    }
+  }
+
   const {
     name,
     image,
@@ -460,6 +574,7 @@ export default (
 
   const {
     receipt,
+    chains,
   } = {
     ...(
       tokenId ?
@@ -488,7 +603,23 @@ export default (
     validating ||
     deploying ||
     deployingRemote ||
-    registering
+    registering ||
+    (
+      steps[currentStep]?.id === 'remote_deployments' &&
+      chains?.length > 0 &&
+      receipt?.transactionHash &&
+      (calls || '')
+        .filter(c =>
+          [
+            'executed',
+          ]
+          .includes(
+            c?.status
+          )
+        )
+        .length <
+        chains.length
+    )
 
   const registeringOrDeployingRemote =
     steps[currentStep]?.id === 'deploy_remote_tokens' ?
@@ -591,7 +722,11 @@ export default (
                               'justify-start' :
                               step === steps.length - 1 ?
                                 'justify-end' :
-                                'justify-center'
+                                (steps.length / 2) % 2 === 0 ?
+                                  step < steps.length / 2 ?
+                                    'justify-start' :
+                                    'justify-end' :
+                                  'justify-center'
                           } whitespace-nowrap ${
                             step < currentStep ?
                               'text-slate-700 dark:text-slate-200 font-semibold' :
@@ -646,7 +781,7 @@ export default (
                           className={
                             `w-8 h-8 ${
                               step < currentStep ?
-                                `bg-blue-300 dark:bg-blue-400 ${
+                                `bg-blue-400 dark:bg-blue-500 ${
                                   disabled ?
                                     '' :
                                     'hover:bg-blue-400 dark:hover:bg-blue-500'   
@@ -1296,7 +1431,161 @@ export default (
                         )
                       }
                     </div> :
-                    null
+                    steps[currentStep]?.id === 'remote_deployments' ?
+                      <div className="space-y-1.5">
+                        <div className="whitespace-nowrap text-base font-bold">
+                          Deployment via GMP
+                        </div>
+                        <div className="overflow-y-auto flex flex-col space-y-0.5">
+                          {
+                            (chains || [])
+                              .map((c, i) => {
+                                const data =
+                                  (calls || [])
+                                    .find(_c =>
+                                      equals_ignore_case(
+                                        _c?.returnValues?.destinationChain,
+                                        c,
+                                      )
+                                    )
+
+                                const {
+                                  call,
+                                  status,
+                                  gas_status,
+                                } = { ...data }
+                                const {
+                                  transactionHash,
+                                  logIndex,
+                                } = { ...call }
+
+                                const chain_data =
+                                  get_chain(
+                                    c,
+                                    evm_chains_data,
+                                  )
+
+                                const {
+                                  image,
+                                } = { ...chain_data }
+
+                                const statuses =
+                                  [
+                                    get_name(status),
+                                  ]
+
+                                let title,
+                                  text_color,
+                                  icon
+
+                                switch (gas_status) {
+                                  case 'gas_unpaid':
+                                    statuses
+                                      .push('Gas unpaid')
+                                    break
+                                  case 'gas_paid_enough_gas':
+                                  case 'gas_paid':
+                                    statuses
+                                      .push('Gas paid')
+                                    break
+                                  case 'gas_paid_not_enough_gas':
+                                    statuses
+                                      .push('Not enough gas')
+                                    break
+                                  default:
+                                    break
+                                }
+
+                                title =
+                                  statuses
+                                    .filter(s => s)
+                                    .join(' & ')
+
+                                switch (status) {
+                                  case 'executed':
+                                  case 'express_executed':
+                                    text_color = 'text-green-500 dark:text-green-500'
+                                    break
+                                  case 'error':
+                                    text_color = 'text-red-500 dark:text-red-600'
+                                    break
+                                  default:
+                                    text_color = 'text-blue-500 dark:text-blue-600'
+                                    break
+                                }
+
+                                switch (status) {
+                                  case 'executed':
+                                  case 'express_executed':
+                                    icon =
+                                      (
+                                        <BiCheck
+                                          size={20}
+                                        />
+                                      )
+                                    break
+                                  case 'error':
+                                    icon =
+                                      (
+                                        <BiX
+                                          size={20}
+                                          className="mt-0.5"
+                                        />
+                                      )
+                                    break
+                                  default:
+                                    icon =
+                                      (
+                                        <Oval
+                                          width={20}
+                                          height={20}
+                                          color={
+                                            loader_color(theme)
+                                          }
+                                        />
+                                      )
+                                    break
+                                }
+
+                                const url =
+                                  `${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${
+                                    transactionHash ||
+                                    receipt?.transactionHash
+                                  }${
+                                    typeof logIndex === 'number' ?
+                                      `:${logIndex}` :
+                                      ''
+                                  }`
+
+                                return (
+                                  <a
+                                    key={i}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopenner noreferrer"
+                                    className={
+                                      `hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between ${text_color} space-x-2.5 py-1.5 px-1`
+                                    }
+                                  >
+                                    <div className="flex items-center space-x-2">
+                                      <Image
+                                        src={image}
+                                        width={24}
+                                        height={24}
+                                        className="w-6 h-6 rounded-full"
+                                      />
+                                      <span className="text-sm font-medium">
+                                        {title}
+                                      </span>
+                                    </div>
+                                    {icon}
+                                  </a>
+                                )
+                              })
+                          }
+                        </div>
+                      </div> :
+                      null
             }
           </div>
           <div className="flex items-center justify-between space-x-2.5">
@@ -1410,7 +1699,7 @@ export default (
                     must_switch_network ?
                       <Wallet
                         connectChainId={_chain_id}
-                        className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                        className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
                       >
                         Switch network
                       </Wallet> :
@@ -1512,58 +1801,25 @@ export default (
                     must_switch_network ?
                       <Wallet
                         connectChainId={_chain_id}
-                        className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                        className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
                       >
                         Switch network
                       </Wallet> :
                       registerOrDeployRemoteResponse?.status === 'success' ?
                         registerOrDeployRemoteResponse.chains?.length > 0 &&
-                        receipt?.transactionHash &&
-                        !disabled ?
-                          <a
-                            href={
-                              `${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp${
-                                registerOrDeployRemoteResponse.chains.length > 1 ?
-                                  '?txHash=' :
-                                  '/'
-                              }${receipt.transactionHash}`
-                            }
-                            target="_blank"
-                            rel="noopenner noreferrer"
+                        receipt?.transactionHash ?
+                          <button
+                            disabled={disabled}
                             onClick={
-                              async () => {
-                                reset()
-
-                                await sleep(1 * 1000)
-
-                                router
-                                  .push(
-                                    `${
-                                      pathname
-                                        .replace(
-                                          '/[chain]',
-                                          '',
-                                        )
-                                        .replace(
-                                          '/[token_address]',
-                                          '',
-                                        )
-                                    }/${chainData.id}/${tokenAddress}`,
-                                    undefined,
-                                    {
-                                      shallow: true,
-                                    },
-                                  )
-                              }
+                              () =>
+                                setCurrentStep(
+                                  currentStep + 1
+                                )
                             }
-                            className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                            className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
                           >
-                            Deployment{
-                              registerOrDeployRemoteResponse.chains.length > 1 ?
-                                's' :
-                                ''
-                            } started
-                          </a> :
+                            Next
+                          </button> :
                           <button
                             disabled={disabled}
                             onClick={
@@ -1642,30 +1898,77 @@ export default (
                                 'Register'
                           }
                         </button> :
-                    currentStep >= steps.length - 1 ?
-                      <div /> :
+                    steps[currentStep]?.id === 'remote_deployments' ?
                       <button
                         disabled={disabled}
                         onClick={
-                          () =>
-                            setCurrentStep(
-                              currentStep + 1
-                            )
+                          async () => {
+                            reset()
+
+                            await sleep(1 * 1000)
+
+                            router
+                              .push(
+                                `${
+                                  pathname
+                                    .replace(
+                                      '/[chain]',
+                                      '',
+                                    )
+                                    .replace(
+                                      '/[token_address]',
+                                      '',
+                                    )
+                                }/${chainData.id}/${tokenAddress}`,
+                                undefined,
+                                {
+                                  shallow: true,
+                                },
+                              )
+                          }
                         }
                         className={
                           `${
                             disabled ?
                               'bg-blue-300 dark:bg-blue-400' :
-                              'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                              'bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600'
                           } rounded-lg flex items-center justify-center ${
                             disabled ?
-                              'cursor-not-allowed text-slate-50' :
+                              'text-slate-50' :
                               'text-white'
                           } text-base font-medium py-1 px-2.5`
                         }
                       >
-                        Next
-                      </button>
+                        {
+                          disabled ?
+                            'Processing' :
+                            'Done'
+                        }
+                      </button> :
+                      currentStep >= steps.length - 1 ?
+                        <div /> :
+                        <button
+                          disabled={disabled}
+                          onClick={
+                            () =>
+                              setCurrentStep(
+                                currentStep + 1
+                              )
+                          }
+                          className={
+                            `${
+                              disabled ?
+                                'bg-blue-300 dark:bg-blue-400' :
+                                'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
+                            } rounded-lg flex items-center justify-center ${
+                              disabled ?
+                                'cursor-not-allowed text-slate-50' :
+                                'text-white'
+                            } text-base font-medium py-1 px-2.5`
+                          }
+                        >
+                          Next
+                        </button>
             }
           </div>
         </div>

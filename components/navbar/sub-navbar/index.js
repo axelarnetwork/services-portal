@@ -93,7 +93,7 @@ export default () => {
   const titleComponent =
     (
       <h1
-        className="flex items-center uppercase text-slate-800 dark:text-slate-200 text-base sm:text-xl font-black"
+        className="flex items-center tracking-wider uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
         style={
           {
             height: '46px',

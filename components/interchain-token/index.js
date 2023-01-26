@@ -1673,7 +1673,7 @@ export default () => {
                                         must_switch_network ?
                                           <Wallet
                                             connectChainId={_chain_id}
-                                            className="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                            className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
                                           >
                                             <span className="text-sm">
                                               Switch network to deploy
@@ -1689,7 +1689,7 @@ export default () => {
                                                 deployTokenLinker(id)
                                             }
                                             className={
-                                              `bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full ${
+                                              `bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full ${
                                                 tokenLinkerDeployStatus?.chain &&
                                                 tokenLinkerDeployStatus.chain !== id &&
                                                 tokenLinkerDeployStatus.status !== 'failed' ?
@@ -1923,7 +1923,7 @@ export default () => {
                                               'Register token' :
                                               'Deploy remote tokens'
                                           }
-                                          buttonClassName="bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                          buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
                                           chainData={_chain_data}
                                           supportedEvmChains={
                                             getSupportedEvmChains()
@@ -2172,7 +2172,7 @@ export default () => {
                                                   <div>
                                                     <Wallet
                                                       connectChainId={_chain_id}
-                                                      className="w-full cursor-pointer rounded flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500"
+                                                      className="w-full cursor-pointer rounded flex items-center justify-center text-blue-500 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-500"
                                                     >
                                                       <HiOutlineSwitchHorizontal
                                                         size={14}
@@ -2195,7 +2195,7 @@ export default () => {
                                                         tokenLinkerDeployStatus.status !== 'failed' ?
                                                           'cursor-not-allowed' :
                                                           'cursor-pointer'
-                                                      } flex items-center justify-center text-indigo-500 hover:text-indigo-600 dark:text-indigo-600 dark:hover:text-indigo-500`
+                                                      } flex items-center justify-center text-blue-500 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-500`
                                                     }
                                                   >
                                                     <BsFillFileEarmarkArrowUpFill

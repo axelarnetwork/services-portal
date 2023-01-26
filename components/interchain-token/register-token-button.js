@@ -613,7 +613,7 @@ export default (
       steps[currentStep]?.id === 'remote_deployments' &&
       chains?.length > 0 &&
       receipt?.transactionHash &&
-      (calls || '')
+      (calls || [])
         .filter(c =>
           [
             'executed',
@@ -1437,7 +1437,7 @@ export default (
                       }
                     </div> :
                     steps[currentStep]?.id === 'remote_deployments' ?
-                      <div className="space-y-1.5">
+                      <div className="w-full space-y-1.5">
                         <div className="whitespace-nowrap text-base font-bold">
                           Deployment via GMP
                         </div>
@@ -1449,7 +1449,7 @@ export default (
                                   (calls || [])
                                     .find(_c =>
                                       equals_ignore_case(
-                                        _c?.returnValues?.destinationChain,
+                                        _c?.call?.returnValues?.destinationChain,
                                         c,
                                       )
                                     )
@@ -1483,21 +1483,41 @@ export default (
                                   text_color,
                                   icon
 
-                                switch (gas_status) {
-                                  case 'gas_unpaid':
-                                    statuses
-                                      .push('Gas unpaid')
-                                    break
-                                  case 'gas_paid_enough_gas':
-                                  case 'gas_paid':
-                                    statuses
-                                      .push('Gas paid')
-                                    break
-                                  case 'gas_paid_not_enough_gas':
-                                    statuses
-                                      .push('Not enough gas')
+                                switch (status) {
+                                  case 'executed':
+                                  case 'express_executed':
                                     break
                                   default:
+                                    switch (gas_status) {
+                                      case 'gas_unpaid':
+                                        statuses
+                                          .push('Gas unpaid')
+
+                                        break
+                                      case 'gas_paid_enough_gas':
+                                      case 'gas_paid':
+                                        switch (status) {
+                                          case 'error':
+                                          case 'executing':
+                                          case 'approved':
+                                            break
+                                          default:
+                                            statuses
+                                              .push('Gas paid')
+
+                                            break
+                                        }
+
+                                        break
+                                      case 'gas_paid_not_enough_gas':
+                                        statuses
+                                          .push('Not enough gas')
+
+                                        break
+                                      default:
+                                        break
+                                    }
+
                                     break
                                 }
 
@@ -1510,12 +1530,15 @@ export default (
                                   case 'executed':
                                   case 'express_executed':
                                     text_color = 'text-green-500 dark:text-green-500'
+
                                     break
                                   case 'error':
                                     text_color = 'text-red-500 dark:text-red-600'
+
                                     break
                                   default:
                                     text_color = 'text-blue-500 dark:text-blue-600'
+
                                     break
                                 }
 
@@ -1528,6 +1551,7 @@ export default (
                                           size={20}
                                         />
                                       )
+
                                     break
                                   case 'error':
                                     icon =
@@ -1537,6 +1561,7 @@ export default (
                                           className="mt-0.5"
                                         />
                                       )
+
                                     break
                                   default:
                                     icon =
@@ -1549,6 +1574,7 @@ export default (
                                           }
                                         />
                                       )
+
                                     break
                                 }
 

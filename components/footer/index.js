@@ -35,7 +35,7 @@ export default () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm font-medium"
             >
-              SDK v{
+              GMP SDK v{
                 dependencies['@axelar-network/axelar-gmp-sdk-solidity']
                   .replace(
                     '^',

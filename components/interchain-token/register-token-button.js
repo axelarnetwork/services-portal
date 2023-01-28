@@ -1476,7 +1476,9 @@ export default (
 
                                 const statuses =
                                   [
-                                    get_name(status),
+                                    data ?
+                                      get_name(status) :
+                                      'Wating for ContractCall',
                                   ]
 
                                 let title,

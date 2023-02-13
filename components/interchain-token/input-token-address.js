@@ -143,7 +143,7 @@ export default () => {
           size="small"
           type="text"
           placeholder={
-            `Input your native token address${
+            `Input your origin token address${
               get_chain(
                 selectedChain,
                 evm_chains_data,

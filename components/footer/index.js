@@ -46,6 +46,25 @@ export default () => {
           )
         }
         {
+          dependencies?.['@axelar-network/axelarjs-sdk'] &&
+          (
+            <a
+              href="https://github.com/axelarnetwork/axelarjs-sdk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 text-sm font-medium"
+            >
+              SDK v{
+                dependencies['@axelar-network/axelarjs-sdk']
+                  .replace(
+                    '^',
+                    '',
+                  )
+              }
+            </a>
+          )
+        }
+        {
           version &&
           (
             <a

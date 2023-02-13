@@ -8,22 +8,20 @@ import ERC20MintableBurnable from '@axelar-network/axelar-gmp-sdk-solidity/artif
 import ConstAddressDeployer from '@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/ConstAddressDeployer.sol/ConstAddressDeployer.json'
 import { Blocks, Oval } from 'react-loader-spinner'
 import { Tooltip } from '@material-tailwind/react'
-import { BsFileEarmarkCheckFill, BsFillFileEarmarkArrowUpFill } from 'react-icons/bs'
-import { HiOutlineSwitchHorizontal } from 'react-icons/hi'
+import { BsFileEarmarkCheckFill } from 'react-icons/bs'
 import { BiMessage, BiCheck } from 'react-icons/bi'
 import { IoClose } from 'react-icons/io5'
 
-import RegisterTokenButton from './register-token-button'
+import RegisterOriginTokenButton from './register-origin-token-button'
 import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
-import Datatable from '../datatable'
 import { get_chain, switch_chain } from '../../lib/chain/utils'
 import { deploy_contract, is_contract_deployed, get_salt_from_key, get_contract_address_by_chain } from '../../lib/contract/utils'
-import TokenLinkerProxy from '../../lib/contract/json/TokenLinkerProxy.json'
-import TokenLinker from '../../lib/contract/json/TokenLinker.json'
-import RemoteAddressValidatorProxy from '../../lib/contract/json/RemoteAddressValidatorProxy.json'
-import RemoteAddressValidator from '../../lib/contract/json/RemoteAddressValidator.json'
+import InterchainTokenLinkerProxy from '../../lib/contract/json/InterchainTokenLinkerProxy.json'
+import InterchainTokenLinker from '../../lib/contract/json/InterchainTokenLinker.json'
+import LinkerRouterProxy from '../../lib/contract/json/LinkerRouterProxy.json'
+import LinkerRouter from '../../lib/contract/json/LinkerRouter.json'
 import IUpgradable from '../../lib/contract/json/IUpgradable.json'
 import { ellipse, loader_color, parse_error } from '../../lib/utils'
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from '../../reducers/types'
@@ -39,6 +37,7 @@ export default () => {
     gateway_addresses,
     gas_service_addresses,
     rpc_providers,
+    dev,
     wallet,
     token_linkers,
     token_addresses,
@@ -53,6 +52,7 @@ export default () => {
         gateway_addresses: state.gateway_addresses,
         gas_service_addresses: state.gas_service_addresses,
         rpc_providers: state.rpc_providers,
+        dev: state.dev,
         wallet: state.wallet,
         token_linkers: state.token_linkers,
         token_addresses: state.token_addresses,
@@ -84,6 +84,9 @@ export default () => {
   const {
     rpcs,
   } = { ...rpc_providers }
+  const {
+    sdk,
+  } = { ...dev }
   const {
     wallet_data,
   } = { ...wallet }
@@ -294,11 +297,7 @@ export default () => {
           )
         }
 
-        const contract =
-          await contract_factory
-            .deploy(
-              ...args,
-            )
+        const contract = await contract_factory.deploy(...args)
 
         if (callback) {
           callback(
@@ -318,11 +317,7 @@ export default () => {
           contract_address,
         }
 
-        const contract_code =
-          await _signer.provider
-            .getCode(
-              contract_address,
-            )
+        const contract_code = await _signer.provider.getCode(contract_address)
 
         if (callback) {
           callback(
@@ -337,9 +332,7 @@ export default () => {
           await proxy
             .upgrade(
               contract_address,
-              utils.keccak256(
-                contract_code
-              ),
+              utils.keccak256(contract_code),
               setup_params,
             )
 
@@ -352,9 +345,7 @@ export default () => {
           )
         }
 
-        const receipt =
-          await transaction
-            .wait()
+        const receipt = await transaction.wait()
 
         const {
           status,
@@ -409,11 +400,7 @@ export default () => {
           contract_json.bytecode,
         )
 
-      const bytecode =
-        contract_factory
-          .getDeployTransaction(
-            ...args,
-          )?.data
+      const bytecode = contract_factory.getDeployTransaction(...args)?.data
 
       const salt = get_salt_from_key(key)
 
@@ -439,13 +426,7 @@ export default () => {
           _signer,
         )
 
-      const init_data =
-        (
-          await contract.populateTransaction
-            .init(
-              ...init_args,
-            )
-        )?.data
+      const init_data = (await contract.populateTransaction.init(...init_args))?.data
 
       try {
         if (callback) {
@@ -475,8 +456,7 @@ export default () => {
           )
         }
 
-        await transaction
-          .wait()
+        await transaction.wait()
       } catch (error) {
         return (
           {
@@ -503,10 +483,7 @@ export default () => {
       gas_service_addresses_data &&
       _signer
     ) {
-      const token_linker =
-        await getTokenLinker(
-          _signer,
-        )
+      const token_linker = await getTokenLinker(_signer)
 
       const {
         token_linker_address,
@@ -562,7 +539,7 @@ export default () => {
             await predictContractConstant(
               constant_address_deployer,
               _signer,
-              RemoteAddressValidatorProxy,
+              LinkerRouterProxy,
               'remoteAddressValidator',
             )
         } catch (error) {
@@ -579,8 +556,8 @@ export default () => {
             const token_linker_contract =
               await deployUpgradable(
                 'tokenLinker',
-                TokenLinker,
-                TokenLinkerProxy,
+                InterchainTokenLinker,
+                InterchainTokenLinkerProxy,
                 [
                   gateway_address,
                   gas_service_address,
@@ -602,8 +579,8 @@ export default () => {
               token_linker_contract?.address &&
               await deployUpgradable(
                 'remoteAddressValidator',
-                RemoteAddressValidator,
-                RemoteAddressValidatorProxy,
+                LinkerRouter,
+                LinkerRouterProxy,
                 [
                   token_linker_contract.address,
                   [],
@@ -643,7 +620,7 @@ export default () => {
                   deployed:
                     await is_contract_deployed(
                       token_linker_address,
-                      TokenLinker,
+                      InterchainTokenLinker,
                       _signer,
                     ),
                 }
@@ -819,14 +796,14 @@ export default () => {
           await predictContractConstant(
             constant_address_deployer,
             _signer,
-            TokenLinkerProxy,
+            InterchainTokenLinkerProxy,
             'tokenLinker',
           )
 
         const deployed =
           await is_contract_deployed(
             token_linker_address,
-            TokenLinker,
+            InterchainTokenLinker,
             _signer,
           )
 
@@ -857,7 +834,7 @@ export default () => {
     token_linker_address &&
     new Contract(
       token_linker_address,
-      TokenLinker.abi,
+      InterchainTokenLinker.abi,
       _signer,
     )
 
@@ -876,11 +853,7 @@ export default () => {
       token_id
     ) {
       try {
-        const token_address =
-          await token_linker
-            .getTokenAddress(
-              token_id,
-            )
+        const token_address = await token_linker.getTokenAddress(token_id)
 
         response =
           {
@@ -902,7 +875,7 @@ export default () => {
     return response
   }
 
-  const getNativeTokenId = async (
+  const getOriginTokenId = async (
     token_linker,
     token_address,
   ) => {
@@ -917,11 +890,7 @@ export default () => {
       token_address
     ) {
       try {
-        const token_id =
-          await token_linker
-            .getNativeTokenId(
-              token_address,
-            )
+        const token_id = await token_linker.getOriginTokenId(token_address)
 
         response =
           {
@@ -947,7 +916,7 @@ export default () => {
 
 
   /***** setter *****/
-  const registerToken = async (
+  const registerOriginToken = async (
     token_linker,
     token_address,
   ) => {
@@ -962,15 +931,9 @@ export default () => {
       token_address
     ) {
       try {
-        const transaction =
-          await token_linker
-            .registerToken(
-              token_address,
-            )
+        const transaction = await token_linker.registerOriginToken(token_address)
 
-        const receipt =
-          await transaction
-            .wait()
+        const receipt = await transaction.wait()
 
         const {
           status,
@@ -987,8 +950,8 @@ export default () => {
                 'success',
             message:
               failed ?
-                'Failed to register token' :
-                'Register token successful',
+                'Failed to register origin token' :
+                'Register origin token successful',
             receipt,
           }
       } catch (error) {
@@ -1023,16 +986,59 @@ export default () => {
       chains.length > 0
     ) {
       try {
+        const {
+          id,
+          provider_params,
+        } = {
+          ...(
+            get_chain(
+              chain_id,
+              evm_chains_data,
+            )
+          ),
+        }
+
+        const {
+          nativeCurrency,
+        } = { ..._.head(provider_params) }
+
+        const {
+          symbol,
+        } = { ...nativeCurrency }
+
+        const gas_values =
+          await Promise.all(
+            chains
+              .map(chain =>
+                new Promise(
+                  async resolve => {
+                    resolve(
+                      BigInt(
+                        await sdk.queryAPI
+                          .estimateGasFee(
+                            id,
+                            chain,
+                            symbol,
+                          )
+                      )
+                    )
+                  }
+                )
+              )
+          )
+
         const transaction =
           await token_linker
             .deployRemoteTokens(
               token_id,
               chains,
+              gas_values,
+              {
+                value: _.sum(gas_values),
+              },
             )
 
-        const receipt =
-          await transaction
-            .wait()
+        const receipt = await transaction.wait()
 
         const {
           status,
@@ -1066,7 +1072,7 @@ export default () => {
     return response
   }
 
-  const registerTokenAndDeployRemoteTokens = async (
+  const registerOriginTokenAndDeployRemoteTokens = async (
     token_linker,
     token_address,
     chains,
@@ -1084,24 +1090,67 @@ export default () => {
       Array.isArray(chains)
     ) {
       try {
-        const register_only =
-          chains.length === 0
+        const register_only = chains.length === 0
+
+        let gas_values
+
+        if (!register_only) {
+          const {
+            id,
+            provider_params,
+          } = {
+            ...(
+              get_chain(
+                chain_id,
+                evm_chains_data,
+              )
+            ),
+          }
+
+          const {
+            nativeCurrency,
+          } = { ..._.head(provider_params) }
+
+          const {
+            symbol,
+          } = { ...nativeCurrency }
+
+          gas_values =
+            await Promise.all(
+              chains
+                .map(chain =>
+                  new Promise(
+                    async resolve => {
+                      resolve(
+                        BigInt(
+                          await sdk.queryAPI
+                            .estimateGasFee(
+                              id,
+                              chain,
+                              symbol,
+                            )
+                        )
+                      )
+                    }
+                  )
+                )
+            )
+        }
 
         const transaction =
           register_only ?
+            await token_linker.registerOriginToken(token_address) :
             await token_linker
-              .registerToken(
-                token_address,
-              ) :
-            await token_linker
-              .registerTokenAndDeployRemoteTokens(
+              .registerOriginTokenAndDeployRemoteTokens(
                 token_address,
                 chains,
+                gas_values,
+                {
+                  value: _.sum(gas_values),
+                },
               )
 
-        const receipt =
-          await transaction
-            .wait()
+        const receipt = await transaction.wait()
 
         const {
           status,
@@ -1118,12 +1167,12 @@ export default () => {
                 'success',
             message:
               failed ?
-                `Failed to register token${
+                `Failed to register origin token${
                   register_only ?
                     '' :
                     ' and deploy remote tokens'
                 }` :
-                `Register token${
+                `Register origin token${
                   register_only ?
                     '' :
                     ' and deploy remote tokens'
@@ -1173,10 +1222,7 @@ export default () => {
                     rpcs[_chain_id],
                   )
 
-              const token_linker =
-                await getTokenLinker(
-                  provider,
-                )
+              const token_linker = await getTokenLinker(provider)
 
               if (token_linker) {
                 dispatch(
@@ -1259,7 +1305,7 @@ export default () => {
               )
 
             const response =
-              await getNativeTokenId(
+              await getOriginTokenId(
                 token_linker_contract,
                 tokenAddress,
               )
@@ -1452,8 +1498,8 @@ export default () => {
                               {
                                 deployed &&
                                 (
-                                  <RegisterTokenButton
-                                    tooltip="Register native token"
+                                  <RegisterOriginTokenButton
+                                    tooltip="Register origin token"
                                     placement="bottom"
                                     chainData={chain_data}
                                     supportedEvmChains={
@@ -1484,7 +1530,7 @@ export default () => {
                                       )
                                     }
                                     deployToken={deployToken}
-                                    registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                    registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
                                     provider={
                                       _chain_id === chain_id ?
                                         signer :
@@ -1757,10 +1803,10 @@ export default () => {
                         const _id = _chain_data?.id
                         const _chain_id = _chain_data?.chain_id
 
-                        const is_native = id === _id
+                        const is_origin = id === _id
 
                         const _tokenAddress =
-                          is_native ?
+                          is_origin ?
                             tokenAddress :
                             token_addresses_data?.[id]
 
@@ -1776,7 +1822,7 @@ export default () => {
                           url &&
                           address_path &&
                           (
-                            is_native ||
+                            is_origin ||
                             registered_or_deployed_remote
                           ) &&
                           `${url}${
@@ -1810,7 +1856,7 @@ export default () => {
                                 <div className="space-y-1">
                                   <div className="text-slate-400 dark:text-slate-500 text-sm">
                                     {
-                                      is_native ||
+                                      is_origin ||
                                       registered_or_deployed_remote ?
                                         'Token address' :
                                         'Status'
@@ -1830,7 +1876,7 @@ export default () => {
                                             10,
                                           )}
                                         </a> :
-                                        is_native ||
+                                        is_origin ||
                                         registered_or_deployed_remote ?
                                           <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
                                             {ellipse(
@@ -1844,7 +1890,7 @@ export default () => {
                                     }
                                     {
                                       (
-                                        is_native ||
+                                        is_origin ||
                                         registered_or_deployed_remote
                                       ) &&
                                       _tokenAddress &&
@@ -1870,7 +1916,7 @@ export default () => {
                                         />
                                         <span className="text-sm font-semibold">
                                           {
-                                            is_native ?
+                                            is_origin ?
                                               'Registered' :
                                               'Deployed'
                                           }
@@ -1882,7 +1928,7 @@ export default () => {
                                         />
                                         <span className="text-sm font-medium">
                                           {
-                                            is_native ?
+                                            is_origin ?
                                               'Registered' :
                                               'Deployed'
                                           }
@@ -1911,16 +1957,16 @@ export default () => {
                                         </span>
                                       </div> :
                                       !registered &&
-                                      !is_native ?
+                                      !is_origin ?
                                         <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
                                           <span className="text-sm font-medium">
-                                            Native token not registered
+                                            Origin token not registered
                                           </span>
                                         </div> :
-                                        <RegisterTokenButton
+                                        <RegisterOriginTokenButton
                                           buttonTitle={
-                                            is_native ?
-                                              'Register token' :
+                                            is_origin ?
+                                              'Register origin token' :
                                               'Deploy remote tokens'
                                           }
                                           buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
@@ -1932,10 +1978,10 @@ export default () => {
                                                 token_addresses_data?.[c.id] === constants.AddressZero
                                               )
                                           }
-                                          isNative={is_native}
+                                          isOrigin={is_origin}
                                           fixedTokenAddress={tokenAddress}
                                           initialRemoteChains={
-                                            is_native ?
+                                            is_origin ?
                                               undefined :
                                               [
                                                 chain_name,
@@ -1957,7 +2003,7 @@ export default () => {
                                             )
                                           }
                                           deployRemoteTokens={deployRemoteTokens}
-                                          registerTokenAndDeployRemoteTokens={registerTokenAndDeployRemoteTokens}
+                                          registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
                                           provider={
                                             _chain_id === chain_id ?
                                               signer :
@@ -1972,274 +2018,6 @@ export default () => {
                       })
                   }
                 </div>
-                {/*
-                  <Datatable
-                    columns={
-                      getSupportedEvmChains()
-                        .map(c => {
-                          const {
-                            id,
-                            name,
-                            image,
-                            explorer,
-                          } = { ...c }
-                          const {
-                            url,
-                            address_path,
-                          } = { ...explorer }
-
-                          const _chain_id = c?.chain_id
-
-                          const {
-                            token_linker_address,
-                            deployed,
-                          } = {
-                            ...(
-                              token_linkers_data[id]
-                            ),
-                          }
-
-                          const address_url =
-                            url &&
-                            address_path &&
-                            `${url}${
-                              address_path
-                                .replace(
-                                  '{address}',
-                                  token_linker_address,
-                                )
-                            }`
-
-                          const must_switch_network =
-                            _chain_id &&
-                            _chain_id !== chain_id
-
-                          return {
-                            Header:
-                              (
-                                <div className="w-full flex flex-col space-y-1.5">
-                                  <div className="flex items-center space-x-1.5">
-                                    <Image
-                                      src={image}
-                                      width={20}
-                                      height={20}
-                                      className="w-5 h-5 rounded-full"
-                                    />
-                                    <span className="whitespace-nowrap normal-case text-black dark:text-white text-xs font-bold">
-                                      {name}
-                                    </span>
-                                  </div>
-                                  <div className="border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-2.5 pr-1.5">
-                                    <div className="flex items-center normal-case text-xs space-x-0.5">
-                                      {
-                                        address_url ?
-                                          <a
-                                            href={address_url}
-                                            target="_blank"
-                                            rel="noopenner noreferrer"
-                                            className="text-blue-500 dark:text-blue-200 font-semibold"
-                                          >
-                                            Linker
-                                          </a> :
-                                          <span className="text-slate-500 dark:text-slate-200 font-medium">
-                                            Linker
-                                          </span>
-                                      }
-                                      <Copy
-                                        size={16}
-                                        value={token_linker_address}
-                                      />
-                                    </div>
-                                    {
-                                      deployed ?
-                                        <Tooltip
-                                          placement="top"
-                                          content="Deployed"
-                                          className="z-50 bg-black text-white text-xs"
-                                        >
-                                          {
-                                            address_url ?
-                                              <a
-                                                href={address_url}
-                                                target="_blank"
-                                                rel="noopenner noreferrer"
-                                                className="flex items-center justify-end text-green-500 dark:text-green-500"
-                                              >
-                                                <BsFileEarmarkCheckFill
-                                                  size={14}
-                                                />
-                                              </a> :
-                                              <div className="flex items-center justify-center text-green-500 dark:text-green-500">
-                                                <BsFileEarmarkCheckFill
-                                                  size={14}
-                                                />
-                                              </div>
-                                          }
-                                        </Tooltip> :
-                                        tokenLinkerDeployStatus?.chain === id ?
-                                          <Tooltip
-                                            placement="top"
-                                            content={
-                                              [
-                                                'failed',
-                                              ]
-                                              .includes(
-                                                tokenLinkerDeployStatus.status
-                                              ) ?
-                                                tokenLinkerDeployStatus.error_message ||
-                                                tokenLinkerDeployStatus.message :
-                                                tokenLinkerDeployStatus.message
-                                            }
-                                            className="z-50 bg-black text-white text-xs"
-                                          >
-                                            <div
-                                              className={
-                                                `w-full h-4 ${
-                                                  [
-                                                    'switching',
-                                                    'pending',
-                                                    'waiting',
-                                                  ]
-                                                  .includes(
-                                                    tokenLinkerDeployStatus.status
-                                                  ) ?
-                                                    'cursor-wait' :
-                                                    'cursor-default'
-                                                } flex items-center justify-center ${
-                                                  [
-                                                    'failed',
-                                                  ]
-                                                  .includes(
-                                                    tokenLinkerDeployStatus.status
-                                                  ) ?
-                                                    'text-red-500 dark:text-red-600' :
-                                                    'text-blue-500 dark:text-blue-600'
-                                                }`
-                                              }
-                                            >
-                                              {
-                                                [
-                                                  'switching',
-                                                  'pending',
-                                                  'waiting',
-                                                ]
-                                                .includes(
-                                                  tokenLinkerDeployStatus.status
-                                                ) &&
-                                                (
-                                                  <Oval
-                                                    width={14}
-                                                    height={14}
-                                                    color={
-                                                      loader_color(theme)
-                                                    }
-                                                  />
-                                                )
-                                              }
-                                              {
-                                                [
-                                                  'failed',
-                                                ]
-                                                .includes(
-                                                  tokenLinkerDeployStatus.status
-                                                ) &&
-                                                (
-                                                  <button
-                                                    onClick={
-                                                      () => setTokenLinkerDeployStatus(null)
-                                                    }
-                                                  >
-                                                    <IoClose
-                                                      size={14}
-                                                    />
-                                                  </button>
-                                                )
-                                              }
-                                            </div>
-                                          </Tooltip> :
-                                          deployed === false ?
-                                            <Tooltip
-                                              placement="top"
-                                              content={
-                                                must_switch_network ?
-                                                  'Switch network' :
-                                                  'Deploy'
-                                              }
-                                              className="z-50 bg-black text-white text-xs"
-                                            >
-                                              {
-                                                must_switch_network ?
-                                                  <div>
-                                                    <Wallet
-                                                      connectChainId={_chain_id}
-                                                      className="w-full cursor-pointer rounded flex items-center justify-center text-blue-500 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-500"
-                                                    >
-                                                      <HiOutlineSwitchHorizontal
-                                                        size={14}
-                                                      />
-                                                    </Wallet>
-                                                  </div> :
-                                                  <button
-                                                    disabled={
-                                                      tokenLinkerDeployStatus &&
-                                                      tokenLinkerDeployStatus.status !== 'failed'
-                                                    }
-                                                    onClick={
-                                                      () =>
-                                                        deployTokenLinker(id)
-                                                    }
-                                                    className={
-                                                      `w-full ${
-                                                        tokenLinkerDeployStatus?.chain &&
-                                                        tokenLinkerDeployStatus.chain !== id &&
-                                                        tokenLinkerDeployStatus.status !== 'failed' ?
-                                                          'cursor-not-allowed' :
-                                                          'cursor-pointer'
-                                                      } flex items-center justify-center text-blue-500 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-500`
-                                                    }
-                                                  >
-                                                    <BsFillFileEarmarkArrowUpFill
-                                                      size={14}
-                                                    />
-                                                  </button>
-                                              }
-                                            </Tooltip> :
-                                            <Tooltip
-                                              placement="top"
-                                              content="Loading"
-                                              className="z-50 bg-black text-white text-xs"
-                                            >
-                                              <div
-                                                className="w-full h-4 cursor-wait flex items-center justify-center text-blue-500 dark:text-blue-600"
-                                              >
-                                                <Oval
-                                                  width={14}
-                                                  height={14}
-                                                  color={
-                                                    loader_color(theme)
-                                                  }
-                                                />
-                                              </div>
-                                            </Tooltip>
-                                    }
-                                  </div>
-                                </div>
-                              ),
-                            accessor: id,
-                            disableSortBy: true,
-                            Cell: props => {
-                              return null
-                            },
-                            headerClassName: 'w-20 lg:w-full justify-start',
-                          }
-                        })
-                    }
-                    data={[]}
-                    noPagination={true}
-                    defaultPageSize={100}
-                    className="no-border"
-                  />
-                */}
               </div>
       }
     </div>

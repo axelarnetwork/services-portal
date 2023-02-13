@@ -26,6 +26,8 @@ import IUpgradable from '../../lib/contract/json/IUpgradable.json'
 import { ellipse, loader_color, parse_error } from '../../lib/utils'
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from '../../reducers/types'
 
+const GAS_LIMIT = 2500000
+
 export default () => {
   const dispatch = useDispatch()
   const {
@@ -1019,6 +1021,7 @@ export default () => {
                             id,
                             chain,
                             symbol,
+                            GAS_LIMIT,
                           )
                       )
                     )
@@ -1128,6 +1131,7 @@ export default () => {
                               id,
                               chain,
                               symbol,
+                              GAS_LIMIT,
                             )
                         )
                       )

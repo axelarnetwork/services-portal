@@ -19,6 +19,9 @@ export const ENS_DATA = 'ens_data'
 // rpc
 export const RPCS = 'rpcs'
 
+// dev
+export const SDK = 'sdk'
+
 // wallet
 export const WALLET_DATA = 'wallet_data'
 export const WALLET_RESET = 'wallet_reset'

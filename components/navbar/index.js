@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import _ from 'lodash'
 import { providers } from 'ethers'
+import { AxelarQueryAPI } from '@axelar-network/axelarjs-sdk'
 
 import Logo from './logo'
 import DropdownNavigations from './navigations/dropdown'
@@ -16,7 +17,7 @@ import { chains as getChains, assets as getAssets } from '../../lib/api/config'
 import { assets as getAssetsPrice } from '../../lib/api/assets'
 import { getContracts } from '../../lib/api/contracts'
 import { equals_ignore_case, ellipse } from '../../lib/utils'
-import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, CONSTANT_ADDRESS_DEPLOYER, GATEWAY_ADDRESSES_DATA, GAS_SERVICE_ADDRESSES_DATA, RPCS } from '../../reducers/types'
+import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, CONSTANT_ADDRESS_DEPLOYER, GATEWAY_ADDRESSES_DATA, GAS_SERVICE_ADDRESSES_DATA, RPCS, SDK } from '../../reducers/types'
 
 export default () => {
   const dispatch = useDispatch()
@@ -330,6 +331,31 @@ export default () => {
       init()
     },
     [evm_chains_data],
+  )
+
+  // sdk
+  useEffect(
+    () => {
+      const init = async => {
+        dispatch(
+          {
+            type: SDK,
+            value:
+              {
+                queryAPI:
+                  new AxelarQueryAPI(
+                    {
+                      environment: process.env.NEXT_PUBLIC_ENVIRONMENT,
+                    },
+                  ),
+              },
+          }
+        )
+      }
+
+      init()
+    },
+    [],
   )
 
   return (

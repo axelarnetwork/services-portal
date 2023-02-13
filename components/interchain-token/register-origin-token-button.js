@@ -22,7 +22,7 @@ const DEFAULT_PRE_EXISTING_TOKEN = true
 
 const getSteps = (
   preExistingToken = DEFAULT_PRE_EXISTING_TOKEN,
-  isNative = true,
+  isOrigin = true,
   existingToken = false,
   hasDeployRemoteTokens = false,
 ) =>
@@ -47,24 +47,24 @@ const getSteps = (
       title:
         preExistingToken ?
           `Validate${
-            !isNative ||
+            !isOrigin ||
             hasDeployRemoteTokens ?
               '' :
               ' your ERC20'
           } token` :
           `Deploy${
-            !isNative ||
+            !isOrigin ||
             hasDeployRemoteTokens ?
               '' :
               ' new'
           } ERC20 token`,
     },
-    isNative ?
+    isOrigin ?
       {
-        id: 'register_token',
+        id: 'register_origin_token',
         title:
           `Register${
-            !isNative ||
+            !isOrigin ||
             hasDeployRemoteTokens ?
               '' :
               ' ERC20'
@@ -78,7 +78,7 @@ const getSteps = (
       id: 'remote_deployments',
       title:
         `${
-          !isNative ||
+          !isOrigin ||
           hasDeployRemoteTokens ?
             'D' :
             'Remote d'
@@ -99,7 +99,7 @@ const getSteps = (
       .includes(
         s?.id
       ) ?
-        !isNative ||
+        !isOrigin ||
         hasDeployRemoteTokens :
         true
   )
@@ -139,14 +139,14 @@ export default (
     placement = 'top',
     chainData,
     supportedEvmChains = [],
-    isNative = true,
+    isOrigin = true,
     fixedTokenAddress = null,
     initialRemoteChains,
     tokenId,
     tokenLinker,
     deployToken,
     deployRemoteTokens,
-    registerTokenAndDeployRemoteTokens,
+    registerOriginTokenAndDeployRemoteTokens,
     provider,
   },
 ) => {
@@ -197,7 +197,7 @@ export default (
     useState(
       getSteps(
         DEFAULT_PRE_EXISTING_TOKEN,
-        isNative,
+        isOrigin,
         !!fixedTokenAddress,
       )
     )
@@ -223,7 +223,7 @@ export default (
       setSteps(
         getSteps(
           preExistingToken,
-          isNative,
+          isOrigin,
           !!fixedTokenAddress,
         )
       )
@@ -236,7 +236,7 @@ export default (
       setSteps(
         getSteps(
           _preExistingToken,
-          isNative,
+          isOrigin,
           !!fixedTokenAddress,
         )
       )
@@ -249,7 +249,7 @@ export default (
       setSteps(
         getSteps(
           preExistingToken,
-          isNative,
+          isOrigin,
           !!fixedTokenAddress,
           remoteChains?.length > 0,
         )
@@ -321,7 +321,7 @@ export default (
     setSteps(
       getSteps(
         DEFAULT_PRE_EXISTING_TOKEN,
-        isNative,
+        isOrigin,
         !!fixedTokenAddress,
       )
     )
@@ -494,14 +494,14 @@ export default (
     setDeployingRemote(false)
   }
 
-  const _registerTokenAndDeployRemoteTokens = async () => {
+  const _registerOriginTokenAndDeployRemoteTokens = async () => {
     setRegistering(true)
 
     const response =
       tokenLinker &&
-      registerTokenAndDeployRemoteTokens &&
+      registerOriginTokenAndDeployRemoteTokens &&
       tokenAddress &&
-      await registerTokenAndDeployRemoteTokens(
+      await registerOriginTokenAndDeployRemoteTokens(
         tokenLinker,
         tokenAddress,
         remoteChains,
@@ -653,9 +653,9 @@ export default (
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium">
               {
-                !isNative ?
+                !isOrigin ?
                   'Deploy remote tokens from' :
-                  'Register native token on'
+                  'Register origin token on'
               }
             </span>
             <Image
@@ -1209,7 +1209,7 @@ export default (
                     }
                   </div> :
                   [
-                    'register_token',
+                    'register_origin_token',
                     'deploy_remote_tokens',
                   ]
                   .includes(
@@ -1414,7 +1414,7 @@ export default (
                                   registeringOrDeployingRemote ?
                                     steps[currentStep]?.id === 'deploy_remote_tokens' ?
                                       'Deploying remote tokens' :
-                                      'Registering your token' :
+                                      'Registering your origin token' :
                                     registerOrDeployRemoteResponse.message
                                 }
                               </span>
@@ -1825,7 +1825,7 @@ export default (
                           }
                         </button> :
                   [
-                    'register_token',
+                    'register_origin_token',
                     'deploy_remote_tokens',
                   ]
                   .includes(
@@ -1899,7 +1899,7 @@ export default (
                                 _deployRemoteTokens()
                               }
                               else {
-                                _registerTokenAndDeployRemoteTokens()
+                                _registerOriginTokenAndDeployRemoteTokens()
                               }
                             }
                           }

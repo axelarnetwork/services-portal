@@ -7,7 +7,7 @@ import InterchainTokenInputAddress from '../../interchain-token/input-token-addr
 import Copy from '../../copy'
 import Image from '../../image'
 import services from '../../../config/services'
-import { number_format, equals_ignore_case, ellipse } from '../../../lib/utils'
+import { numberFormat, equalsIgnoreCase, toArray, ellipse } from '../../../lib/utils'
 
 export default () => {
   const {
@@ -57,13 +57,13 @@ export default () => {
       const service =
         services
           .find(s =>
-            equals_ignore_case(
+            equalsIgnoreCase(
               s?.path,
               pathname,
             ) ||
-            (s?.others_paths || [])
+            toArray(s?.others_paths)
               .findIndex(p =>
-                equals_ignore_case(
+                equalsIgnoreCase(
                   p,
                   pathname,
                 )

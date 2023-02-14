@@ -18,8 +18,9 @@ export default (
     () => {
       const timeout =
         copied ?
-          setTimeout(() =>
-            setCopied(false),
+          setTimeout(
+            () =>
+              setCopied(false),
             1 * 1000,
           ) :
           undefined

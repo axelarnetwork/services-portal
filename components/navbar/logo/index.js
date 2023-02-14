@@ -6,7 +6,8 @@ export default () => {
   const is_testnet =
     [
       'testnet',
-    ].includes(process.env.NEXT_PUBLIC_ENVIRONMENT)
+    ]
+    .includes(process.env.NEXT_PUBLIC_ENVIRONMENT)
 
   return (
     <div className="logo ml-3 mr-1 sm:mr-3">

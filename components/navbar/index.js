@@ -16,7 +16,7 @@ import Copy from '../copy'
 import { chains as getChains, assets as getAssets } from '../../lib/api/config'
 import { assets as getAssetsPrice } from '../../lib/api/assets'
 import { getContracts } from '../../lib/api/contracts'
-import { equals_ignore_case, ellipse } from '../../lib/utils'
+import { equalsIgnoreCase, toArray, ellipse } from '../../lib/utils'
 import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, CONSTANT_ADDRESS_DEPLOYER, GATEWAY_ADDRESSES_DATA, GAS_SERVICE_ADDRESSES_DATA, RPCS, SDK } from '../../reducers/types'
 
 export default () => {
@@ -120,7 +120,7 @@ export default () => {
 
                   const chain =
                     _.head(
-                      (contracts || [])
+                      toArray(contracts)
                         .map(c => c?.chain)
                     )
 
@@ -152,7 +152,7 @@ export default () => {
 
                     const asset_index = assets_data
                       .findIndex(_a =>
-                        equals_ignore_case(
+                        equalsIgnoreCase(
                           _a?.id,
                           denom,
                         )
@@ -287,9 +287,7 @@ export default () => {
                 rpcUrls,
               } = { ..._.head(provider_params) }
    
-              const rpc_urls =
-                (rpcUrls || [])
-                  .filter(url => url)
+              const rpc_urls = toArray(rpcUrls)
 
               const provider =
                 rpc_urls.length === 1 ?

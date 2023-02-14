@@ -14,9 +14,9 @@ import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
 import { searchGMP } from '../../lib/api/gmp'
-import { get_chain } from '../../lib/chain/utils'
+import { getChain } from '../../lib/chain/utils'
 import ERC20 from '../../lib/contract/json/ERC20.json'
-import { equals_ignore_case, ellipse, name as get_name, loader_color, sleep } from '../../lib/utils'
+import { equalsIgnoreCase, ellipse, name as getName, split, toArray, loaderColor, sleep } from '../../lib/utils'
 
 const DEFAULT_PRE_EXISTING_TOKEN = true
 
@@ -295,9 +295,7 @@ export default (
           transactionHash &&
           chains?.length > 0
         ) {
-          updateCalls(
-            transactionHash,
-          )
+          updateCalls(transactionHash)
         }
       }
 
@@ -360,10 +358,7 @@ export default (
         setValidating(true)
 
         try {
-          const _tokenAddress =
-            utils.getAddress(
-              inputTokenAddress,
-            )
+          const _tokenAddress = utils.getAddress(inputTokenAddress)
 
           setTokenAddress(_tokenAddress)
 
@@ -442,7 +437,6 @@ export default (
     switch (code) {
       case 'user_rejected':
         setDeployResponse(null)
-
         break
       default:
         if (token_address) {
@@ -456,7 +450,6 @@ export default (
         }
 
         setDeployResponse(response)
-
         break
     }
 
@@ -483,11 +476,9 @@ export default (
     switch (code) {
       case 'user_rejected':
         setDeployRemoteResponse(null)
-
         break
       default:
         setDeployRemoteResponse(response)
-
         break
     }
 
@@ -514,11 +505,9 @@ export default (
     switch (code) {
       case 'user_rejected':
         setRegisterResponse(null)
-
         break
       default:
         setRegisterResponse(response)
-
         break
     }
 
@@ -613,7 +602,7 @@ export default (
       steps[currentStep]?.id === 'remote_deployments' &&
       chains?.length > 0 &&
       receipt?.transactionHash &&
-      (calls || [])
+      toArray(calls)
         .filter(c =>
           [
             'executed',
@@ -671,7 +660,8 @@ export default (
           <button
             disabled={disabled}
             onClick={
-              () => reset()
+              () =>
+                reset()
             }
             className="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-500 dark:text-slate-200 p-2"
           >
@@ -845,7 +835,7 @@ export default (
               steps[currentStep]?.id === 'select_pre_existing_token' ?
                 <div className="flex flex-col space-y-2">
                   {
-                    (steps[currentStep].options || [])
+                    toArray(steps[currentStep].options)
                       .map((o, i) => {
                         const {
                           title,
@@ -945,9 +935,7 @@ export default (
                                   <Oval
                                     width={16}
                                     height={16}
-                                    color={
-                                      loader_color(theme)
-                                    }
+                                    color={loaderColor(theme)}
                                   />
                                   <span>
                                     Validating
@@ -988,21 +976,19 @@ export default (
                                       ''
                                   }`
                                 }
-                                value={
-                                  tokenData?.name ||
-                                  ''
-                                }
+                                value={tokenData?.name || ''}
                                 onChange={
                                   e =>
                                     setTokenData(
                                       {
                                         ...tokenData,
                                         name:
-                                          (e.target.value || '')
-                                            .trim()
-                                            .split(' ')
-                                            .filter(s => s)
-                                            .join(' '),
+                                          split(
+                                            e.target.value,
+                                            'normal',
+                                            ' ',
+                                          )
+                                          .join(' '),
                                       }
                                     )
                                 }
@@ -1032,21 +1018,19 @@ export default (
                                       ''
                                   }`
                                 }
-                                value={
-                                  tokenData?.symbol ||
-                                  ''
-                                }
+                                value={tokenData?.symbol || ''}
                                 onChange={
                                   e =>
                                     setTokenData(
                                       {
                                         ...tokenData,
                                         symbol:
-                                          (e.target.value || '')
-                                            .trim()
-                                            .split(' ')
-                                            .filter(s => s)
-                                            .join(''),
+                                          split(
+                                            e.target.value,
+                                            'normal',
+                                            ' ',
+                                          )
+                                          .join(' '),
                                       }
                                     )
                                 }
@@ -1085,9 +1069,7 @@ export default (
 
                                     if (
                                       e.target.value === '' ||
-                                      regex.test(
-                                        e.target.value
-                                      )
+                                      regex.test(e.target.value)
                                     ) {
                                       value = e.target.value
                                     }
@@ -1153,9 +1135,7 @@ export default (
                                 <Oval
                                   width={16}
                                   height={16}
-                                  color={
-                                    loader_color('light')
-                                  }
+                                  color={loaderColor('light')}
                                 /> :
                                 deployResponse.status === 'failed' ?
                                   <BiX
@@ -1311,7 +1291,7 @@ export default (
                                       } = { ...c }
 
                                       const selected =
-                                        (remoteChains || [])
+                                        toArray(remoteChains)
                                           .includes(
                                             chain_name
                                           )
@@ -1329,11 +1309,12 @@ export default (
                                                       _c !== chain_name
                                                     ) :
                                                   _.uniq(
-                                                    _.concat(
-                                                      remoteChains,
-                                                      chain_name,
+                                                    toArray(
+                                                      _.concat(
+                                                        remoteChains,
+                                                        chain_name,
+                                                      )
                                                     )
-                                                    .filter(c => c)
                                                   )
                                               )
                                           }
@@ -1396,9 +1377,7 @@ export default (
                                   <Oval
                                     width={16}
                                     height={16}
-                                    color={
-                                      loader_color('light')
-                                    }
+                                    color={loaderColor('light')}
                                   /> :
                                   registerOrDeployRemoteResponse.status === 'failed' ?
                                     <BiX
@@ -1443,12 +1422,12 @@ export default (
                         </div>
                         <div className="overflow-y-auto flex flex-col space-y-0.5">
                           {
-                            (chains || [])
+                            toArray(chains)
                               .map((c, i) => {
                                 const data =
-                                  (calls || [])
+                                  toArray(calls)
                                     .find(_c =>
-                                      equals_ignore_case(
+                                      equalsIgnoreCase(
                                         _c?.call?.returnValues?.destinationChain,
                                         c,
                                       )
@@ -1465,7 +1444,7 @@ export default (
                                 } = { ...call }
 
                                 const chain_data =
-                                  get_chain(
+                                  getChain(
                                     c,
                                     evm_chains_data,
                                   )
@@ -1477,7 +1456,7 @@ export default (
                                 const statuses =
                                   [
                                     data ?
-                                      get_name(status) :
+                                      getName(status) :
                                       'Wating for ContractCall',
                                   ]
 
@@ -1492,9 +1471,7 @@ export default (
                                   default:
                                     switch (gas_status) {
                                       case 'gas_unpaid':
-                                        statuses
-                                          .push('Gas unpaid')
-
+                                        statuses.push('Gas unpaid')
                                         break
                                       case 'gas_paid_enough_gas':
                                       case 'gas_paid':
@@ -1504,43 +1481,33 @@ export default (
                                           case 'approved':
                                             break
                                           default:
-                                            statuses
-                                              .push('Gas paid')
-
+                                            statuses.push('Gas paid')
                                             break
                                         }
-
                                         break
                                       case 'gas_paid_not_enough_gas':
-                                        statuses
-                                          .push('Not enough gas')
-
+                                        statuses.push('Not enough gas')
                                         break
                                       default:
                                         break
                                     }
-
                                     break
                                 }
 
                                 title =
-                                  statuses
-                                    .filter(s => s)
+                                  toArray(statuses)
                                     .join(' & ')
 
                                 switch (status) {
                                   case 'executed':
                                   case 'express_executed':
                                     text_color = 'text-green-500 dark:text-green-500'
-
                                     break
                                   case 'error':
                                     text_color = 'text-red-500 dark:text-red-600'
-
                                     break
                                   default:
                                     text_color = 'text-blue-500 dark:text-blue-600'
-
                                     break
                                 }
 
@@ -1553,7 +1520,6 @@ export default (
                                           size={20}
                                         />
                                       )
-
                                     break
                                   case 'error':
                                     icon =
@@ -1563,7 +1529,6 @@ export default (
                                           className="mt-0.5"
                                         />
                                       )
-
                                     break
                                   default:
                                     icon =
@@ -1571,12 +1536,9 @@ export default (
                                         <Oval
                                           width={20}
                                           height={20}
-                                          color={
-                                            loader_color(theme)
-                                          }
+                                          color={loaderColor(theme)}
                                         />
                                       )
-
                                     break
                                 }
 
@@ -1629,9 +1591,7 @@ export default (
                   disabled={disabled}
                   onClick={
                     () =>
-                      setCurrentStep(
-                        currentStep - 1
-                      )
+                      setCurrentStep(currentStep - 1)
                   }
                   className={
                     `${
@@ -1656,9 +1616,7 @@ export default (
                     () => {
                       setPreExistingToken(_preExistingToken)
 
-                      setCurrentStep(
-                        currentStep + 1
-                      )
+                      setCurrentStep(currentStep + 1)
 
                       if (_preExistingToken !== preExistingToken) {
                         setInputTokenAddress(null)
@@ -1710,9 +1668,7 @@ export default (
                             )
                           }
 
-                          setCurrentStep(
-                            currentStep + 1
-                          )
+                          setCurrentStep(currentStep + 1)
                         }
                       }
                       className={
@@ -1751,9 +1707,7 @@ export default (
                                 )
                               }
 
-                              setCurrentStep(
-                                currentStep + 1
-                              )
+                              setCurrentStep(currentStep + 1)
                             }
                           }
                           className={
@@ -1845,9 +1799,7 @@ export default (
                             disabled={disabled}
                             onClick={
                               () =>
-                                setCurrentStep(
-                                  currentStep + 1
-                                )
+                                setCurrentStep(currentStep + 1)
                             }
                             className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
                           >
@@ -1859,7 +1811,7 @@ export default (
                               async () => {
                                 reset()
 
-                                await sleep(1 * 1000)
+                                await sleep(2 * 1000)
 
                                 router
                                   .push(
@@ -1938,7 +1890,7 @@ export default (
                           async () => {
                             reset()
 
-                            await sleep(1 * 1000)
+                            await sleep(2 * 1000)
 
                             router
                               .push(
@@ -1984,9 +1936,7 @@ export default (
                           disabled={disabled}
                           onClick={
                             () =>
-                              setCurrentStep(
-                                currentStep + 1
-                              )
+                              setCurrentStep(currentStep + 1)
                           }
                           className={
                             `${

@@ -2,6 +2,8 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 
+import { split } from '../../lib/utils'
+
 export default () => {
   const router = useRouter()
   const {
@@ -60,11 +62,12 @@ export default () => {
       onChange={
         e =>
           setInput(
-            (e.target.value || '')
-              .trim()
-              .split(' ')
-              .filter(s => s)
-              .join(' ')
+            split(
+              e.target.value,
+              'normal',
+              ' ',
+            )
+            .join(' ')
           )
       }
       className="w-full sm:w-80 bg-transparent border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl text-lg py-2 px-3"

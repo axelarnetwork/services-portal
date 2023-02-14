@@ -6,7 +6,8 @@ import { utils } from 'ethers'
 import { DebounceInput } from 'react-debounce-input'
 
 import Chains from './chains'
-import { get_chain } from '../../lib/chain/utils'
+import { getChain } from '../../lib/chain/utils'
+import { split, toArray } from '../../lib/utils'
 
 export default () => {
   const {
@@ -52,7 +53,7 @@ export default () => {
   useEffect(
     () => {
       const supported_evm_chains_data =
-        (evm_chains_data || [])
+        toArray(evm_chains_data)
           .filter(c =>
             c?.id &&
             c.chain_id &&
@@ -66,7 +67,7 @@ export default () => {
           evm_chains_data &&
           token_linkers_data &&
           (
-            get_chain(
+            getChain(
               chain_id,
               supported_evm_chains_data,
             ) ||
@@ -82,10 +83,7 @@ export default () => {
 
   useEffect(
     () => {
-      setInput(
-        token_address ||
-        ''
-      )
+      setInput(token_address || '')
     },
     [token_address],
   )
@@ -96,9 +94,7 @@ export default () => {
         try {
           const _input =
             input ?
-              utils.getAddress(
-                input,
-              ) :
+              utils.getAddress(input) :
               input
 
           router
@@ -144,12 +140,12 @@ export default () => {
           type="text"
           placeholder={
             `Input your origin token address${
-              get_chain(
+              getChain(
                 selectedChain,
                 evm_chains_data,
               ) ?
                 ` on ${
-                  get_chain(
+                  getChain(
                     selectedChain,
                     evm_chains_data,
                   ).name
@@ -161,11 +157,12 @@ export default () => {
           onChange={
             e =>
               setInput(
-                (e.target.value || '')
-                  .trim()
-                  .split(' ')
-                  .filter(s => s)
-                  .join('')
+                split(
+                  e.target.value,
+                  'normal',
+                  ' ',
+                )
+                .join('')
               )
           }
           className="w-full bg-transparent text-base ml-0.5"
@@ -173,7 +170,8 @@ export default () => {
         <Chains
           chain={selectedChain}
           onSelect={
-            c => setSelectedChain(c)
+            c =>
+              setSelectedChain(c)
           }
         />
       </div>

@@ -16,14 +16,14 @@ import RegisterOriginTokenButton from './register-origin-token-button'
 import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
-import { get_chain, switch_chain } from '../../lib/chain/utils'
-import { deploy_contract, is_contract_deployed, get_salt_from_key, get_contract_address_by_chain } from '../../lib/contract/utils'
+import { getChain, switchChain } from '../../lib/chain/utils'
+import { deployContract, isContractDeployed, getSaltFromKey, getContractAddressByChain } from '../../lib/contract/utils'
 import InterchainTokenLinkerProxy from '../../lib/contract/json/InterchainTokenLinkerProxy.json'
 import InterchainTokenLinker from '../../lib/contract/json/InterchainTokenLinker.json'
 import LinkerRouterProxy from '../../lib/contract/json/LinkerRouterProxy.json'
 import LinkerRouter from '../../lib/contract/json/LinkerRouter.json'
 import IUpgradable from '../../lib/contract/json/IUpgradable.json'
-import { ellipse, loader_color, parse_error } from '../../lib/utils'
+import { ellipse, toArray, loaderColor, parseError } from '../../lib/utils'
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from '../../reducers/types'
 
 const GAS_LIMIT = 2500000
@@ -139,7 +139,7 @@ export default () => {
     ) {
       try {
         const contract =
-          await deploy_contract(
+          await deployContract(
             ERC20MintableBurnable,
             _signer,
             [
@@ -163,7 +163,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -207,11 +207,7 @@ export default () => {
           )
         }
 
-        const _contract =
-          await contract_factory
-            .deploy(
-              ...args,
-            )
+        const _contract = await contract_factory.deploy(...args)
 
         if (callback) {
           callback(
@@ -372,7 +368,7 @@ export default () => {
         response =
           {
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -404,7 +400,7 @@ export default () => {
 
       const bytecode = contract_factory.getDeployTransaction(...args)?.data
 
-      const salt = get_salt_from_key(key)
+      const salt = getSaltFromKey(key)
 
       const deployer =
         new Contract(
@@ -463,7 +459,7 @@ export default () => {
         return (
           {
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
         )
       }
@@ -497,7 +493,7 @@ export default () => {
         chain_name,
       } = {
         ...(
-          get_chain(
+          getChain(
             chain_id,
             evm_chains_data,
           )
@@ -509,13 +505,13 @@ export default () => {
         id
 
       const gateway_address =
-        get_contract_address_by_chain(
+        getContractAddressByChain(
           id,
           gateway_addresses_data,
         )
 
       const gas_service_address =
-        get_contract_address_by_chain(
+        getContractAddressByChain(
           id,
           gas_service_addresses_data,
         )
@@ -549,7 +545,7 @@ export default () => {
             {
               ...response,
               status: 'failed',
-              ...parse_error(error),
+              ...parseError(error),
             }
         }
 
@@ -620,7 +616,7 @@ export default () => {
                   ...response,
                   remote_address_validator_address,
                   deployed:
-                    await is_contract_deployed(
+                    await isContractDeployed(
                       token_linker_address,
                       InterchainTokenLinker,
                       _signer,
@@ -652,7 +648,7 @@ export default () => {
               {
                 ...response,
                 status: 'failed',
-                ...parse_error(error),
+                ...parseError(error),
               }
           }
         }
@@ -667,7 +663,7 @@ export default () => {
     _signer,
   ) => {
     const chain_data =
-      get_chain(
+      getChain(
         chain,
         evm_chains_data,
       )
@@ -685,7 +681,7 @@ export default () => {
       )
 
       const _signer =
-        await switch_chain(
+        await switchChain(
           chain_data?.chain_id,
           provider,
           evm_chains_data,
@@ -759,7 +755,7 @@ export default () => {
     chains_data = evm_chains_data,
   ) => {
     return (
-      (chains_data || [])
+      toArray(chains_data)
         .filter(c => {
           const {
             id,
@@ -771,11 +767,11 @@ export default () => {
             id &&
             chain_id &&
             !deprecated &&
-            get_contract_address_by_chain(
+            getContractAddressByChain(
               id,
               gateway_addresses_data,
             ) &&
-            get_contract_address_by_chain(
+            getContractAddressByChain(
               id,
               gas_service_addresses_data,
             )
@@ -795,6 +791,7 @@ export default () => {
     ) {
       try {
         const token_linker_address =
+          process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS ||
           await predictContractConstant(
             constant_address_deployer,
             _signer,
@@ -803,7 +800,7 @@ export default () => {
           )
 
         const deployed =
-          await is_contract_deployed(
+          await isContractDeployed(
             token_linker_address,
             InterchainTokenLinker,
             _signer,
@@ -820,7 +817,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -869,7 +866,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -906,7 +903,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -961,7 +958,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -993,7 +990,7 @@ export default () => {
           provider_params,
         } = {
           ...(
-            get_chain(
+            getChain(
               chain_id,
               evm_chains_data,
             )
@@ -1067,7 +1064,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -1103,7 +1100,7 @@ export default () => {
             provider_params,
           } = {
             ...(
-              get_chain(
+              getChain(
                 chain_id,
                 evm_chains_data,
               )
@@ -1188,7 +1185,7 @@ export default () => {
           {
             ...response,
             status: 'failed',
-            ...parse_error(error),
+            ...parseError(error),
           }
       }
     }
@@ -1288,7 +1285,7 @@ export default () => {
             tokenAddress
           ) {
             const chain_data =
-              get_chain(
+              getChain(
                 selectedChain,
                 evm_chains_data,
               )
@@ -1349,7 +1346,7 @@ export default () => {
 
               if (token_linker_address) {
                 const chain_data =
-                  get_chain(
+                  getChain(
                     id,
                     evm_chains_data,
                   )
@@ -1447,6 +1444,10 @@ export default () => {
                           ),
                         }
                       })
+                      .filter(tl =>
+                        !process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS ||
+                        tl?.deployed
+                      )
                       .map((tl, i) => {
                         const {
                           chain_data,
@@ -1693,7 +1694,8 @@ export default () => {
                                               }
                                               <button
                                                 onClick={
-                                                  () => setTokenLinkerDeployStatus(null)
+                                                  () =>
+                                                    setTokenLinkerDeployStatus(null)
                                                 }
                                                 className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
                                               >
@@ -1711,9 +1713,7 @@ export default () => {
                                             <Oval
                                               width={14}
                                               height={14}
-                                              color={
-                                                loader_color(theme)
-                                              }
+                                              color={loaderColor(theme)}
                                             />
                                           </div>
                                           <span>
@@ -1799,7 +1799,7 @@ export default () => {
                         } = { ...explorer }
 
                         const _chain_data =
-                          get_chain(
+                          getChain(
                             chain,
                             evm_chains_data,
                           )
@@ -1951,9 +1951,7 @@ export default () => {
                                           <Oval
                                             width={14}
                                             height={14}
-                                            color={
-                                              loader_color(theme)
-                                            }
+                                            color={loaderColor(theme)}
                                           />
                                         </div>
                                         <span>
@@ -1987,10 +1985,7 @@ export default () => {
                                           initialRemoteChains={
                                             is_origin ?
                                               undefined :
-                                              [
-                                                chain_name,
-                                              ]
-                                              .filter(c => c)
+                                              toArray(chain_name)
                                           }
                                           tokenId={tokenId}
                                           tokenLinker={

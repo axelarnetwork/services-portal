@@ -4,7 +4,7 @@ import { BsQuestionCircle } from 'react-icons/bs'
 
 import Items from './items'
 import Image from '../../image'
-import { get_chain } from '../../../lib/chain/utils'
+import { getChain } from '../../../lib/chain/utils'
 
 export default () => {
   const {
@@ -72,7 +72,7 @@ export default () => {
         chain_id
       ) {
         setChainData(
-          get_chain(
+          getChain(
             chain_id,
             evm_chains_data,
           )

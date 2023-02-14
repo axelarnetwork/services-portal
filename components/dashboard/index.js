@@ -6,6 +6,7 @@ import { BsArrowRightShort } from 'react-icons/bs'
 
 import Image from '../image'
 import services from '../../config/services'
+import { split, toArray } from '../../lib/utils'
 
 export default () => {
   const router = useRouter()
@@ -58,21 +59,23 @@ export default () => {
               )
 
             const search_words =
-              (inputSearch || '')
-                .split(' ')
-                .filter(w => w)
-                .flatMap(w =>
-                  w
-                    .replace(
-                      /[^a-zA-Z0-9]/g,
-                      ' ',
-                    )
-                    .split(' ')
-                )
-                .filter(w => w)
-                .map(w =>
-                  w.toLowerCase()
-                )
+              split(
+                inputSearch,
+                'normal',
+                ' ',
+              )
+              .flatMap(w =>
+                w
+                  .replace(
+                    /[^a-zA-Z0-9]/g,
+                    ' ',
+                  )
+                  .split(' ')
+              )
+              .filter(w => w)
+              .map(w =>
+                w.toLowerCase()
+              )
 
             return (
               !inputSearch ||
@@ -96,14 +99,12 @@ export default () => {
                               0
                       )
                   ) /
-                  search_words
-                    .length > 0.5 :
+                  search_words.length > 0.5 :
                   words
                     .findIndex(w =>
                       w
                         .startsWith(
-                          _.head(search_words) ||
-                          ''
+                          _.head(search_words) || ''
                         )
                     ) > -1
               )
@@ -152,7 +153,7 @@ export default () => {
                   <div>
                     <div className="flex items-center mt-8">
                       {
-                        (tags || [])
+                        toArray(tags)
                           .map((t, j) => {
                             return (
                               <div

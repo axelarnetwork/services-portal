@@ -18,7 +18,7 @@ import { getChain } from '../../lib/chain/utils'
 import ERC20 from '../../lib/contract/json/ERC20.json'
 import { equalsIgnoreCase, ellipse, name as getName, split, toArray, loaderColor, sleep } from '../../lib/utils'
 
-const DEFAULT_PRE_EXISTING_TOKEN = true
+const DEFAULT_PRE_EXISTING_TOKEN = false
 
 const getSteps = (
   preExistingToken = DEFAULT_PRE_EXISTING_TOKEN,
@@ -33,12 +33,12 @@ const getSteps = (
       options:
         [
           {
-            title: 'Pre-existing ERC20 token',
-            value: true,
-          },
-          {
             title: 'New ERC20 token',
             value: false,
+          },
+          {
+            title: 'Pre-existing ERC20 token',
+            value: true,
           },
         ],
     },
@@ -190,8 +190,8 @@ export default (
   } = { ...router }
 
   const [hidden, setHidden] = useState(true)
-  const [preExistingToken, setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
-  const [_preExistingToken, _setPreExistingToken] = useState(DEFAULT_PRE_EXISTING_TOKEN)
+  const [preExistingToken, setPreExistingToken] = useState(!!fixedTokenAddress || DEFAULT_PRE_EXISTING_TOKEN)
+  const [_preExistingToken, _setPreExistingToken] = useState(!!fixedTokenAddress || DEFAULT_PRE_EXISTING_TOKEN)
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] =
     useState(
@@ -313,8 +313,8 @@ export default (
 
   const reset = () => {
     setHidden(true)
-    setPreExistingToken(DEFAULT_PRE_EXISTING_TOKEN)
-    _setPreExistingToken(DEFAULT_PRE_EXISTING_TOKEN)
+    setPreExistingToken(!!fixedTokenAddress || DEFAULT_PRE_EXISTING_TOKEN)
+    _setPreExistingToken(!!fixedTokenAddress || DEFAULT_PRE_EXISTING_TOKEN)
     setCurrentStep(0)
     setSteps(
       getSteps(
@@ -1418,7 +1418,7 @@ export default (
                     steps[currentStep]?.id === 'remote_deployments' ?
                       <div className="w-full space-y-1.5">
                         <div className="whitespace-nowrap text-base font-bold">
-                          Deployment via GMP
+                          Deploy via GMP
                         </div>
                         <div className="overflow-y-auto flex flex-col space-y-0.5">
                           {

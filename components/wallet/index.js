@@ -195,11 +195,13 @@ export default (
           await provider.disconnect()
         }
 
-        dispatch(
-          {
-            type: WALLET_RESET,
-          }
-        )
+        if (!is_reestablish) {
+          dispatch(
+            {
+              type: WALLET_RESET,
+            }
+          )
+        }
       },
       [web3Modal, provider],
     )

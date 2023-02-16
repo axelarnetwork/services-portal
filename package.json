@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/axelarnetwork/services-portal#readme",
   "dependencies": {
-    "@axelar-network/axelar-gmp-sdk-solidity": "^3.0.0",
-    "@axelar-network/axelarjs-sdk": "0.12.5-alpha.2",
+    "@axelar-network/axelar-gmp-sdk-solidity": "^3.2.0",
+    "@axelar-network/axelarjs-sdk": "0.12.5-alph.3",
     "@material-tailwind/react": "^1.2.5",
     "@redux-devtools/extension": "^3.2.5",
     "env-cmd": "^10.1.0",

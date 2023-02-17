@@ -46,13 +46,14 @@
     "react-icons": "^4.7.1",
     "react-loader-spinner": "^5.3.4",
     "react-redux": "^8.0.5",
-    "react-reveal": "^1.2.2",
     "react-table": "^7.8.0",
     "redux": "^4.2.1",
     "web3": "^1.8.2",
     "web3modal": "^1.9.12"
   },
   "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@types/react": "^18.0.28",
     "autoprefixer": "^10.4.13",
     "husky": "^8.0.3",
     "postcss": "^8.4.21",

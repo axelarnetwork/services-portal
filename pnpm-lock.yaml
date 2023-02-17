@@ -25,12 +25,14 @@ specifiers:
   react-dom: 18.2.0
   react-gtm-module: ^2.0.11
   react-icons: ^4.7.1
+  react-is: ^18.2.0
   react-loader-spinner: ^5.3.4
   react-redux: ^8.0.5
   react-reveal: ^1.2.2
   react-table: ^7.8.0
   redux: ^4.2.1
   tailwindcss: ^3.2.6
+  typescript: ^4.9.5
   web3: ^1.8.2
   web3modal: ^1.9.12
 
@@ -59,7 +61,7 @@ dependencies:
   react-table: 7.8.0_react@18.2.0
   redux: 4.2.1
   web3: 1.8.2
-  web3modal: 1.9.12
+  web3modal: 1.9.12_react-is@18.2.0
 
 devDependencies:
   autoprefixer: 10.4.13_postcss@8.4.21
@@ -68,7 +70,9 @@ devDependencies:
   postcss-flexbugs-fixes: 5.0.2_postcss@8.4.21
   postcss-import: 15.1.0_postcss@8.4.21
   postcss-preset-env: 8.0.1_postcss@8.4.21
+  react-is: 18.2.0
   tailwindcss: 3.2.7_postcss@8.4.21
+  typescript: 4.9.5
 
 packages:
 
@@ -4340,7 +4344,6 @@ packages:
 
   /react-is/18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
-    dev: false
 
   /react-loader-spinner/5.3.4_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-G2vw4ssX+RDZ/vfaeva06yfNqyFViv/u+tVZ3kFLy5TKNlNx2DbuwreBSpRtPespQA+VxinxUJsigwLwG9erOg==}
@@ -4793,7 +4796,7 @@ packages:
       supports-color: 5.5.0
     dev: false
 
-  /styled-components/5.3.6_wcqkhtmu7mswc6yz4uyexck3ty:
+  /styled-components/5.3.6_gzjxbbqgwmhffys5rngtiuy3yq:
     resolution: {integrity: sha512-hGTZquGAaTqhGWldX7hhfzjnIYBZ0IXQXkCYdvF1Sq3DsUaLx6+NTHC5Jj1ooM2F68sBiVz3lvhfwQs/S3l6qg==}
     engines: {node: '>=10'}
     requiresBuild: true
@@ -4812,6 +4815,7 @@ packages:
       hoist-non-react-statics: 3.3.2
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
+      react-is: 18.2.0
       shallowequal: 1.1.0
       supports-color: 5.5.0
     dev: false
@@ -5005,6 +5009,12 @@ packages:
     dependencies:
       is-typedarray: 1.0.0
     dev: false
+
+  /typescript/4.9.5:
+    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
 
   /ultron/1.1.1:
     resolution: {integrity: sha512-UIEXBNeYmKptWH6z8ZnqTeS8fV74zG0/eRU9VGkpzz+LIJNs8W/zM/L+7ctCkRrgbNnnR0xxw4bKOr0cW0N0Og==}
@@ -5399,14 +5409,14 @@ packages:
       - utf-8-validate
     dev: false
 
-  /web3modal/1.9.12:
+  /web3modal/1.9.12_react-is@18.2.0:
     resolution: {integrity: sha512-RiLY2tNOEUCobtsMTmhwl/FoHZGxRZz7SSdLsh6qbbybPNUO0rFPY8xam9SpPwlLd2cUDGiWkLgDUJde0sHxdw==}
     dependencies:
       detect-browser: 5.3.0
       prop-types: 15.8.1
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
-      styled-components: 5.3.6_wcqkhtmu7mswc6yz4uyexck3ty
+      styled-components: 5.3.6_gzjxbbqgwmhffys5rngtiuy3yq
       tslib: 1.14.1
     transitivePeerDependencies:
       - react-is

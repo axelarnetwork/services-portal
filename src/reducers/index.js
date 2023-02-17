@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 
-import preferences from "./preferences";
-import evm_chains from "./evm-chains";
+import preferences, { preferencesSlice } from "./preferences";
+import evm_chains, { evmChainSlice } from "./evm-chains";
 import cosmos_chains from "./cosmos-chains";
 import assets from "./assets";
 import constant_address_deployer from "./constant-address-deployer";
@@ -15,7 +15,11 @@ import chain_id from "./chain-id";
 import token_linkers from "./token-linkers";
 import token_addresses from "./token-addresses";
 
-export default combineReducers({
+export const slices = {
+  preferences: preferencesSlice,
+  evm_chains: evmChainSlice,
+};
+export const reducers = {
   preferences,
   evm_chains,
   cosmos_chains,
@@ -30,4 +34,6 @@ export default combineReducers({
   chain_id,
   token_linkers,
   token_addresses,
-});
+};
+
+export default combineReducers(reducers);

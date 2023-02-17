@@ -1,3 +1,4 @@
+import { createSlice } from "@reduxjs/toolkit";
 import { THEME } from "./types";
 
 export default (
@@ -19,3 +20,17 @@ export default (
       return state;
   }
 };
+
+export const preferencesSlice = createSlice({
+  name: "theme",
+  initialState: {
+    [`${THEME}`]: "light",
+  },
+  reducers: {
+    setTheme: (state, action) => {
+      localStorage.setItem(THEME, action.payload);
+
+      state[`${THEME}`] = action.payload;
+    },
+  },
+});

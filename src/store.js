@@ -1,13 +1,29 @@
 import { useMemo } from "react";
 import { createStore, applyMiddleware } from "redux";
 import { composeWithDevTools } from "@redux-devtools/extension";
+import { configureStore } from "@reduxjs/toolkit";
 
-import reducers from "./reducers";
+import combinedReducers, { reducers } from "./reducers";
 
 let store;
 
 const initStore = (preloadedState) =>
-  createStore(reducers, preloadedState, composeWithDevTools(applyMiddleware()));
+  createStore(
+    combinedReducers,
+    preloadedState,
+    composeWithDevTools(applyMiddleware())
+  );
+
+const initStoreRTK = (preloadedState) =>
+  configureStore({
+    reducers: combinedReducers,
+    preloadedState,
+    devTools: true,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
 
 export const initializeStore = (preloadedState) => {
   let _store = store ?? initStore(preloadedState);

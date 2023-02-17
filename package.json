@@ -30,6 +30,7 @@
     "@axelar-network/axelarjs-sdk": "0.12.5-alph.3",
     "@material-tailwind/react": "^1.2.5",
     "@redux-devtools/extension": "^3.2.5",
+    "@reduxjs/toolkit": "^1.9.2",
     "env-cmd": "^10.1.0",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",

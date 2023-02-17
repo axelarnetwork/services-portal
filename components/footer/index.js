@@ -6,8 +6,8 @@ import _package from '../../package.json'
 export default () => {
   const {
     preferences,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         preferences: state.preferences,
       }
@@ -35,13 +35,7 @@ export default () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm font-medium"
             >
-              GMP SDK v{
-                dependencies['@axelar-network/axelar-gmp-sdk-solidity']
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
+              GMP SDK v{dependencies['@axelar-network/axelar-gmp-sdk-solidity'].replace('^', '')}
             </a>
           )
         }
@@ -54,13 +48,7 @@ export default () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm font-medium"
             >
-              SDK v{
-                dependencies['@axelar-network/axelarjs-sdk']
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
+              SDK v{dependencies['@axelar-network/axelarjs-sdk'].replace('^', '')}
             </a>
           )
         }
@@ -73,13 +61,7 @@ export default () => {
               rel="noopener noreferrer"
               className="text-blue-500 text-sm font-medium"
             >
-              UI v{
-                version
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
+              UI v{version.replace('^', '')}
             </a>
           )
         }

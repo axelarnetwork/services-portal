@@ -2,7 +2,7 @@ import { COSMOS_CHAINS_DATA } from './types'
 
 export default (
   state = {
-    [`${COSMOS_CHAINS_DATA}`]: null,
+    [COSMOS_CHAINS_DATA]: null,
   },
   action,
 ) => {
@@ -10,7 +10,7 @@ export default (
     case COSMOS_CHAINS_DATA:
       return {
         ...state,
-        [`${COSMOS_CHAINS_DATA}`]: action.value,
+        [COSMOS_CHAINS_DATA]: action.value,
       }
     default:
       return state

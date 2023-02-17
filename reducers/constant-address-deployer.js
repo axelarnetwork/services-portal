@@ -2,7 +2,7 @@ import { CONSTANT_ADDRESS_DEPLOYER } from './types'
 
 export default (
   state = {
-    [`${CONSTANT_ADDRESS_DEPLOYER}`]: null,
+    [CONSTANT_ADDRESS_DEPLOYER]: null,
   },
   action,
 ) => {
@@ -10,7 +10,7 @@ export default (
     case CONSTANT_ADDRESS_DEPLOYER:
       return {
         ...state,
-        [`${CONSTANT_ADDRESS_DEPLOYER}`]: action.value,
+        [CONSTANT_ADDRESS_DEPLOYER]: action.value,
       }
     default:
       return state

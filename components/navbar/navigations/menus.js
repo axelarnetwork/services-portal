@@ -9,16 +9,10 @@ export default (
         id: 'dashboard',
         title: 'Dashboard',
         path: '/',
-        others_paths:
-          [],
+        others_paths: [],
       },
     ],
-    services
-      .filter(s =>
-        s?.navbar_visible
-      ),
+    services.filter(s => s?.navbar_visible),
   )
-  .filter(m =>
-    m?.path
-  )
+  .filter(m =>  m?.path)
 )

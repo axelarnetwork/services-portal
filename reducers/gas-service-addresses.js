@@ -2,7 +2,7 @@ import { GAS_SERVICE_ADDRESSES_DATA } from './types'
 
 export default (
   state = {
-    [`${GAS_SERVICE_ADDRESSES_DATA}`]: null,
+    [GAS_SERVICE_ADDRESSES_DATA]: null,
   },
   action,
 ) => {
@@ -10,7 +10,7 @@ export default (
     case GAS_SERVICE_ADDRESSES_DATA:
       return {
         ...state,
-        [`${GAS_SERVICE_ADDRESSES_DATA}`]: action.value,
+        [GAS_SERVICE_ADDRESSES_DATA]: action.value,
       }
     default:
       return state

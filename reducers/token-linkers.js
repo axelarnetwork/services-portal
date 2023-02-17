@@ -2,7 +2,7 @@ import { TOKEN_LINKERS_DATA } from './types'
 
 export default (
   state = {
-    [`${TOKEN_LINKERS_DATA}`]: null,
+    [TOKEN_LINKERS_DATA]: null,
   },
   action,
 ) => {
@@ -10,10 +10,10 @@ export default (
     case TOKEN_LINKERS_DATA:
       return {
         ...state,
-        [`${TOKEN_LINKERS_DATA}`]:
+        [TOKEN_LINKERS_DATA]:
           action.value ?
             {
-              ...state[`${TOKEN_LINKERS_DATA}`],
+              ...state[TOKEN_LINKERS_DATA],
               ...action.value,
             } :
             null,

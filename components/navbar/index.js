@@ -13,8 +13,8 @@ import Wallet from '../wallet'
 import Theme from './theme'
 import SubNavbar from './sub-navbar'
 import Copy from '../copy'
-import { chains as getChains, assets as getAssets } from '../../lib/api/config'
-import { assets as getAssetsPrice } from '../../lib/api/assets'
+import { getChains, getAssets } from '../../lib/api/config'
+import { getAssetsPrice } from '../../lib/api/assets'
 import { getContracts } from '../../lib/api/contracts'
 import { equalsIgnoreCase, toArray, ellipse } from '../../lib/utils'
 import { EVM_CHAINS_DATA, COSMOS_CHAINS_DATA, ASSETS_DATA, CONSTANT_ADDRESS_DEPLOYER, GATEWAY_ADDRESSES_DATA, GAS_SERVICE_ADDRESSES_DATA, RPCS, SDK } from '../../reducers/types'
@@ -26,8 +26,8 @@ export default () => {
     assets,
     rpc_providers,
     wallet,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         evm_chains: state.evm_chains,
         assets: state.assets,
@@ -98,9 +98,7 @@ export default () => {
           // price
           let updated_ids =
             assets_data
-              .filter(a =>
-                typeof a?.price === 'number'
-              )
+              .filter(a => typeof a?.price === 'number')
               .map(a => a.id)
 
           if (updated_ids.length < assets_data.length) {
@@ -108,21 +106,14 @@ export default () => {
 
             const denoms =
               assets_data
-                .filter(a =>
-                  a?.id &&
-                  !updated_ids.includes(a.id)
-                )
+                .filter(a => a?.id && !updated_ids.includes(a.id))
                 .map(a => {
                   const {
                     id,
                     contracts,
                   } = { ...a }
 
-                  const chain =
-                    _.head(
-                      toArray(contracts)
-                        .map(c => c?.chain)
-                    )
+                  const chain = _.head(toArray(contracts).map(c => c?.chain))
 
                   if (chain) {
                     return {
@@ -135,12 +126,7 @@ export default () => {
                 })
 
             if (denoms.length > 0) {
-              const response =
-                await getAssetsPrice(
-                  {
-                    denoms,
-                  },
-                )
+              const response = await getAssetsPrice({ denoms })
 
               if (Array.isArray(response)) {
                 response
@@ -165,21 +151,10 @@ export default () => {
                         id,
                       } = { ...asset_data }
 
-                      asset_data.price =
-                        price ||
-                        asset_data.price ||
-                        0
-
+                      asset_data.price = price || asset_data.price || 0
                       assets_data[asset_index] = asset_data
 
-                      updated_ids =
-                        _.uniq(
-                          _.concat(
-                            updated_ids,
-                            id,
-                          )
-                        )
-
+                      updated_ids = _.uniq(_.concat(updated_ids, id))
                       updated = true
                     }
                   })
@@ -286,7 +261,7 @@ export default () => {
               const {
                 rpcUrls,
               } = { ..._.head(provider_params) }
-   
+
               const rpc_urls = toArray(rpcUrls)
 
               const provider =
@@ -369,8 +344,7 @@ export default () => {
           </div>
           <div className="flex items-center justify-end">
             {
-              evm_chains_data?.length > 0 &&
-              web3_provider &&
+              evm_chains_data?.length > 0 && web3_provider &&
               (
                 <div className="ml-2">
                   <Chains />
@@ -378,8 +352,7 @@ export default () => {
               )
             }
             {
-              web3_provider &&
-              address &&
+              web3_provider && address &&
               (
                 <div className="min-w-max hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2 mr-1">
                   <EnsProfile

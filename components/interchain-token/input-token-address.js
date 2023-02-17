@@ -14,8 +14,8 @@ export default () => {
     evm_chains,
     wallet,
     token_linkers,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         evm_chains: state.evm_chains,
         wallet: state.wallet,
@@ -67,13 +67,8 @@ export default () => {
           evm_chains_data &&
           token_linkers_data &&
           (
-            getChain(
-              chain_id,
-              supported_evm_chains_data,
-            ) ||
-            _.head(
-              supported_evm_chains_data
-            )
+            getChain(chain_id, supported_evm_chains_data) ||
+            _.head(supported_evm_chains_data)
           )?.id
         )
       )
@@ -92,34 +87,15 @@ export default () => {
     () => {
       if (typeof input === 'string') {
         try {
-          const _input =
-            input ?
-              utils.getAddress(input) :
-              input
+          const _input = input ? utils.getAddress(input) : input
 
-          router
-            .push(
-              `${
-                pathname
-                  .replace(
-                    '/[chain]',
-                    '',
-                  )
-                  .replace(
-                    '/[token_address]',
-                    '',
-                  )
-              }${
-                selectedChain &&
-                _input ?
-                  `/${selectedChain}/${_input}` :
-                  ''
-              }`,
-              undefined,
-              {
-                shallow: true,
-              },
-            )
+          router.push(
+            `${pathname.replace('/[chain]', '').replace('/[token_address]', '')}${selectedChain && _input ? `/${selectedChain}/${_input}` : ''}`,
+            undefined,
+            {
+              shallow: true,
+            },
+          )
         } catch (error) {}
       }
     },
@@ -127,11 +103,7 @@ export default () => {
   )
 
   return (
-    Object.values({ ...token_linkers_data })
-      .filter(tl =>
-        tl?.deployed
-      )
-      .length > 0 &&
+    Object.values({ ...token_linkers_data }).filter(tl => tl?.deployed).length > 0 &&
     (
       <div className="w-full sm:max-w-md border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl flex items-center justify-between space-x-2.5 py-2 px-3">
         <DebounceInput
@@ -140,39 +112,18 @@ export default () => {
           type="text"
           placeholder={
             `Input your origin token address${
-              getChain(
-                selectedChain,
-                evm_chains_data,
-              ) ?
-                ` on ${
-                  getChain(
-                    selectedChain,
-                    evm_chains_data,
-                  ).name
-                }` :
+              getChain(selectedChain, evm_chains_data) ?
+                ` on ${getChain(selectedChain, evm_chains_data).name}` :
                 ''
             }`
           }
           value={input}
-          onChange={
-            e =>
-              setInput(
-                split(
-                  e.target.value,
-                  'normal',
-                  ' ',
-                )
-                .join('')
-              )
-          }
+          onChange={e => setInput(split(e.target.value, 'normal', ' ').join(''))}
           className="w-full bg-transparent text-base ml-0.5"
         />
         <Chains
           chain={selectedChain}
-          onSelect={
-            c =>
-              setSelectedChain(c)
-          }
+          onSelect={c => setSelectedChain(c)}
         />
       </div>
     )

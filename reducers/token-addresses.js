@@ -2,7 +2,7 @@ import { TOKEN_ADDRESSES_DATA } from './types'
 
 export default (
   state = {
-    [`${TOKEN_ADDRESSES_DATA}`]: null,
+    [TOKEN_ADDRESSES_DATA]: null,
   },
   action,
 ) => {
@@ -10,10 +10,10 @@ export default (
     case TOKEN_ADDRESSES_DATA:
       return {
         ...state,
-        [`${TOKEN_ADDRESSES_DATA}`]:
+        [TOKEN_ADDRESSES_DATA]:
           action.value ?
             {
-              ...state[`${TOKEN_ADDRESSES_DATA}`],
+              ...state[TOKEN_ADDRESSES_DATA],
               ...action.value,
             } :
             null,

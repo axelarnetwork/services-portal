@@ -11,7 +11,6 @@ import ens from './ens'
 import rpc_providers from './rpc-providers'
 import dev from './dev'
 import wallet from './wallet'
-import chain_id from './chain-id'
 import token_linkers from './token-linkers'
 import token_addresses from './token-addresses'
 
@@ -28,7 +27,6 @@ export default combineReducers(
     rpc_providers,
     dev,
     wallet,
-    chain_id,
     token_linkers,
     token_addresses,
   },

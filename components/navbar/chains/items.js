@@ -12,8 +12,8 @@ export default (
  const {
     evm_chains,
     wallet,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         evm_chains: state.evm_chains,
         wallet: state.wallet,
@@ -75,15 +75,7 @@ export default (
                     height={24}
                     className="rounded-full"
                   />
-                  <span
-                    className={
-                      `whitespace-nowrap normal-case ${
-                        selected ?
-                          'font-semibold' :
-                          'font-medium'
-                      }`
-                    }
-                  >
+                  <span className={`whitespace-nowrap normal-case ${selected ? 'font-semibold' : 'font-medium'}`}>
                     {name}
                   </span>
                 </div>

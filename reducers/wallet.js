@@ -5,13 +5,13 @@ const initial_wallet_data = {
   chain_id: null,
   provider: null,
   web3_provider: null,
-  address: null,
   signer: null,
+  address: null,
 }
 
 export default (
   state = {
-    [`${WALLET_DATA}`]: initial_wallet_data,
+    [WALLET_DATA]: initial_wallet_data,
   },
   action,
 ) => {
@@ -19,15 +19,15 @@ export default (
     case WALLET_DATA:
       return {
         ...state,
-        [`${WALLET_DATA}`]: {
-          ...state[`${WALLET_DATA}`],
+        [WALLET_DATA]: {
+          ...state[WALLET_DATA],
           ...action.value,
         },
       }
     case WALLET_RESET:
       return {
         ...state,
-        [`${WALLET_DATA}`]: initial_wallet_data,
+        [WALLET_DATA]: initial_wallet_data,
       }
     default:
       return state

@@ -118,7 +118,7 @@ export default (
         }
       </button>
       <div
-        ref={dropdownRef} 
+        ref={dropdownRef}
         className={`dropdown ${hidden ? '' : 'open'} absolute top-0 right-0 mt-8`}
       >
         <div className="bottom-start">

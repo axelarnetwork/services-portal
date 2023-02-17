@@ -12,8 +12,8 @@ import { numberFormat, equalsIgnoreCase, toArray, ellipse } from '../../../lib/u
 export default () => {
   const {
     wallet,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         wallet: state.wallet,
       }
@@ -38,20 +38,12 @@ export default () => {
     id,
   } = { ...query }
 
-  let title,
-    subtitle,
-    right,
-    path
+  let title, subtitle, right, path
 
   switch (pathname) {
     case '/':
       title = 'All Services'
-
-      right =
-        (
-          <ServicesInputSearch />
-        )
-
+      right = <ServicesInputSearch />
       break
     default:
       const service =
@@ -78,31 +70,24 @@ export default () => {
       switch (pathname) {
         case '/interchain-token':
         case '/interchain-token/[chain]/[token_address]':
-          right =
-            signer &&
-            (
-              <InterchainTokenInputAddress />
-            )
-
+          right = signer && (<InterchainTokenInputAddress />)
           break
       }
-
       break
   }
 
-  const titleComponent =
-    (
-      <h1
-        className="flex items-center tracking-wider uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
-        style={
-          {
-            height: '46px',
-          }
+  const titleComponent = (
+    <h1
+      className="flex items-center tracking-wider uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
+      style={
+        {
+          height: '46px',
         }
-      >
-        {title}
-      </h1>
-    )
+      }
+    >
+      {title}
+    </h1>
+  )
 
   return (
     <div className="w-full max-w-8xl flex flex-col sm:flex-row sm:items-center mx-auto pt-6 pb-2 px-3 sm:px-4 xl:px-1">

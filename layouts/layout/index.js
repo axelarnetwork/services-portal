@@ -16,8 +16,8 @@ export default (
   const dispatch = useDispatch()
   const {
     preferences,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         preferences: state.preferences,
       }

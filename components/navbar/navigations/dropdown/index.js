@@ -12,29 +12,15 @@ export default () => {
   useEffect(
     () => {
       const handleClickOutside = e => {
-        if (
-          hidden ||
-          buttonRef.current.contains(e.target) ||
-          dropdownRef.current.contains(e.target)
-        ) {
+        if (hidden || buttonRef.current.contains(e.target) || dropdownRef.current.contains(e.target)) {
           return false
         }
 
         setHidden(!hidden)
       }
 
-      document
-        .addEventListener(
-          'mousedown',
-          handleClickOutside,
-        )
-
-      return () =>
-        document
-          .removeEventListener(
-            'mousedown',
-            handleClickOutside,
-          )
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
     },
     [hidden, buttonRef, dropdownRef],
   )
@@ -53,7 +39,7 @@ export default () => {
         />
       </button>
       <div
-        ref={dropdownRef} 
+        ref={dropdownRef}
         className={`dropdown ${hidden ? '' : 'open'} absolute top-0 left-3 mt-12`}
       >
         <div className="bottom-start">

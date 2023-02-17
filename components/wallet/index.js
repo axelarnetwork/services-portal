@@ -36,7 +36,7 @@ export default (
   {
     mainController = false,
     hidden = false,
-    disabled = false, 
+    disabled = false,
     connectChainId,
     onSwitch,
     children,
@@ -49,8 +49,8 @@ export default (
     preferences,
     evm_chains,
     wallet,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         preferences: state.preferences,
         evm_chains: state.evm_chains,
@@ -105,13 +105,7 @@ export default (
         web3Modal =
           new Web3Modal(
             {
-              network:
-                getNetwork(defaultChainId) ||
-                (
-                  process.env.NEXT_PUBLIC_ENVIRONMENT === 'mainnet' ?
-                    'mainnet' :
-                    'goerli'
-                ),
+              network: getNetwork(defaultChainId) || (process.env.NEXT_PUBLIC_ENVIRONMENT === 'mainnet' ? 'mainnet' : 'goerli'),
               cacheProvider: true,
               providerOptions,
             }
@@ -181,17 +175,11 @@ export default (
         e,
         is_reestablish,
       ) => {
-        if (
-          web3Modal &&
-          !is_reestablish
-        ) {
+        if (web3Modal && !is_reestablish) {
           await web3Modal.clearCachedProvider()
         }
 
-        if (
-          provider?.disconnect &&
-          typeof provider.disconnect === 'function'
-        ) {
+        if (typeof provider?.disconnect === 'function') {
           await provider.disconnect()
         }
 
@@ -207,24 +195,14 @@ export default (
     )
 
   const switchChain = async () => {
-    if (
-      connectChainId &&
-      connectChainId !== chain_id &&
-      provider
-    ) {
+    if (connectChainId && connectChainId !== chain_id && provider) {
       try {
-        await provider
-          .request(
-            {
-              method: 'wallet_switchEthereumChain',
-              params:
-                [
-                  {
-                    chainId: utils.hexValue(connectChainId),
-                  },
-                ],
-            },
-          )
+        await provider.request(
+          {
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: utils.hexValue(connectChainId) }],
+          },
+        )
       } catch (error) {
         const {
           code,
@@ -234,22 +212,14 @@ export default (
           try {
             const {
               provider_params,
-            } = {
-              ...(
-                getChain(
-                  connectChainId,
-                  evm_chains_data,
-                )
-              ),
-            }
+            } = { ...getChain(connectChainId, chains_data) }
 
-            await provider
-              .request(
-                {
-                  method: 'wallet_addEthereumChain',
-                  params: provider_params,
-                },
-              )
+            await provider.request(
+              {
+                method: 'wallet_addEthereumChain',
+                params: provider_params,
+              },
+            )
           } catch (error) {}
         }
       }
@@ -289,55 +259,26 @@ export default (
             code,
           } = { ...e }
 
-          disconnect(
-            e,
-            code === 1013,
-          )
+          disconnect(e, code === 1013)
 
           if (code === 1013) {
             connect()
           }
         }
 
-        provider
-          .on(
-            'chainChanged',
-            handleChainChanged,
-          )
+        provider.on('chainChanged', handleChainChanged)
+        provider.on('accountsChanged', handleAccountsChanged)
+        provider.on('disconnect', handleDisconnect)
 
-        provider
-          .on(
-            'accountsChanged',
-            handleAccountsChanged,
-          )
-
-        provider
-          .on(
-            'disconnect',
-            handleDisconnect,
-          )
-
-        return () => {
-          if (provider.removeListener) {
-            provider
-              .removeListener(
-                'chainChanged',
-                handleChainChanged,
-              )
-
-            provider
-              .removeListener(
-                'accountsChanged',
-                handleAccountsChanged,
-              )
-
-            provider
-              .removeListener(
-                'disconnect',
-                handleDisconnect,
-              )
+        return (
+          () => {
+            if (provider.removeListener) {
+              provider.removeListener('chainChanged', handleChainChanged)
+              provider.removeListener('accountsChanged', handleAccountsChanged)
+              provider.removeListener('disconnect', handleDisconnect)
+            }
           }
-        }
+        )
       }
     },
     [provider, disconnect],
@@ -348,15 +289,12 @@ export default (
     (
       <>
         {web3_provider ?
-          !mainController &&
-          connectChainId &&
-          connectChainId !== chain_id ?
+          !mainController && connectChainId && connectChainId !== chain_id ?
             <button
               disabled={disabled}
               onClick={
                 () => {
                   switchChain()
-
                   if (onSwitch) {
                     onSwitch()
                   }

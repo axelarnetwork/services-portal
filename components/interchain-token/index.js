@@ -13,7 +13,6 @@ import { BiMessage, BiCheck } from 'react-icons/bi'
 import { IoClose } from 'react-icons/io5'
 
 import RegisterOriginTokenButton from './register-origin-token-button'
-import TokenId from './token-id'
 import Image from '../image'
 import Copy from '../copy'
 import Wallet from '../wallet'
@@ -1449,10 +1448,6 @@ export default () => {
                                 }
                               </div>
                             </div>
-                            <TokenId
-                              chain={id}
-                              tokenAddress={_tokenAddress}
-                            />
                             {registered_or_deployed_remote ?
                               address_url ?
                                 <a

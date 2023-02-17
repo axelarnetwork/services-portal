@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { THEME } from "./types";
 
 const initialState = {
-  [`${THEME}`]: "light",
+  [THEME]: "light",
 };
 
 export default (state = initialState, action) => {
@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
 
       return {
         ...state,
-        [`${THEME}`]: action.value,
+        [THEME]: action.value,
       };
     }
     default:
@@ -24,12 +24,17 @@ export const preferencesSlice = createSlice({
   name: "preferences",
   initialState,
   reducers: {
-    setTheme: (state, action) => {
+    setTheme: (
+      state,
+      action = {
+        payload: initialState[THEME],
+      }
+    ) => {
       localStorage.setItem(THEME, action.payload);
 
-      state[`${THEME}`] = action.payload;
+      state[THEME] = action.payload;
     },
   },
 });
 
-export const { setTheme } = preferencesSlice.actions;
+export const { actions } = preferencesSlice;

@@ -3,12 +3,6 @@ import Link from 'next/link'
 import Image from '../../image'
 
 export default () => {
-  const is_testnet =
-    [
-      'testnet',
-    ]
-    .includes(process.env.NEXT_PUBLIC_ENVIRONMENT)
-
   return (
     <div className="logo ml-3 mr-1 sm:mr-3">
       <div className="flex flex-col items-start">
@@ -45,7 +39,7 @@ export default () => {
         </div>
         <div className="hidden sm:block">
           {
-            is_testnet &&
+            process.env.NEXT_PUBLIC_ENVIRONMENT === 'testnet' &&
             (
               <div className="w-fit whitespace-nowrap uppercase text-slate-400 dark:text-slate-600 text-xs font-medium ml-11">
                 {process.env.NEXT_PUBLIC_ENVIRONMENT}

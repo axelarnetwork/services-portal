@@ -25,7 +25,6 @@ export const SDK = 'sdk'
 // wallet
 export const WALLET_DATA = 'wallet_data'
 export const WALLET_RESET = 'wallet_reset'
-export const CHAIN_ID = 'chain_id'
 
 // interchain token
 export const TOKEN_LINKERS_DATA = 'token_linkers_data'

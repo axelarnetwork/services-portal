@@ -28,25 +28,13 @@ export default () => {
   useEffect(
     () => {
       if (typeof input === 'string') {
-        router
-          .push(
-            `${pathname}${
-              input ?
-                `?${
-                  new URLSearchParams(
-                    {
-                      search: input,
-                    }
-                  )
-                  .toString()
-                }` :
-                ''
-            }`,
-            undefined,
-            {
-              shallow: true,
-            },
-          )
+        router.push(
+          `${pathname}${input ? `?${new URLSearchParams({ search: input }).toString()}` : ''}`,
+          undefined,
+          {
+            shallow: true,
+          },
+        )
       }
     },
     [input],
@@ -59,17 +47,7 @@ export default () => {
       type="text"
       placeholder="Search..."
       value={input}
-      onChange={
-        e =>
-          setInput(
-            split(
-              e.target.value,
-              'normal',
-              ' ',
-            )
-            .join(' ')
-          )
-      }
+      onChange={e => setInput(split(e.target.value, 'normal', ' ').join(' '))}
       className="w-full sm:w-80 bg-transparent border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl text-lg py-2 px-3"
     />
   )

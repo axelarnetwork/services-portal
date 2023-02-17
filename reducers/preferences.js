@@ -2,7 +2,7 @@ import { THEME } from './types'
 
 export default (
   state = {
-    [`${THEME}`]: 'light',
+    [THEME]: 'light',
   },
   action,
 ) => {
@@ -16,7 +16,7 @@ export default (
 
       return {
         ...state,
-        [`${THEME}`]: action.value,
+        [THEME]: action.value,
       }
     default:
       return state

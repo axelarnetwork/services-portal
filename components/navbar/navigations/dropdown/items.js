@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import HeadShake from 'react-reveal/HeadShake'
-import { FaHandPointLeft } from 'react-icons/fa'
 
 import menus from '../menus'
 
@@ -24,38 +22,19 @@ export default (
           const {
             id,
             disabled,
-            emphasize,
             title,
             path,
             others_paths,
             external,
           } = { ...m }
 
-          const selected =
-            !external &&
-            (
-              pathname === path ||
-              others_paths?.includes(pathname)
-            )
+          const selected = !external && (pathname === path || others_paths?.includes(pathname))
 
-          const item =
-            (
-              <span className="whitespace-nowrap tracking-wider">
-                {title}
-              </span>
-            )
-
-          const right_icon =
-            emphasize ?
-              <HeadShake
-                duration={1500}
-                forever
-              >
-                <FaHandPointLeft
-                  size={20}
-                />
-              </HeadShake> :
-              undefined
+          const item = (
+            <span className="whitespace-nowrap tracking-wider">
+              {title}
+            </span>
+          )
 
           const className =
             `w-full ${
@@ -85,7 +64,6 @@ export default (
                 className={className}
               >
                 {item}
-                {right_icon}
               </a> :
               <Link
                 key={id}
@@ -94,7 +72,6 @@ export default (
                 className={className}
               >
                 {item}
-                {right_icon}
               </Link>
           )
         })

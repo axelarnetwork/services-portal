@@ -10,8 +10,8 @@ export default () => {
     evm_chains,
     cosmos_chains,
     assets,
-  } = useSelector(state =>
-    (
+  } = useSelector(
+    state => (
       {
         preferences: state.preferences,
         evm_chains: state.evm_chains,
@@ -36,7 +36,7 @@ export default () => {
 
   return (
     <div className="space-y-8">
-      
+
     </div>
   )
 }

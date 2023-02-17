@@ -1,15 +1,5 @@
-import Image from 'next/image'
+import Image from "next/image";
 
-export default (
-  {
-    alt = '',
-    ...rest
-  },
-) => {
-  return (
-    <Image
-      alt={alt}
-      { ...rest }
-    />
-  )
-}
+export default ({ alt = "", ...rest }) => {
+  return <Image alt={alt} {...rest} />;
+};

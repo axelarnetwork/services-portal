@@ -1,13 +1,5 @@
-import Layout from './layout'
+import Layout from "./layout";
 
-export default (
-  {
-    children,
-  },
-) => {
-  return (
-    <Layout>
-      {children}
-    </Layout>
-  )
-}
+export default ({ children }) => {
+  return <Layout>{children}</Layout>;
+};

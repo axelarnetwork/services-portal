@@ -1,22 +1,15 @@
-import Link from 'next/link'
+import Link from "next/link";
 
-import Image from '../../image'
+import Image from "../../image";
 
 export default () => {
-  const is_testnet =
-    [
-      'testnet',
-    ]
-    .includes(process.env.NEXT_PUBLIC_ENVIRONMENT)
+  const is_testnet = ["testnet"].includes(process.env.NEXT_PUBLIC_ENVIRONMENT);
 
   return (
     <div className="logo ml-3 mr-1 sm:mr-3">
       <div className="flex flex-col items-start">
         <div className="w-full flex items-center">
-          <Link
-            href="/"
-            className="min-w-max sm:mr-3"
-          >
+          <Link href="/" className="min-w-max sm:mr-3">
             <div className="block dark:hidden">
               <Image
                 src="/logos/logo.png"
@@ -44,16 +37,13 @@ export default () => {
           </div>
         </div>
         <div className="hidden sm:block">
-          {
-            is_testnet &&
-            (
-              <div className="w-fit whitespace-nowrap uppercase text-slate-400 dark:text-slate-600 text-xs font-medium ml-11">
-                {process.env.NEXT_PUBLIC_ENVIRONMENT}
-              </div>
-            )
-          }
+          {is_testnet && (
+            <div className="w-fit whitespace-nowrap uppercase text-slate-400 dark:text-slate-600 text-xs font-medium ml-11">
+              {process.env.NEXT_PUBLIC_ENVIRONMENT}
+            </div>
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

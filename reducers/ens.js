@@ -1,10 +1,10 @@
-import { ENS_DATA } from './types'
+import { ENS_DATA } from "./types";
 
 export default (
   state = {
     [`${ENS_DATA}`]: null,
   },
-  action,
+  action
 ) => {
   switch (action.type) {
     case ENS_DATA:
@@ -14,8 +14,8 @@ export default (
           ...state[`${ENS_DATA}`],
           ...action.value,
         },
-      }
+      };
     default:
-      return state
+      return state;
   }
-}
+};

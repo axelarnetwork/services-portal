@@ -1,93 +1,63 @@
-import { useSelector, shallowEqual } from 'react-redux'
-import moment from 'moment'
+import { useSelector, shallowEqual } from "react-redux";
+import moment from "moment";
 
-import _package from '../../package.json'
+import _package from "../../package.json";
 
 export default () => {
-  const {
-    preferences,
-  } = useSelector(state =>
-    (
-      {
-        preferences: state.preferences,
-      }
-    ),
-    shallowEqual,
-  )
-  const {
-    theme,
-  } = { ...preferences }
+  const { preferences } = useSelector(
+    (state) => ({
+      preferences: state.preferences,
+    }),
+    shallowEqual
+  );
+  const { theme } = { ...preferences };
 
-  const {
-    version,
-    dependencies,
-  } = { ..._package }
+  const { version, dependencies } = { ..._package };
 
   return (
-    <div className={`${theme} footer flex flex-col md:flex-row items-center space-y-2.5 sm:space-y-0 p-3`}>
+    <div
+      className={`${theme} footer flex flex-col md:flex-row items-center space-y-2.5 sm:space-y-0 p-3`}
+    >
       <div className="w-full md:w-1/2 lg:w-1/4 min-w-max flex items-center justify-center md:justify-start space-x-2">
-        {
-          dependencies?.['@axelar-network/axelar-gmp-sdk-solidity'] &&
-          (
-            <a
-              href="https://github.com/axelarnetwork/axelar-gmp-sdk-solidity"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-sm font-medium"
-            >
-              GMP SDK v{
-                dependencies['@axelar-network/axelar-gmp-sdk-solidity']
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
-            </a>
-          )
-        }
-        {
-          dependencies?.['@axelar-network/axelarjs-sdk'] &&
-          (
-            <a
-              href="https://github.com/axelarnetwork/axelarjs-sdk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-sm font-medium"
-            >
-              SDK v{
-                dependencies['@axelar-network/axelarjs-sdk']
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
-            </a>
-          )
-        }
-        {
-          version &&
-          (
-            <a
-              href="https://github.com/axelarnetwork/services-portal"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-sm font-medium"
-            >
-              UI v{
-                version
-                  .replace(
-                    '^',
-                    '',
-                  )
-              }
-            </a>
-          )
-        }
+        {dependencies?.["@axelar-network/axelar-gmp-sdk-solidity"] && (
+          <a
+            href="https://github.com/axelarnetwork/axelar-gmp-sdk-solidity"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 text-sm font-medium"
+          >
+            GMP SDK v
+            {dependencies["@axelar-network/axelar-gmp-sdk-solidity"].replace(
+              "^",
+              ""
+            )}
+          </a>
+        )}
+        {dependencies?.["@axelar-network/axelarjs-sdk"] && (
+          <a
+            href="https://github.com/axelarnetwork/axelarjs-sdk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 text-sm font-medium"
+          >
+            SDK v{dependencies["@axelar-network/axelarjs-sdk"].replace("^", "")}
+          </a>
+        )}
+        {version && (
+          <a
+            href="https://github.com/axelarnetwork/services-portal"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 text-sm font-medium"
+          >
+            UI v{version.replace("^", "")}
+          </a>
+        )}
       </div>
       <div className="hidden lg:flex w-full lg:w-2/4 flex-wrap items-center justify-center" />
       <div className="w-full md:w-1/2 lg:w-1/4 min-w-max flex items-center justify-center md:justify-end space-x-1.5">
         <span className="text-slate-500 dark:text-white font-medium">
-          © {moment().format('YYYY')}
+          © {moment().format("YYYY")}
         </span>
         <a
           href={process.env.NEXT_PUBLIC_WEBSITE_URL}
@@ -102,5 +72,5 @@ export default () => {
         </span>
       </div>
     </div>
-  )
-}
+  );
+};

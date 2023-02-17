@@ -1,12 +1,12 @@
-const { createSecureHeaders } = require('next-secure-headers')
+const { createSecureHeaders } = require("next-secure-headers");
 
 module.exports = {
   headers: () => {
     return [
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: createSecureHeaders(),
       },
-    ]
+    ];
   },
-}
+};

@@ -1,18 +1,18 @@
-import { COSMOS_CHAINS_DATA } from './types'
+import { COSMOS_CHAINS_DATA } from "./types";
 
 export default (
   state = {
     [`${COSMOS_CHAINS_DATA}`]: null,
   },
-  action,
+  action
 ) => {
   switch (action.type) {
     case COSMOS_CHAINS_DATA:
       return {
         ...state,
         [`${COSMOS_CHAINS_DATA}`]: action.value,
-      }
+      };
     default:
-      return state
+      return state;
   }
-}
+};

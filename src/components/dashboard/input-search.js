@@ -43,7 +43,7 @@ export default () => {
       placeholder="Search..."
       value={input}
       onChange={(e) => setInput(split(e.target.value, "normal", " ").join(" "))}
-      className="w-full sm:w-80 bg-transparent border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl text-lg py-2 px-3"
+      className="w-full rounded-xl border border-slate-300 bg-transparent py-2 px-3 text-lg focus:border-blue-500 dark:border-slate-700 dark:focus:border-blue-500 sm:w-80"
     />
   );
 };

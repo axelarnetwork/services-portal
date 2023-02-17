@@ -96,7 +96,7 @@ export default ({
       onClick={show}
       className={
         buttonClassName ||
-        "btn btn-default btn-rounded bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 text-white"
+        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400"
       }
     >
       {buttonTitle}
@@ -109,7 +109,7 @@ export default ({
         <Tooltip
           placement={placement}
           content={tooltip}
-          className="z-50 bg-black text-white text-xs"
+          className="z-50 bg-black text-xs text-white"
         >
           {buttonComponent}
         </Tooltip>
@@ -127,14 +127,14 @@ export default ({
               ref={modalRef}
               className={`w-full ${
                 modalClassName.includes("max-w-") ? "" : "max-w-sm lg:max-w-lg"
-              } relative lg:my-4 mx-auto ${modalClassName}`}
+              } relative mx-auto lg:my-4 ${modalClassName}`}
             >
-              <div className="w-full bg-white dark:bg-slate-900 dark:bg-opacity-90 relative outline-none rounded-lg shadow-lg border-0 flex flex-col">
+              <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none dark:bg-slate-900 dark:bg-opacity-90">
                 <div className="relative flex-auto p-4">
                   <div className="flex items-start justify-start space-x-4 p-2">
                     {icon && <div className="w-12 flex-shrink-0">{icon}</div>}
-                    <div className="w-full flex flex-col">
-                      <div className="uppercase tracking-wider text-lg font-medium mb-2">
+                    <div className="flex w-full flex-col">
+                      <div className="mb-2 text-lg font-medium uppercase tracking-wider">
                         {title}
                       </div>
                       {body}
@@ -143,7 +143,7 @@ export default ({
                 </div>
                 {!noButtons && (
                   <div
-                    className={`border-t border-zinc-100 dark:border-zinc-800 border-solid rounded-b flex items-center justify-end ${
+                    className={`flex items-center justify-end rounded-b border-t border-solid border-zinc-100 dark:border-zinc-800 ${
                       cancelButtonClassName?.includes("hidden")
                         ? "space-x-0"
                         : "space-x-2"
@@ -180,7 +180,7 @@ export default ({
                       }}
                       className={
                         confirmButtonClassName ||
-                        "btn btn-default btn-rounded bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 text-white"
+                        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400"
                       }
                     >
                       {confirmButtonTitle || "Confirm"}

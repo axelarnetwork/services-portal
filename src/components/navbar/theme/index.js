@@ -21,9 +21,9 @@ export default () => {
           value: theme === "light" ? "dark" : "light",
         });
       }}
-      className="w-8 h-16 flex items-center justify-center sm:mr-1"
+      className="flex h-16 w-8 items-center justify-center sm:mr-1"
     >
-      <div className="w-6 h-6 flex items-center justify-center">
+      <div className="flex h-6 w-6 items-center justify-center">
         {theme === "light" ? <RiMoonFill size={18} /> : <RiSunLine size={18} />}
       </div>
     </button>

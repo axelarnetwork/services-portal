@@ -10,7 +10,7 @@ export default ({ onClick }) => {
   const { pathname } = { ...router };
 
   return (
-    <div className="backdrop-blur-16 w-40 shadow dark:shadow-slate-700 rounded-lg flex flex-col py-1">
+    <div className="backdrop-blur-16 flex w-40 flex-col rounded-lg py-1 shadow dark:shadow-slate-700">
       {menus.map((m, i) => {
         const { id, disabled, emphasize, title, path, others_paths, external } =
           { ...m };

@@ -25,10 +25,10 @@ h6 {
 }
 
 code {
-  @apply inline rounded font-mono font-semibold p-1;
+  @apply inline rounded p-1 font-mono font-semibold;
 }
 pre {
-  @apply block rounded whitespace-pre-wrap font-mono font-semibold p-2;
+  @apply block whitespace-pre-wrap rounded p-2 font-mono font-semibold;
 }
 
 ul {
@@ -71,7 +71,7 @@ button {
 }
 
 body {
-  @apply antialiased text-sm disable-scrollbars;
+  @apply disable-scrollbars text-sm antialiased;
 }
 
 [data-background="light"] {

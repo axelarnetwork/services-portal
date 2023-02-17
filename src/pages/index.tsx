@@ -24,7 +24,7 @@ export default () => {
 
   return (
     !ssr && (
-      <div className="max-w-8xl mt-2 mb-8 mx-auto">
+      <div className="max-w-8xl mx-auto mt-2 mb-8">
         <Dashboard />
       </div>
     )

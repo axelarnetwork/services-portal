@@ -19,7 +19,9 @@ export const routes = _.concat(
 
 export const isRouteExist = (pathname) =>
   routes.findIndex((r, i) => {
-    if (r.pathname === pathname) { return true; }
+    if (r.pathname === pathname) {
+      return true;
+    }
 
     if (
       r.pathname.split("/").filter((p) => p).length ===

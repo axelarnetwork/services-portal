@@ -449,7 +449,7 @@ export default ({
       buttonTitle={buttonTitle}
       buttonClassName={buttonClassName}
       title={
-        <div className="flex items-center justify-between normal-case space-x-2">
+        <div className="flex items-center justify-between space-x-2 normal-case">
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium">
               {isOrigin
@@ -460,21 +460,21 @@ export default ({
               src={image}
               width={24}
               height={24}
-              className="w-6 h-6 rounded-full"
+              className="h-6 w-6 rounded-full"
             />
             <span className="text-base font-bold">{name}</span>
           </div>
           <button
             disabled={disabled}
             onClick={() => reset()}
-            className="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-500 dark:text-slate-200 p-2"
+            className="rounded-full p-2 text-slate-500 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             <IoClose size={18} />
           </button>
         </div>
       }
       body={
-        <div className="space-y-8 mt-4">
+        <div className="mt-4 space-y-8">
           <div className="space-y-1">
             <div className={`grid grid-cols-${steps.length} gap-1.5`}>
               {steps.map((s) => {
@@ -507,10 +507,10 @@ export default ({
                         : "justify-center"
                     } whitespace-nowrap ${
                       step < currentStep
-                        ? "text-slate-700 dark:text-slate-200 font-semibold"
+                        ? "font-semibold text-slate-700 dark:text-slate-200"
                         : step === currentStep
                         ? "font-bold"
-                        : "text-slate-400 dark:text-slate-500 font-medium"
+                        : "font-medium text-slate-400 dark:text-slate-500"
                     } text-2xs sm:text-xs`}
                   >
                     {title}
@@ -536,7 +536,7 @@ export default ({
                           setCurrentStep(step);
                         }
                       }}
-                      className={`w-8 h-8 ${
+                      className={`h-8 w-8 ${
                         step < currentStep
                           ? `bg-blue-400 dark:bg-blue-500 ${
                               disabled
@@ -552,7 +552,7 @@ export default ({
                           : step < currentStep
                           ? "cursor-pointer"
                           : ""
-                      } rounded-full flex items-center justify-center ${
+                      } flex items-center justify-center rounded-full ${
                         step < currentStep
                           ? `text-slate-100 dark:text-slate-200 ${
                               disabled
@@ -560,8 +560,8 @@ export default ({
                                 : "hover:text-white dark:hover:text-slate-100"
                             } font-semibold`
                           : step === currentStep
-                          ? "text-white font-bold"
-                          : "text-slate-400 dark:text-slate-500 font-medium"
+                          ? "font-bold text-white"
+                          : "font-medium text-slate-400 dark:text-slate-500"
                       } text-base`}
                       style={{
                         minWidth: "2rem",
@@ -571,7 +571,7 @@ export default ({
                     </button>
                     {step < steps.length - 1 && (
                       <div
-                        className={`w-full h-0.5 ${
+                        className={`h-0.5 w-full ${
                           step < currentStep
                             ? "bg-blue-500 dark:bg-blue-600"
                             : "bg-slate-100 dark:bg-slate-800"
@@ -599,9 +599,9 @@ export default ({
                           : "border border-slate-200 dark:border-slate-800"
                       } cursor-pointer rounded-xl ${
                         _preExistingToken === value
-                          ? "text-blue-500 dark:text-blue-600 font-bold"
+                          ? "font-bold text-blue-500 dark:text-blue-600"
                           : "text-slate-400 dark:text-slate-300"
-                      } text-base py-2 px-3`}
+                      } py-2 px-3 text-base`}
                     >
                       {title}
                     </div>
@@ -610,10 +610,10 @@ export default ({
               </div>
             ) : steps[currentStep]?.id === "input_token" ? (
               <div className="w-full space-y-5">
-                <div className="w-full flex flex-col space-y-3">
+                <div className="flex w-full flex-col space-y-3">
                   {preExistingToken && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Token address
                       </div>
                       <DebounceInput
@@ -634,7 +634,7 @@ export default ({
                               .join("")
                           )
                         }
-                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
+                        className="flex w-full items-center justify-between space-x-1 rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2.5 text-base font-medium text-black dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                       />
                       {validateResponse ? (
                         <div
@@ -642,7 +642,7 @@ export default ({
                             validateResponse.status === "failed"
                               ? "text-red-500 dark:text-red-600"
                               : "text-green-500 dark:text-green-500"
-                          } text-sm space-x-0.5`}
+                          } space-x-0.5 text-sm`}
                         >
                           {validateResponse.status === "failed" ? (
                             <BiX size={18} className="mt-0.5" />
@@ -652,7 +652,7 @@ export default ({
                           <span>{validateResponse.message}</span>
                         </div>
                       ) : validating ? (
-                        <div className="flex items-center text-blue-500 dark:slate-200 text-sm space-x-0.5">
+                        <div className="dark:slate-200 flex items-center space-x-0.5 text-sm text-blue-500">
                           <Oval
                             width={16}
                             height={16}
@@ -666,7 +666,7 @@ export default ({
                   {(!preExistingToken || tokenData) && (
                     <>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token name
                         </div>
                         <DebounceInput
@@ -686,11 +686,11 @@ export default ({
                               ),
                             })
                           }
-                          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
+                          className="flex w-full items-center justify-between space-x-1 rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2.5 text-base font-medium text-black dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                         />
                       </div>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token symbol
                         </div>
                         <DebounceInput
@@ -710,11 +710,11 @@ export default ({
                               ),
                             })
                           }
-                          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
+                          className="flex w-full items-center justify-between space-x-1 rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2.5 text-base font-medium text-black dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                         />
                       </div>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token decimals
                         </div>
                         <DebounceInput
@@ -748,7 +748,7 @@ export default ({
                             ["e", "E", "-"].includes(e.key) &&
                             e.preventDefault()
                           }
-                          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
+                          className="flex w-full items-center justify-between space-x-1 rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2.5 text-base font-medium text-black dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                         />
                       </div>
                     </>
@@ -763,13 +763,13 @@ export default ({
                           : deployResponse.status === "failed"
                           ? "bg-red-50 dark:bg-red-900 dark:bg-opacity-50"
                           : "bg-green-50 dark:bg-green-900 dark:bg-opacity-50"
-                      } rounded-lg flex items-center ${
+                      } flex items-center rounded-lg ${
                         deploying
                           ? "text-blue-500 dark:text-blue-600"
                           : deployResponse.status === "failed"
                           ? "text-red-500 dark:text-red-600"
                           : "text-green-500 dark:text-green-500"
-                      } text-sm space-x-0.5 py-1.5 px-2.5`}
+                      } space-x-0.5 py-1.5 px-2.5 text-sm`}
                     >
                       {deploying ? (
                         <Oval
@@ -789,18 +789,18 @@ export default ({
                       </span>
                     </div>
                     {deployResponse?.token_address && (
-                      <div className="border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-2.5 pr-1.5">
+                      <div className="flex items-center justify-between space-x-1 rounded-lg border border-slate-200 py-1.5 pl-2.5 pr-1.5 dark:border-slate-800">
                         {contract_url ? (
                           <a
                             href={contract_url}
                             target="_blank"
                             rel="noopenner noreferrer"
-                            className="text-blue-500 dark:text-blue-200 text-sm sm:text-base font-semibold"
+                            className="text-sm font-semibold text-blue-500 dark:text-blue-200 sm:text-base"
                           >
                             {ellipse(deployResponse.token_address, 16)}
                           </a>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-200 text-sm sm:text-base font-medium">
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-200 sm:text-base">
                             {ellipse(deployResponse.token_address, 16)}
                           </span>
                         )}
@@ -814,18 +814,18 @@ export default ({
                 steps[currentStep]?.id
               ) ? (
               <div className="w-full space-y-5">
-                <div className="w-full flex flex-col space-y-3">
-                  <div className="border border-slate-200 dark:border-slate-800 rounded-lg space-y-3 py-3.5 px-3">
+                <div className="flex w-full flex-col space-y-3">
+                  <div className="space-y-3 rounded-lg border border-slate-200 py-3.5 px-3 dark:border-slate-800">
                     <div className="flex items-center space-x-2.5">
-                      <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                      <div className="w-20 text-sm text-slate-400 dark:text-slate-500 sm:w-24 sm:text-base">
                         Token:
                       </div>
                       <div className="flex items-center">
-                        <span className="text-base font-bold mr-2.5">
+                        <span className="mr-2.5 text-base font-bold">
                           {tokenData?.name}
                         </span>
                         {tokenData?.symbol && (
-                          <div className="bg-slate-100 dark:bg-slate-800 rounded-lg text-base font-semibold py-0.5 px-2">
+                          <div className="rounded-lg bg-slate-100 py-0.5 px-2 text-base font-semibold dark:bg-slate-800">
                             {tokenData.symbol}
                           </div>
                         )}
@@ -833,7 +833,7 @@ export default ({
                     </div>
                     {tokenData?.decimals && (
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                        <div className="w-20 text-sm text-slate-400 dark:text-slate-500 sm:w-24 sm:text-base">
                           Decimals:
                         </div>
                         <span className="text-base font-semibold">
@@ -844,21 +844,21 @@ export default ({
                   </div>
                   {tokenAddress && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Token address
                       </div>
-                      <div className="border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-2.5 pr-1.5">
+                      <div className="flex items-center justify-between space-x-1 rounded-lg border border-slate-200 py-1.5 pl-2.5 pr-1.5 dark:border-slate-800">
                         {contract_url ? (
                           <a
                             href={contract_url}
                             target="_blank"
                             rel="noopenner noreferrer"
-                            className="text-blue-500 dark:text-blue-200 text-sm sm:text-base font-semibold"
+                            className="text-sm font-semibold text-blue-500 dark:text-blue-200 sm:text-base"
                           >
                             {ellipse(tokenAddress, 16)}
                           </a>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-200 text-sm sm:text-base font-medium">
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-200 sm:text-base">
                             {ellipse(tokenAddress, 16)}
                           </span>
                         )}
@@ -869,7 +869,7 @@ export default ({
                   {supportedEvmChains.filter((c) => c?.id !== chainData?.id)
                     .length > 0 && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Chains to deploy remote tokens
                       </div>
                       <div className="flex flex-wrap items-center">
@@ -905,13 +905,13 @@ export default ({
                                   selected
                                     ? "border-blue-600 dark:border-blue-700"
                                     : "border-transparent"
-                                } rounded-full mr-1.5 p-0.5`}
+                                } mr-1.5 rounded-full p-0.5`}
                               >
                                 <Image
                                   src={image}
                                   width={24}
                                   height={24}
-                                  className={`w-6 h-6 ${
+                                  className={`h-6 w-6 ${
                                     selected
                                       ? ""
                                       : "opacity-70 hover:opacity-100"
@@ -934,13 +934,13 @@ export default ({
                           : registerOrDeployRemoteResponse.status === "failed"
                           ? "bg-red-50 dark:bg-red-900 dark:bg-opacity-50"
                           : "bg-green-50 dark:bg-green-900 dark:bg-opacity-50"
-                      } rounded-lg flex items-center ${
+                      } flex items-center rounded-lg ${
                         registeringOrDeployingRemote
                           ? "text-blue-500 dark:text-blue-600"
                           : registerOrDeployRemoteResponse.status === "failed"
                           ? "text-red-500 dark:text-red-600"
                           : "text-green-500 dark:text-green-500"
-                      } text-sm py-1.5 px-2.5`}
+                      } py-1.5 px-2.5 text-sm`}
                     >
                       {registeringOrDeployingRemote ? (
                         <Oval
@@ -965,7 +965,7 @@ export default ({
                           href={transaction_url}
                           target="_blank"
                           rel="noopenner noreferrer"
-                          className="font-semibold ml-auto mr-0.5"
+                          className="ml-auto mr-0.5 font-semibold"
                         >
                           Receipt
                         </a>
@@ -979,7 +979,7 @@ export default ({
                 <div className="whitespace-nowrap text-base font-bold">
                   Deploy via GMP
                 </div>
-                <div className="overflow-y-auto flex flex-col space-y-0.5">
+                <div className="flex flex-col space-y-0.5 overflow-y-auto">
                   {toArray(chains).map((c, i) => {
                     const data = toArray(calls).find((_c) =>
                       equalsIgnoreCase(
@@ -1084,14 +1084,14 @@ export default ({
                         href={url}
                         target="_blank"
                         rel="noopenner noreferrer"
-                        className={`hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between ${text_color} space-x-2.5 py-1.5 px-1`}
+                        className={`flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 ${text_color} space-x-2.5 py-1.5 px-1`}
                       >
                         <div className="flex items-center space-x-2">
                           <Image
                             src={image}
                             width={24}
                             height={24}
-                            className="w-6 h-6 rounded-full"
+                            className="h-6 w-6 rounded-full"
                           />
                           <span className="text-sm font-medium">{title}</span>
                         </div>
@@ -1112,13 +1112,13 @@ export default ({
                 onClick={() => setCurrentStep(currentStep - 1)}
                 className={`${
                   disabled
-                    ? "bg-slate-50 dark:bg-slate-800 cursor-not-allowed"
+                    ? "cursor-not-allowed bg-slate-50 dark:bg-slate-800"
                     : "bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700"
-                } rounded-lg flex items-center justify-center ${
+                } flex items-center justify-center rounded-lg ${
                   disabled
                     ? "text-slate-400 dark:text-slate-500"
                     : "text-slate-900 dark:text-slate-200"
-                } text-base font-medium py-1 px-2.5`}
+                } py-1 px-2.5 text-base font-medium`}
               >
                 Back
               </button>
@@ -1147,11 +1147,11 @@ export default ({
                 }}
                 className={`${
                   disabled
-                    ? "bg-blue-300 dark:bg-blue-400 cursor-not-allowed"
+                    ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                     : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                } rounded-lg flex items-center justify-center ${
+                } flex items-center justify-center rounded-lg ${
                   disabled ? "text-slate-50" : "text-white"
-                } text-base font-medium py-1 px-2.5`}
+                } py-1 px-2.5 text-base font-medium`}
               >
                 Next
               </button>
@@ -1175,18 +1175,18 @@ export default ({
                   }}
                   className={`${
                     disabled
-                      ? "bg-blue-300 dark:bg-blue-400 cursor-not-allowed"
+                      ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                       : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  } rounded-lg flex items-center justify-center ${
+                  } flex items-center justify-center rounded-lg ${
                     disabled ? "text-slate-50" : "text-white"
-                  } text-base font-medium py-1 px-2.5`}
+                  } py-1 px-2.5 text-base font-medium`}
                 >
                   Next
                 </button>
               ) : must_switch_network ? (
                 <Wallet
                   connectChainId={_chain_id}
-                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                  className="flex cursor-pointer items-center justify-center space-x-1.5 rounded-lg bg-blue-500 py-1 px-2.5 text-base font-medium text-white hover:bg-blue-600 hover:font-semibold dark:bg-blue-600 dark:hover:bg-blue-500"
                 >
                   Switch network
                 </Wallet>
@@ -1207,15 +1207,15 @@ export default ({
                     disabled ||
                     !tokenData ||
                     validateResponse?.status === "failed"
-                      ? "bg-blue-300 dark:bg-blue-400 cursor-not-allowed"
+                      ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                       : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  } rounded-lg flex items-center justify-center ${
+                  } flex items-center justify-center rounded-lg ${
                     disabled ||
                     !tokenData ||
                     validateResponse?.status === "failed"
                       ? "text-slate-50"
                       : "text-white"
-                  } text-base font-medium py-1 px-2.5`}
+                  } py-1 px-2.5 text-base font-medium`}
                 >
                   Next
                 </button>
@@ -1223,32 +1223,20 @@ export default ({
                 <button
                   disabled={
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
                   }
                   onClick={() => _deployToken()}
                   className={`${
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
-                      ? "bg-blue-300 dark:bg-blue-400 cursor-not-allowed"
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
+                      ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                       : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  } rounded-lg flex items-center justify-center ${
+                  } flex items-center justify-center rounded-lg ${
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
                       ? "text-slate-50"
                       : "text-white"
-                  } text-base font-medium py-1 px-2.5`}
+                  } py-1 px-2.5 text-base font-medium`}
                 >
                   {deployResponse?.status === "failed" ? "Redeploy" : "Deploy"}
                 </button>
@@ -1259,7 +1247,7 @@ export default ({
               must_switch_network ? (
                 <Wallet
                   connectChainId={_chain_id}
-                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded-lg flex items-center justify-center text-white text-base font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                  className="flex cursor-pointer items-center justify-center space-x-1.5 rounded-lg bg-blue-500 py-1 px-2.5 text-base font-medium text-white hover:bg-blue-600 hover:font-semibold dark:bg-blue-600 dark:hover:bg-blue-500"
                 >
                   Switch network
                 </Wallet>
@@ -1269,7 +1257,7 @@ export default ({
                   <button
                     disabled={disabled}
                     onClick={() => setCurrentStep(currentStep + 1)}
-                    className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                    className="flex items-center justify-center rounded-lg bg-blue-500 py-1 px-2.5 text-base font-medium text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
                   >
                     Next
                   </button>
@@ -1293,7 +1281,7 @@ export default ({
                         }
                       );
                     }}
-                    className="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg flex items-center justify-center text-white text-base font-medium py-1 px-2.5"
+                    className="flex items-center justify-center rounded-lg bg-green-500 py-1 px-2.5 text-base font-medium text-white hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600"
                   >
                     Done
                   </button>
@@ -1316,15 +1304,15 @@ export default ({
                     disabled ||
                     (steps[currentStep]?.id === "deploy_remote_tokens" &&
                       remoteChains.length < 1)
-                      ? "bg-blue-300 dark:bg-blue-400 cursor-not-allowed"
+                      ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                       : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  } rounded-lg flex items-center justify-center ${
+                  } flex items-center justify-center rounded-lg ${
                     disabled ||
                     (steps[currentStep]?.id === "deploy_remote_tokens" &&
                       remoteChains.length < 1)
                       ? "text-slate-50"
                       : "text-white"
-                  } text-base font-medium py-1 px-2.5`}
+                  } py-1 px-2.5 text-base font-medium`}
                 >
                   {registerOrDeployRemoteResponse?.status === "failed"
                     ? "Retry"
@@ -1357,9 +1345,9 @@ export default ({
                   disabled
                     ? "bg-blue-300 dark:bg-blue-400"
                     : "bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600"
-                } rounded-lg flex items-center justify-center ${
+                } flex items-center justify-center rounded-lg ${
                   disabled ? "text-slate-50" : "text-white"
-                } text-base font-medium py-1 px-2.5`}
+                } py-1 px-2.5 text-base font-medium`}
               >
                 {disabled ? "Processing" : "Done"}
               </button>
@@ -1373,9 +1361,9 @@ export default ({
                   disabled
                     ? "bg-blue-300 dark:bg-blue-400"
                     : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                } rounded-lg flex items-center justify-center ${
+                } flex items-center justify-center rounded-lg ${
                   disabled ? "cursor-not-allowed text-slate-50" : "text-white"
-                } text-base font-medium py-1 px-2.5`}
+                } py-1 px-2.5 text-base font-medium`}
               >
                 Next
               </button>

@@ -2,10 +2,10 @@
   .navbar,
   .footer {
     @apply text-slate-900;
-    @apply bg-white border-slate-100;
+    @apply border-slate-100 bg-white;
     .navbar-search {
       input {
-        @apply bg-slate-100 border-slate-100;
+        @apply border-slate-100 bg-slate-100;
       }
     }
   }

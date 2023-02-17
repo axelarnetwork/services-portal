@@ -1,5 +1,5 @@
 .table {
-  @apply w-full table-auto block lg:inline-table overflow-x-scroll;
+  @apply block w-full table-auto overflow-x-scroll lg:inline-table;
   &.inline-table {
     display: inline-table;
   }
@@ -11,10 +11,10 @@
     @apply border-0 border-none;
   }
   thead tr th {
-    @apply px-3 py-2 border-b text-xs leading-4 font-medium uppercase tracking-wider;
+    @apply border-b px-3 py-2 text-xs font-medium uppercase leading-4 tracking-wider;
   }
   tbody tr td {
-    @apply px-3 py-2 border-b whitespace-nowrap align-top;
+    @apply whitespace-nowrap border-b px-3 py-2 align-top;
   }
   &.table-sm {
     thead tr th {
@@ -41,7 +41,7 @@
 }
 
 .table {
-  @apply shadow text-left;
+  @apply text-left shadow;
   thead tr th,
   tbody tr td {
     @apply text-left;

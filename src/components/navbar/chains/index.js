@@ -57,7 +57,7 @@ export default () => {
       <button
         ref={buttonRef}
         onClick={onClick}
-        className="w-12 h-16 flex items-center justify-center"
+        className="flex h-16 w-12 items-center justify-center"
       >
         {image ? (
           <Image src={image} width={24} height={24} className="rounded-full" />

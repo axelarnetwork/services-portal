@@ -259,12 +259,12 @@ export default () => {
   return (
     <>
       <div className="navbar">
-        <div className="navbar-inner w-full sm:h-20 flex items-center justify-between">
+        <div className="navbar-inner flex w-full items-center justify-between sm:h-20">
           <div className="flex items-center">
             <Logo />
             <DropdownNavigations />
           </div>
-          <div className="w-full flex items-center justify-center mx-0 sm:mx-4 xl:mx-8">
+          <div className="mx-0 flex w-full items-center justify-center sm:mx-4 xl:mx-8">
             <Navigations />
           </div>
           <div className="flex items-center justify-end">
@@ -274,7 +274,7 @@ export default () => {
               </div>
             )}
             {web3_provider && address && (
-              <div className="min-w-max hidden sm:flex lg:hidden xl:flex flex-col space-y-0.5 ml-2 mr-1">
+              <div className="ml-2 mr-1 hidden min-w-max flex-col space-y-0.5 sm:flex lg:hidden xl:flex">
                 <EnsProfile
                   address={address}
                   fallback={
@@ -282,7 +282,7 @@ export default () => {
                       <Copy
                         value={address}
                         title={
-                          <span className="text-slate-600 dark:text-slate-200 text-sm font-semibold">
+                          <span className="text-sm font-semibold text-slate-600 dark:text-slate-200">
                             <span className="xl:hidden">
                               {ellipse(address, 6)}
                             </span>

@@ -10,7 +10,7 @@ export default () => {
   const { pathname } = { ...router };
 
   return (
-    <div className="w-full hidden xl:flex items-center justify-start xl:space-x-6 mx-auto">
+    <div className="mx-auto hidden w-full items-center justify-start xl:flex xl:space-x-6">
       {menus.map((m) => {
         const { id, disabled, emphasize, title, path, others_paths, external } =
           { ...m };

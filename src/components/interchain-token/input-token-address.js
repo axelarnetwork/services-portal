@@ -75,7 +75,7 @@ export default () => {
   return (
     Object.values({ ...token_linkers_data }).filter((tl) => tl?.deployed)
       .length > 0 && (
-      <div className="w-full sm:max-w-md border border-slate-300 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 rounded-xl flex items-center justify-between space-x-2.5 py-2 px-3">
+      <div className="flex w-full items-center justify-between space-x-2.5 rounded-xl border border-slate-300 py-2 px-3 focus:border-blue-500 dark:border-slate-700 dark:focus:border-blue-500 sm:max-w-md">
         <DebounceInput
           debounceTimeout={500}
           size="small"
@@ -89,7 +89,7 @@ export default () => {
           onChange={(e) =>
             setInput(split(e.target.value, "normal", " ").join(""))
           }
-          className="w-full bg-transparent text-base ml-0.5"
+          className="ml-0.5 w-full bg-transparent text-base"
         />
         <Chains chain={selectedChain} onSelect={(c) => setSelectedChain(c)} />
       </div>

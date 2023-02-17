@@ -1011,7 +1011,7 @@ export default () => {
 
   return (
     <div
-      className="flex justify-center my-4"
+      className="my-4 flex justify-center"
       style={{
         minHeight: "65vh",
       }}
@@ -1020,7 +1020,7 @@ export default () => {
         token_linkers_data ? (
           token_address ? (
             <div className="w-full xl:px-1">
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5">
                 {getSupportedEvmChains()
                   .map((c) => {
                     const { id } = { ...c };
@@ -1070,7 +1070,7 @@ export default () => {
                     return (
                       <div
                         key={i}
-                        className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                        className="space-y-5 rounded-xl border border-slate-200 bg-white bg-opacity-100 py-5 px-4 dark:border-slate-800 dark:bg-slate-900 dark:bg-opacity-50"
                       >
                         <div className="flex items-center justify-between space-x-2.5">
                           <div className="flex items-center space-x-2.5">
@@ -1078,36 +1078,36 @@ export default () => {
                               src={image}
                               width={32}
                               height={32}
-                              className="w-8 h-8 rounded-full"
+                              className="h-8 w-8 rounded-full"
                             />
                             <span className="text-lg font-bold">{name}</span>
                           </div>
                         </div>
                         <div>
-                          <div className="h-full flex flex-col justify-between space-y-5">
+                          <div className="flex h-full flex-col justify-between space-y-5">
                             <div className="space-y-1">
-                              <div className="text-slate-400 dark:text-slate-500 text-sm">
+                              <div className="text-sm text-slate-400 dark:text-slate-500">
                                 {is_origin || registered_or_deployed_remote
                                   ? "Token address"
                                   : "Status"}
                               </div>
-                              <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                              <div className="flex items-center justify-between space-x-1 rounded-lg border border-slate-100 py-1.5 pl-1.5 pr-1 dark:border-slate-800">
                                 {address_url ? (
                                   <a
                                     href={address_url}
                                     target="_blank"
                                     rel="noopenner noreferrer"
-                                    className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                    className="flex items-center text-base font-semibold text-blue-500 dark:text-blue-200 sm:h-5 sm:text-xs xl:text-sm"
                                   >
                                     {ellipse(_tokenAddress, 10)}
                                   </a>
                                 ) : is_origin ||
                                   registered_or_deployed_remote ? (
-                                  <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                  <span className="flex items-center text-base font-medium text-slate-500 dark:text-slate-200 sm:h-5 sm:text-xs xl:text-sm">
                                     {ellipse(_tokenAddress, 10)}
                                   </span>
                                 ) : (
-                                  <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
+                                  <span className="flex items-center text-base font-medium text-slate-400 dark:text-slate-500 sm:h-5 sm:text-xs xl:text-sm">
                                     Remote token not deployed
                                   </span>
                                 )}
@@ -1123,7 +1123,7 @@ export default () => {
                                   href={address_url}
                                   target="_blank"
                                   rel="noopenner noreferrer"
-                                  className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                                  className="flex w-full items-center justify-center space-x-1.5 rounded bg-slate-50 p-1.5 text-green-500 hover:bg-slate-100 dark:bg-slate-900 dark:bg-opacity-75 dark:text-green-500 dark:hover:bg-slate-800"
                                 >
                                   <BiCheck size={16} />
                                   <span className="text-sm font-semibold">
@@ -1131,7 +1131,7 @@ export default () => {
                                   </span>
                                 </a>
                               ) : (
-                                <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                <div className="flex w-full items-center justify-center space-x-1.5 rounded bg-slate-50 p-1.5 text-green-500 dark:bg-slate-900 dark:bg-opacity-75 dark:text-green-500">
                                   <BiCheck size={16} />
                                   <span className="text-sm font-medium">
                                     {is_origin ? "Registered" : "Deployed"}
@@ -1142,7 +1142,7 @@ export default () => {
                                 token_linker_address && token_addresses_data
                               ) ||
                               (tokenId && !token_addresses_data[id]) ? (
-                              <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
+                              <div className="flex w-full cursor-wait items-center justify-center rounded bg-blue-50 p-1.5 font-medium text-blue-500 dark:bg-blue-900 dark:bg-opacity-50 dark:text-blue-600">
                                 <div className="mr-1.5">
                                   <Oval
                                     width={14}
@@ -1192,7 +1192,7 @@ export default () => {
                                 }
                               />
                             ) : (
-                              <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                              <div className="flex w-full cursor-not-allowed items-center justify-center space-x-1.5 rounded bg-slate-50 p-1.5 text-slate-400 dark:bg-slate-900 dark:bg-opacity-75 dark:text-slate-500">
                                 <span className="text-sm font-medium">
                                   Origin token not registered
                                 </span>
@@ -1207,7 +1207,7 @@ export default () => {
             </div>
           ) : (
             <div className="w-full xl:px-1">
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5">
                 {getSupportedEvmChains()
                   .map((c) => {
                     const { id } = { ...c };
@@ -1247,7 +1247,7 @@ export default () => {
                     return (
                       <div
                         key={i}
-                        className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                        className="space-y-5 rounded-xl border border-slate-200 bg-white bg-opacity-100 py-5 px-4 dark:border-slate-800 dark:bg-slate-900 dark:bg-opacity-50"
                       >
                         <div className="flex items-center justify-between space-x-2.5">
                           <div className="flex items-center space-x-2.5">
@@ -1255,7 +1255,7 @@ export default () => {
                               src={image}
                               width={32}
                               height={32}
-                              className="w-8 h-8 rounded-full"
+                              className="h-8 w-8 rounded-full"
                             />
                             <span className="text-lg font-bold">{name}</span>
                           </div>
@@ -1293,23 +1293,23 @@ export default () => {
                           )}
                         </div>
                         <div>
-                          <div className="h-full flex flex-col justify-between space-y-5">
+                          <div className="flex h-full flex-col justify-between space-y-5">
                             <div className="space-y-1">
-                              <div className="text-slate-400 dark:text-slate-500 text-sm">
+                              <div className="text-sm text-slate-400 dark:text-slate-500">
                                 TokenLinker address
                               </div>
-                              <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                              <div className="flex items-center justify-between space-x-1 rounded-lg border border-slate-100 py-1.5 pl-1.5 pr-1 dark:border-slate-800">
                                 {address_url ? (
                                   <a
                                     href={address_url}
                                     target="_blank"
                                     rel="noopenner noreferrer"
-                                    className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                    className="flex items-center text-base font-semibold text-blue-500 dark:text-blue-200 sm:h-5 sm:text-xs xl:text-sm"
                                   >
                                     {ellipse(token_linker_address, 10)}
                                   </a>
                                 ) : (
-                                  <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                  <span className="flex items-center text-base font-medium text-slate-500 dark:text-slate-200 sm:h-5 sm:text-xs xl:text-sm">
                                     {ellipse(token_linker_address, 10)}
                                   </span>
                                 )}
@@ -1324,7 +1324,7 @@ export default () => {
                                   href={address_url}
                                   target="_blank"
                                   rel="noopenner noreferrer"
-                                  className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                                  className="flex w-full items-center justify-center space-x-1.5 rounded bg-slate-50 p-1.5 text-green-500 hover:bg-slate-100 dark:bg-slate-900 dark:bg-opacity-75 dark:text-green-500 dark:hover:bg-slate-800"
                                 >
                                   <BsFileEarmarkCheckFill size={16} />
                                   <span className="text-sm font-semibold">
@@ -1332,7 +1332,7 @@ export default () => {
                                   </span>
                                 </a>
                               ) : (
-                                <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                <div className="flex w-full items-center justify-center space-x-1.5 rounded bg-slate-50 p-1.5 text-green-500 dark:bg-slate-900 dark:bg-opacity-75 dark:text-green-500">
                                   <BsFileEarmarkCheckFill size={16} />
                                   <span className="text-sm font-medium">
                                     Deployed
@@ -1353,7 +1353,7 @@ export default () => {
                                   )
                                     ? "cursor-wait"
                                     : "cursor-default"
-                                } rounded flex items-center justify-center text-white font-medium p-1.5`}
+                                } flex items-center justify-center rounded p-1.5 font-medium text-white`}
                               >
                                 {["switching", "pending", "waiting"].includes(
                                   tokenLinkerDeployStatus.status
@@ -1380,14 +1380,14 @@ export default () => {
                                 {["failed"].includes(
                                   tokenLinkerDeployStatus.status
                                 ) && (
-                                  <div className="flex items-center space-x-1 ml-auto">
+                                  <div className="ml-auto flex items-center space-x-1">
                                     {tokenLinkerDeployStatus.error_message && (
                                       <Tooltip
                                         placement="top"
                                         content={
                                           tokenLinkerDeployStatus.error_message
                                         }
-                                        className="z-50 bg-black text-white text-xs"
+                                        className="z-50 bg-black text-xs text-white"
                                       >
                                         <div>
                                           <BiMessage size={14} />
@@ -1398,7 +1398,7 @@ export default () => {
                                       onClick={() =>
                                         setTokenLinkerDeployStatus(null)
                                       }
-                                      className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
+                                      className="rounded-full p-0.5 hover:bg-red-400 dark:hover:bg-red-500"
                                     >
                                       <IoClose size={12} />
                                     </button>
@@ -1409,7 +1409,7 @@ export default () => {
                               must_switch_network ? (
                                 <Wallet
                                   connectChainId={_chain_id}
-                                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                  className="flex w-full cursor-pointer items-center justify-center space-x-1.5 rounded bg-blue-500 p-1.5 font-medium text-white hover:bg-blue-600 hover:font-semibold dark:bg-blue-600 dark:hover:bg-blue-500"
                                 >
                                   <span className="text-sm">
                                     Switch network to deploy
@@ -1422,19 +1422,19 @@ export default () => {
                                     tokenLinkerDeployStatus.status !== "failed"
                                   }
                                   onClick={() => deployTokenLinker(id)}
-                                  className={`bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full ${
+                                  className={`w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 ${
                                     tokenLinkerDeployStatus?.chain &&
                                     tokenLinkerDeployStatus.chain !== id &&
                                     tokenLinkerDeployStatus.status !== "failed"
                                       ? "cursor-not-allowed"
                                       : "cursor-pointer"
-                                  } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`}
+                                  } flex items-center justify-center space-x-1.5 rounded p-1.5 font-medium text-white hover:font-semibold`}
                                 >
                                   <span className="text-sm">Deploy</span>
                                 </button>
                               )
                             ) : (
-                              <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
+                              <div className="flex w-full cursor-wait items-center justify-center rounded bg-blue-50 p-1.5 font-medium text-blue-500 dark:bg-blue-900 dark:bg-opacity-50 dark:text-blue-600">
                                 <div className="mr-1.5">
                                   <Oval
                                     width={14}
@@ -1455,13 +1455,13 @@ export default () => {
           )
         ) : (
           <div className="w-full">
-            <div className="h-full flex items-center justify-center">
+            <div className="flex h-full items-center justify-center">
               <Blocks />
             </div>
           </div>
         )
       ) : (
-        <div className="min-h-full flex flex-col justify-center space-y-3">
+        <div className="flex min-h-full flex-col justify-center space-y-3">
           <Wallet />
           <span className="text-slate-400 dark:text-slate-600">
             Please connect your wallet to manage your contract

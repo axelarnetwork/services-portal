@@ -24,7 +24,7 @@ const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
       ref={resolvedRef}
       type="checkbox"
       {...rest}
-      className="form-checkbox w-4 h-4"
+      className="form-checkbox h-4 w-4"
     />
   );
 });
@@ -171,16 +171,16 @@ export default ({
         <div
           className={`flex flex-col items-center ${
             noRecordPerPage || pageCount > 4
-              ? "sm:flex-row justify-center"
-              : "sm:grid sm:grid-cols-3 justify-between"
-          } gap-4 my-0.5`}
+              ? "justify-center sm:flex-row"
+              : "justify-between sm:grid sm:grid-cols-3"
+          } my-0.5 gap-4`}
         >
           {!noRecordPerPage && (
             <select
               disabled={loading}
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
-              className="w-24 form-select bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 outline-none border-zinc-100 dark:border-zinc-900 appearance-none shadow rounded cursor-pointer text-center py-2 px-3"
+              className="form-select w-24 cursor-pointer appearance-none rounded border-zinc-100 bg-slate-100 py-2 px-3 text-center shadow outline-none hover:bg-slate-200 dark:border-zinc-900 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               {pageSizes.map((s, i) => (
                 <option key={i} value={s} className="text-xs font-medium">
@@ -190,7 +190,7 @@ export default ({
             </select>
           )}
           {pageCount > 1 && pageCount <= 4 && (
-            <div className="space-x-1 my-2.5 sm:my-0 mx-auto">
+            <div className="my-2.5 mx-auto space-x-1 sm:my-0">
               <span>Page</span>
               <span className="font-bold">{pageIndex + 1}</span>
               <span>of</span>
@@ -199,7 +199,7 @@ export default ({
           )}
           <div className="pagination flex flex-wrap items-center justify-end space-x-2">
             {pageCount > 4 ? (
-              <div className="flex flex-col sm:flex-row items-center justify-center mt-2.5 sm:mt-0">
+              <div className="mt-2.5 flex flex-col items-center justify-center sm:mt-0 sm:flex-row">
                 <Pagination
                   items={[...Array(pageCount).keys()]}
                   disabled={loading}
@@ -227,7 +227,7 @@ export default ({
                       tableRef.current.scrollIntoView();
                     }}
                   >
-                    <span className="text-black dark:text-white font-bold">
+                    <span className="font-bold text-black dark:text-white">
                       First
                     </span>
                   </PageWithText>
@@ -268,7 +268,7 @@ export default ({
                       tableRef.current.scrollIntoView();
                     }}
                   >
-                    <span className="text-black dark:text-white font-bold">
+                    <span className="font-bold text-black dark:text-white">
                       Last
                     </span>
                   </PageWithText>

@@ -30,11 +30,11 @@ export default () => {
   const onClick = () => setHidden(!hidden);
 
   return (
-    <div className="block xl:hidden relative">
+    <div className="relative block xl:hidden">
       <button
         ref={buttonRef}
         onClick={onClick}
-        className="w-12 h-16 flex items-center justify-center"
+        className="flex h-16 w-12 items-center justify-center"
       >
         <FiMenu size={24} />
       </button>

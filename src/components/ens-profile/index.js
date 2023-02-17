@@ -83,7 +83,7 @@ export default ({
       title={name}
       className={
         className ||
-        "normal-case tracking-wider text-black dark:text-white text-base font-medium"
+        "text-base font-medium normal-case tracking-wider text-black dark:text-white"
       }
     >
       <span className="xl:hidden">{ellipse(name, 12)}</span>
@@ -97,7 +97,7 @@ export default ({
         <img
           src={`${process.env.NEXT_PUBLIC_ENS_AVATAR_URL}/${name}`}
           onError={() => setNoImage(true)}
-          className="w-6 h-6 rounded-full"
+          className="h-6 w-6 rounded-full"
         />
       )}
       {no_copy ? ens_name : <Copy value={name} title={ens_name} />}

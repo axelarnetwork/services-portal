@@ -57,7 +57,7 @@ export default ({ chain, onSelect }) => {
       <button
         ref={buttonRef}
         onClick={onClick}
-        className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-full flex items-center justify-center p-1"
+        className="flex items-center justify-center rounded-full bg-slate-100 p-1 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800"
       >
         {image ? (
           <Image src={image} width={20} height={20} className="rounded-full" />

@@ -75,7 +75,7 @@ export default ({ children }) => {
         data-layout="layout"
         data-background={theme}
         data-navbar={theme}
-        className={`antialiased disable-scrollbars font-sans text-sm ${theme}`}
+        className={`disable-scrollbars font-sans text-sm antialiased ${theme}`}
       >
         <div className="wrapper">
           <div

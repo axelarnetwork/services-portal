@@ -69,7 +69,7 @@ export default () => {
 
   const titleComponent = (
     <h1
-      className="flex items-center tracking-wider uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
+      className="flex items-center text-base font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200 sm:text-lg"
       style={{
         height: "46px",
       }}
@@ -79,12 +79,12 @@ export default () => {
   );
 
   return (
-    <div className="w-full max-w-8xl flex flex-col sm:flex-row sm:items-center mx-auto pt-6 pb-2 px-3 sm:px-4 xl:px-1">
+    <div className="max-w-8xl mx-auto flex w-full flex-col px-3 pt-6 pb-2 sm:flex-row sm:items-center sm:px-4 xl:px-1">
       <div className="flex flex-col space-y-1">
         {title &&
           (path ? <Link href={path}>{titleComponent}</Link> : titleComponent)}
         {subtitle && (
-          <h2 className="text-slate-400 dark:text-slate-600 text-sm">
+          <h2 className="text-sm text-slate-400 dark:text-slate-600">
             {subtitle}
           </h2>
         )}
@@ -92,7 +92,7 @@ export default () => {
       <span className="sm:ml-auto" />
       {right && (
         <>
-          <span className="mt-2 sm:mt-0 ml-auto" />
+          <span className="mt-2 ml-auto sm:mt-0" />
           {right}
         </>
       )}

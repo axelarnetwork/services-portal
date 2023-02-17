@@ -4,6 +4,7 @@ import { useSelector, shallowEqual } from 'react-redux'
 
 import ServicesInputSearch from '../../dashboard/input-search'
 import InterchainTokenInputAddress from '../../interchain-token/input-token-address'
+import InterchainTokenTokenId from '../../interchain-token/token-id'
 import Copy from '../../copy'
 import Image from '../../image'
 import services from '../../../config/services'
@@ -36,6 +37,8 @@ export default () => {
     address,
     tx,
     id,
+    chain,
+    token_address,
   } = { ...query }
 
   let title, subtitle, right, path
@@ -70,7 +73,17 @@ export default () => {
       switch (pathname) {
         case '/interchain-token':
         case '/interchain-token/[chain]/[token_address]':
-          right = signer && (<InterchainTokenInputAddress />)
+          right =
+            signer &&
+            (
+              <div className="w-full sm:max-w-md flex flex-col sm:items-end space-y-1">
+                <InterchainTokenInputAddress />
+                <InterchainTokenTokenId
+                  chain={chain}
+                  tokenAddress={token_address}
+                />
+              </div>
+            )
           break
       }
       break
@@ -78,7 +91,7 @@ export default () => {
 
   const titleComponent = (
     <h1
-      className="flex items-center tracking-wider uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
+      className="flex items-center tracking-wider whitespace-nowrap uppercase text-slate-800 dark:text-slate-200 text-base sm:text-lg font-extrabold"
       style={
         {
           height: '46px',

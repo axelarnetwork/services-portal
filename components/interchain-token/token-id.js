@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
-import { Contract } from 'ethers'
+import { Contract, constants } from 'ethers'
 
 import Copy from '../copy'
 import InterchainTokenLinker from '../../lib/contract/json/InterchainTokenLinker.json'
@@ -78,20 +78,21 @@ export default (
   )
 
   return (
-    tokenId &&
+    tokenAddress && tokenId && tokenId !== constants.AddressZero &&
     (
-      <div className="space-y-1">
-        <div className="text-slate-400 dark:text-slate-500 text-sm">
-          Token ID
-        </div>
-        <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
-          <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+      <div className="flex items-center space-x-2">
+        <span className="whitespace-nowrap text-slate-400 dark:text-slate-500 text-xs">
+          Token ID:
+        </span>
+        <div className="flex items-center space-x-1">
+          <span className="text-slate-400 dark:text-slate-500 text-xs font-medium">
             {ellipse(
               tokenId,
-              10,
+              20,
             )}
           </span>
           <Copy
+            size={16}
             value={tokenId}
           />
         </div>

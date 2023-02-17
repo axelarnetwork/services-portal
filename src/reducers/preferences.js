@@ -24,12 +24,12 @@ export const preferencesSlice = createSlice({
   name: "preferences",
   initialState,
   reducers: {
-    setTheme: (
+    setTheme(
       state,
       action = {
         payload: initialState[THEME],
       }
-    ) => {
+    ) {
       localStorage.setItem(THEME, action.payload);
 
       state[THEME] = action.payload;

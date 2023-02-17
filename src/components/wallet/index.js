@@ -95,8 +95,8 @@ export default ({
 
   useEffect(() => {
     const update = async () => {
-      if (web3Modal) {
-        await web3Modal.updateTheme(theme);
+      if (web3Modal && theme) {
+        await web3Modal.updateTheme(theme ?? "light");
       }
     };
 

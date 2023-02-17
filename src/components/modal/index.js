@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { Tooltip } from "@material-tailwind/react";
-import { FiX } from "react-icons/fi";
 
 import Portal from "../portal";
 
@@ -59,7 +58,7 @@ export default ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!(modalRef?.current)) {
+      if (!modalRef?.current) {
         return false;
       }
 

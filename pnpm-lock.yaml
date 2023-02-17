@@ -6,6 +6,7 @@ specifiers:
   '@material-tailwind/react': ^1.2.5
   '@redux-devtools/extension': ^3.2.5
   '@types/node': ^18.13.0
+  '@types/nprogress': ^0.2.0
   '@types/react': ^18.0.28
   autoprefixer: ^10.4.13
   env-cmd: ^10.1.0
@@ -70,6 +71,7 @@ dependencies:
 
 devDependencies:
   '@types/node': 18.13.0
+  '@types/nprogress': 0.2.0
   '@types/react': 18.0.28
   autoprefixer: 10.4.13_postcss@8.4.21
   husky: 8.0.3
@@ -1413,6 +1415,10 @@ packages:
 
   /@types/node/18.13.0:
     resolution: {integrity: sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==}
+
+  /@types/nprogress/0.2.0:
+    resolution: {integrity: sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==}
+    dev: true
 
   /@types/pbkdf2/3.1.0:
     resolution: {integrity: sha512-Cf63Rv7jCQ0LaL8tNXmEyqTHuIJxRdlS5vMh1mj5voN4+QFhVZnlZruezqpWYDiJ8UTzhP0VmeLXCmBk66YrMQ==}

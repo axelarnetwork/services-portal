@@ -1,4 +1,8 @@
 module.exports = {
-  content: ["./components/**/*.js", "./pages/**/*.js", "./styles/globals.css"],
+  content: [
+    "./src/components/**/*.js",
+    "./src/pages/**/*.js",
+    "./src/styles/globals.css",
+  ],
   darkMode: "class",
 };

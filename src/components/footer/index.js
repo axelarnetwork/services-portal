@@ -1,7 +1,7 @@
 import { useSelector, shallowEqual } from "react-redux";
 import moment from "moment";
 
-import _package from "../../package.json";
+import _package from "../../../package.json";
 
 export default () => {
   const { preferences } = useSelector(

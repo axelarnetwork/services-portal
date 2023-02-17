@@ -19,5 +19,5 @@ export default () => {
   const { cosmos_chains_data } = { ...cosmos_chains };
   const { assets_data } = { ...assets };
 
-  return <div className="space-y-8"></div>;
+  return <div className="space-y-8" />;
 };

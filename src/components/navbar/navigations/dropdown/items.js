@@ -23,7 +23,7 @@ export default ({ onClick }) => {
         );
 
         const right_icon = emphasize ? (
-          <HeadShake duration={1500} forever>
+          <HeadShake duration={1500} forever={true}>
             <FaHandPointLeft size={20} />
           </HeadShake>
         ) : undefined;

@@ -28,15 +28,19 @@ export default () => {
   const { pathname, query } = { ...router };
   const { address, tx, id } = { ...query };
 
-  let title, subtitle, right, path;
+  let title;
+  let subtitle;
+  let right;
+  let path;
 
   switch (pathname) {
-    case "/":
+    case "/": {
       title = "All Services";
 
       right = <ServicesInputSearch />;
 
       break;
+    }
     default:
       const service = services.find(
         (s) =>
@@ -53,10 +57,11 @@ export default () => {
 
       switch (pathname) {
         case "/interchain-token":
-        case "/interchain-token/[chain]/[token_address]":
+        case "/interchain-token/[chain]/[token_address]": {
           right = signer && <InterchainTokenInputAddress />;
 
           break;
+        }
       }
 
       break;

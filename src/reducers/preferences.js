@@ -7,13 +7,14 @@ export default (
   action
 ) => {
   switch (action.type) {
-    case THEME:
+    case THEME: {
       localStorage.setItem(THEME, action.value);
 
       return {
         ...state,
         [`${THEME}`]: action.value,
       };
+    }
     default:
       return state;
   }

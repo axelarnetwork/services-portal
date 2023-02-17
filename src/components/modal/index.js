@@ -59,7 +59,7 @@ export default ({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!modalRef || !modalRef.current) {
+      if (!(modalRef?.current)) {
         return false;
       }
 

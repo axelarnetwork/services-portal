@@ -306,9 +306,10 @@ export default ({
     const { code, token_address } = { ...response };
 
     switch (code) {
-      case "user_rejected":
+      case "user_rejected": {
         setDeployResponse(null);
         break;
+      }
       default:
         if (token_address) {
           setTokenAddress(token_address);
@@ -337,9 +338,10 @@ export default ({
     const { code } = { ...response };
 
     switch (code) {
-      case "user_rejected":
+      case "user_rejected": {
         setDeployRemoteResponse(null);
         break;
+      }
       default:
         setDeployRemoteResponse(response);
         break;
@@ -364,9 +366,10 @@ export default ({
     const { code } = { ...response };
 
     switch (code) {
-      case "user_rejected":
+      case "user_rejected": {
         setRegisterResponse(null);
         break;
+      }
       default:
         setRegisterResponse(response);
         break;
@@ -449,9 +452,9 @@ export default ({
         <div className="flex items-center justify-between normal-case space-x-2">
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium">
-              {!isOrigin
-                ? "Deploy remote tokens from"
-                : "Register origin token on"}
+              {isOrigin
+                ? "Register origin token on"
+                : "Deploy remote tokens from"}
             </span>
             <Image
               src={image}
@@ -996,7 +999,9 @@ export default ({
                       data ? getName(status) : "Wating for ContractCall",
                     ];
 
-                    let title, text_color, icon;
+                    let title;
+                    let text_color;
+                    let icon;
 
                     switch (status) {
                       case "executed":
@@ -1004,11 +1009,12 @@ export default ({
                         break;
                       default:
                         switch (gas_status) {
-                          case "gas_unpaid":
+                          case "gas_unpaid": {
                             statuses.push("Gas unpaid");
                             break;
+                          }
                           case "gas_paid_enough_gas":
-                          case "gas_paid":
+                          case "gas_paid": {
                             switch (status) {
                               case "error":
                               case "executing":
@@ -1019,9 +1025,11 @@ export default ({
                                 break;
                             }
                             break;
-                          case "gas_paid_not_enough_gas":
+                          }
+                          case "gas_paid_not_enough_gas": {
                             statuses.push("Not enough gas");
                             break;
+                          }
                           default:
                             break;
                         }
@@ -1032,12 +1040,14 @@ export default ({
 
                     switch (status) {
                       case "executed":
-                      case "express_executed":
+                      case "express_executed": {
                         text_color = "text-green-500 dark:text-green-500";
                         break;
-                      case "error":
+                      }
+                      case "error": {
                         text_color = "text-red-500 dark:text-red-600";
                         break;
+                      }
                       default:
                         text_color = "text-blue-500 dark:text-blue-600";
                         break;
@@ -1045,12 +1055,14 @@ export default ({
 
                     switch (status) {
                       case "executed":
-                      case "express_executed":
+                      case "express_executed": {
                         icon = <BiCheck size={20} />;
                         break;
-                      case "error":
+                      }
+                      case "error": {
                         icon = <BiX size={20} className="mt-0.5" />;
                         break;
+                      }
                       default:
                         icon = (
                           <Oval
@@ -1212,8 +1224,7 @@ export default ({
                   disabled={
                     disabled ||
                     !(
-                      tokenData &&
-                      tokenData.name &&
+                      tokenData?.name &&
                       tokenData.symbol &&
                       tokenData.decimals
                     )
@@ -1222,8 +1233,7 @@ export default ({
                   className={`${
                     disabled ||
                     !(
-                      tokenData &&
-                      tokenData.name &&
+                      tokenData?.name &&
                       tokenData.symbol &&
                       tokenData.decimals
                     )
@@ -1232,8 +1242,7 @@ export default ({
                   } rounded-lg flex items-center justify-center ${
                     disabled ||
                     !(
-                      tokenData &&
-                      tokenData.name &&
+                      tokenData?.name &&
                       tokenData.symbol &&
                       tokenData.decimals
                     )

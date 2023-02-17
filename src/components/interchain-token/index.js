@@ -1015,20 +1015,186 @@ export default () => {
         minHeight: "65vh",
       }}
     >
-      {!signer ? (
-        <div className="min-h-full flex flex-col justify-center space-y-3">
-          <Wallet />
-          <span className="text-slate-400 dark:text-slate-600">
-            Please connect your wallet to manage your contract
-          </span>
-        </div>
-      ) : !token_linkers_data ? (
-        <div className="w-full">
-          <div className="h-full flex items-center justify-center">
-            <Blocks />
+      {signer ? token_linkers_data ? token_address ? (
+        <div className="w-full xl:px-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+            {getSupportedEvmChains()
+              .map((c) => {
+                const { id } = { ...c };
+
+                return {
+                  chain: id,
+                  chain_data: c,
+                  ...token_linkers_data[id],
+                };
+              })
+              .filter((tl) => tl.deployed)
+              .map((tl, i) => {
+                const { chain_data, token_linker_address } = { ...tl };
+                const { id, chain_name, name, image, explorer } = {
+                  ...chain_data,
+                };
+                const { url, address_path } = { ...explorer };
+
+                const _chain_data = getChain(chain, evm_chains_data);
+
+                const _id = _chain_data?.id;
+                const _chain_id = _chain_data?.chain_id;
+
+                const is_origin = id === _id;
+
+                const _tokenAddress = is_origin
+                  ? tokenAddress
+                  : token_addresses_data?.[id];
+
+                const registered =
+                  token_addresses_data?.[chain] &&
+                  token_addresses_data[chain] !== constants.AddressZero;
+
+                const registered_or_deployed_remote =
+                  token_addresses_data?.[id] &&
+                  token_addresses_data[id] !== constants.AddressZero;
+
+                const address_url =
+                  url &&
+                  address_path &&
+                  (is_origin || registered_or_deployed_remote) &&
+                  `${url}${address_path.replace("{address}", _tokenAddress)}`;
+
+                return (
+                  <div
+                    key={i}
+                    className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                  >
+                    <div className="flex items-center justify-between space-x-2.5">
+                      <div className="flex items-center space-x-2.5">
+                        <Image
+                          src={image}
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span className="text-lg font-bold">{name}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="h-full flex flex-col justify-between space-y-5">
+                        <div className="space-y-1">
+                          <div className="text-slate-400 dark:text-slate-500 text-sm">
+                            {is_origin || registered_or_deployed_remote
+                              ? "Token address"
+                              : "Status"}
+                          </div>
+                          <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                            {address_url ? (
+                              <a
+                                href={address_url}
+                                target="_blank"
+                                rel="noopenner noreferrer"
+                                className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                              >
+                                {ellipse(_tokenAddress, 10)}
+                              </a>
+                            ) : is_origin || registered_or_deployed_remote ? (
+                              <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                {ellipse(_tokenAddress, 10)}
+                              </span>
+                            ) : (
+                              <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
+                                Remote token not deployed
+                              </span>
+                            )}
+                            {(is_origin || registered_or_deployed_remote) &&
+                              _tokenAddress && <Copy value={_tokenAddress} />}
+                          </div>
+                        </div>
+                        {registered_or_deployed_remote ? (
+                          address_url ? (
+                            <a
+                              href={address_url}
+                              target="_blank"
+                              rel="noopenner noreferrer"
+                              className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                            >
+                              <BiCheck size={16} />
+                              <span className="text-sm font-semibold">
+                                {is_origin ? "Registered" : "Deployed"}
+                              </span>
+                            </a>
+                          ) : (
+                            <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                              <BiCheck size={16} />
+                              <span className="text-sm font-medium">
+                                {is_origin ? "Registered" : "Deployed"}
+                              </span>
+                            </div>
+                          )
+                        ) : !(token_linker_address &&token_addresses_data ) ||
+                          (tokenId && !token_addresses_data[id]) ? (
+                          <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
+                            <div className="mr-1.5">
+                              <Oval
+                                width={14}
+                                height={14}
+                                color={loaderColor(theme)}
+                              />
+                            </div>
+                            <span>Loading</span>
+                          </div>
+                        ) : (registered || is_origin ) ? (
+                          <RegisterOriginTokenButton
+                            buttonTitle={
+                              is_origin
+                                ? "Register origin token"
+                                : "Deploy remote tokens"
+                            }
+                            buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                            chainData={_chain_data}
+                            supportedEvmChains={getSupportedEvmChains().filter(
+                              (c) =>
+                                token_linkers_data[c.id]?.deployed &&
+                                token_addresses_data?.[c.id] ===
+                                  constants.AddressZero
+                            )}
+                            isOrigin={is_origin}
+                            fixedTokenAddress={tokenAddress}
+                            initialRemoteChains={
+                              is_origin ? undefined : toArray(chain_name)
+                            }
+                            tokenId={tokenId}
+                            tokenLinker={getTokenLinkerContract(
+                              _chain_id === chain_id
+                                ? signer
+                                : address
+                                ? new VoidSigner(address, rpcs?.[_chain_id])
+                                : rpcs?.[_chain_id],
+                              token_linker_address
+                            )}
+                            deployRemoteTokens={deployRemoteTokens}
+                            registerOriginTokenAndDeployRemoteTokens={
+                              registerOriginTokenAndDeployRemoteTokens
+                            }
+                            provider={
+                              _chain_id === chain_id
+                                ? signer
+                                : rpcs?.[_chain_id]
+                            }
+                          />
+                        ) : (
+                          <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                            <span className="text-sm font-medium">
+                              Origin token not registered
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
-      ) : !token_address ? (
+      ) : (
         <div className="w-full xl:px-1">
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
             {getSupportedEvmChains()
@@ -1089,8 +1255,7 @@ export default () => {
                             (c) =>
                               (!token_linkers_data ||
                                 token_linkers_data[c.id]?.deployed) &&
-                              (!token_addresses_data ||
-                                !token_addresses_data[c.id] ||
+                              (!(token_addresses_data?.[c.id] ) ||
                                 token_addresses_data[c.id] ===
                                   constants.AddressZero)
                           )}
@@ -1221,18 +1386,7 @@ export default () => {
                               </div>
                             )}
                           </div>
-                        ) : !token_linker_address ? (
-                          <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
-                            <div className="mr-1.5">
-                              <Oval
-                                width={14}
-                                height={14}
-                                color={loaderColor(theme)}
-                              />
-                            </div>
-                            <span>Loading</span>
-                          </div>
-                        ) : must_switch_network ? (
+                        ) : token_linker_address ? must_switch_network ? (
                           <Wallet
                             connectChainId={_chain_id}
                             className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
@@ -1258,131 +1412,7 @@ export default () => {
                           >
                             <span className="text-sm">Deploy</span>
                           </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      ) : (
-        <div className="w-full xl:px-1">
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
-            {getSupportedEvmChains()
-              .map((c) => {
-                const { id } = { ...c };
-
-                return {
-                  chain: id,
-                  chain_data: c,
-                  ...token_linkers_data[id],
-                };
-              })
-              .filter((tl) => tl.deployed)
-              .map((tl, i) => {
-                const { chain_data, token_linker_address } = { ...tl };
-                const { id, chain_name, name, image, explorer } = {
-                  ...chain_data,
-                };
-                const { url, address_path } = { ...explorer };
-
-                const _chain_data = getChain(chain, evm_chains_data);
-
-                const _id = _chain_data?.id;
-                const _chain_id = _chain_data?.chain_id;
-
-                const is_origin = id === _id;
-
-                const _tokenAddress = is_origin
-                  ? tokenAddress
-                  : token_addresses_data?.[id];
-
-                const registered =
-                  token_addresses_data?.[chain] &&
-                  token_addresses_data[chain] !== constants.AddressZero;
-
-                const registered_or_deployed_remote =
-                  token_addresses_data?.[id] &&
-                  token_addresses_data[id] !== constants.AddressZero;
-
-                const address_url =
-                  url &&
-                  address_path &&
-                  (is_origin || registered_or_deployed_remote) &&
-                  `${url}${address_path.replace("{address}", _tokenAddress)}`;
-
-                return (
-                  <div
-                    key={i}
-                    className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
-                  >
-                    <div className="flex items-center justify-between space-x-2.5">
-                      <div className="flex items-center space-x-2.5">
-                        <Image
-                          src={image}
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <span className="text-lg font-bold">{name}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="h-full flex flex-col justify-between space-y-5">
-                        <div className="space-y-1">
-                          <div className="text-slate-400 dark:text-slate-500 text-sm">
-                            {is_origin || registered_or_deployed_remote
-                              ? "Token address"
-                              : "Status"}
-                          </div>
-                          <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
-                            {address_url ? (
-                              <a
-                                href={address_url}
-                                target="_blank"
-                                rel="noopenner noreferrer"
-                                className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
-                              >
-                                {ellipse(_tokenAddress, 10)}
-                              </a>
-                            ) : is_origin || registered_or_deployed_remote ? (
-                              <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
-                                {ellipse(_tokenAddress, 10)}
-                              </span>
-                            ) : (
-                              <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
-                                Remote token not deployed
-                              </span>
-                            )}
-                            {(is_origin || registered_or_deployed_remote) &&
-                              _tokenAddress && <Copy value={_tokenAddress} />}
-                          </div>
-                        </div>
-                        {registered_or_deployed_remote ? (
-                          address_url ? (
-                            <a
-                              href={address_url}
-                              target="_blank"
-                              rel="noopenner noreferrer"
-                              className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
-                            >
-                              <BiCheck size={16} />
-                              <span className="text-sm font-semibold">
-                                {is_origin ? "Registered" : "Deployed"}
-                              </span>
-                            </a>
-                          ) : (
-                            <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
-                              <BiCheck size={16} />
-                              <span className="text-sm font-medium">
-                                {is_origin ? "Registered" : "Deployed"}
-                              </span>
-                            </div>
-                          )
-                        ) : !token_linker_address ||
-                          !token_addresses_data ||
-                          (tokenId && !token_addresses_data[id]) ? (
+                        ) : (
                           <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
                             <div className="mr-1.5">
                               <Oval
@@ -1393,51 +1423,6 @@ export default () => {
                             </div>
                             <span>Loading</span>
                           </div>
-                        ) : !registered && !is_origin ? (
-                          <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
-                            <span className="text-sm font-medium">
-                              Origin token not registered
-                            </span>
-                          </div>
-                        ) : (
-                          <RegisterOriginTokenButton
-                            buttonTitle={
-                              is_origin
-                                ? "Register origin token"
-                                : "Deploy remote tokens"
-                            }
-                            buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                            chainData={_chain_data}
-                            supportedEvmChains={getSupportedEvmChains().filter(
-                              (c) =>
-                                token_linkers_data[c.id]?.deployed &&
-                                token_addresses_data?.[c.id] ===
-                                  constants.AddressZero
-                            )}
-                            isOrigin={is_origin}
-                            fixedTokenAddress={tokenAddress}
-                            initialRemoteChains={
-                              is_origin ? undefined : toArray(chain_name)
-                            }
-                            tokenId={tokenId}
-                            tokenLinker={getTokenLinkerContract(
-                              _chain_id === chain_id
-                                ? signer
-                                : address
-                                ? new VoidSigner(address, rpcs?.[_chain_id])
-                                : rpcs?.[_chain_id],
-                              token_linker_address
-                            )}
-                            deployRemoteTokens={deployRemoteTokens}
-                            registerOriginTokenAndDeployRemoteTokens={
-                              registerOriginTokenAndDeployRemoteTokens
-                            }
-                            provider={
-                              _chain_id === chain_id
-                                ? signer
-                                : rpcs?.[_chain_id]
-                            }
-                          />
                         )}
                       </div>
                     </div>
@@ -1445,6 +1430,19 @@ export default () => {
                 );
               })}
           </div>
+        </div>
+      ) : (
+        <div className="w-full">
+          <div className="h-full flex items-center justify-center">
+            <Blocks />
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-full flex flex-col justify-center space-y-3">
+          <Wallet />
+          <span className="text-slate-400 dark:text-slate-600">
+            Please connect your wallet to manage your contract
+          </span>
         </div>
       )}
     </div>

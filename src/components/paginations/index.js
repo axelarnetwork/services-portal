@@ -32,7 +32,7 @@ export const Page = ({
   <button
     disabled={disabled}
     onClick={onClick}
-    className={active ? activeClassNames : nactiveClassNames}
+    className={active ? activeClassNames : inactiveClassNames}
   >
     {children}
   </button>
@@ -54,7 +54,7 @@ export const Pages = ({ items = [], disabled = false, active, onClick }) => {
           <div key={i} className={`${hide(i - 1) ? "hidden" : ""}`}>
             <BsThreeDots
               size={20}
-              className="mt-1.5 text-slate-300 dark:text-slate-700"
+              className="text-slate-300 dark:text-slate-700 mt-1.5"
             />
           </div>
         ) : (

@@ -1,10 +1,10 @@
-import Head from "next/head";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
-import Navbar from "~/components/navbar";
 import Footer from "~/components/footer";
+import Navbar from "~/components/navbar";
 import meta from "~/lib/meta";
 import { THEME } from "~/reducers/types";
 

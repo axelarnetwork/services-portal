@@ -1,12 +1,13 @@
+import { useSelector, shallowEqual } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSelector, shallowEqual } from "react-redux";
+
+import services from "~/config/services";
+import { equalsIgnoreCase, toArray } from "~/lib/utils";
 
 import ServicesInputSearch from "../../dashboard/input-search";
 import InterchainTokenInputAddress from "../../interchain-token/input-token-address";
 import InterchainTokenTokenId from "../../interchain-token/token-id";
-import services from "~/config/services";
-import { equalsIgnoreCase, toArray } from "~/lib/utils";
 
 export default () => {
   const { wallet } = useSelector(

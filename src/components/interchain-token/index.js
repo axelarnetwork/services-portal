@@ -1,7 +1,14 @@
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { BiMessage, BiCheck } from "react-icons/bi";
+import { BsFileEarmarkCheckFill } from "react-icons/bs";
+import { IoClose } from "react-icons/io5";
+import { Blocks, Oval } from "react-loader-spinner";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import _ from "lodash";
+import { useRouter } from "next/router";
+import { predictContractConstant } from "@axelar-network/axelar-gmp-sdk-solidity";
+import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
+import ERC20MintableBurnable from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json";
+import { Tooltip } from "@material-tailwind/react";
 import {
   Contract,
   ContractFactory,
@@ -9,33 +16,27 @@ import {
   constants,
   utils,
 } from "ethers";
-import { predictContractConstant } from "@axelar-network/axelar-gmp-sdk-solidity";
-import ERC20MintableBurnable from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json";
-import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
-import { Blocks, Oval } from "react-loader-spinner";
-import { Tooltip } from "@material-tailwind/react";
-import { BsFileEarmarkCheckFill } from "react-icons/bs";
-import { BiMessage, BiCheck } from "react-icons/bi";
-import { IoClose } from "react-icons/io5";
+import _ from "lodash";
 
-import RegisterOriginTokenButton from "./register-origin-token-button";
-import Image from "../image";
-import Copy from "../copy";
-import Wallet from "../wallet";
 import { getChain, switchChain } from "~/lib/chain/utils";
+import IUpgradable from "~/lib/contract/json/IUpgradable.json";
+import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
+import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinkerProxy.json";
+import LinkerRouter from "~/lib/contract/json/LinkerRouter.json";
+import LinkerRouterProxy from "~/lib/contract/json/LinkerRouterProxy.json";
 import {
   deployContract,
   isContractDeployed,
   getSaltFromKey,
   getContractAddressByChain,
 } from "~/lib/contract/utils";
-import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinkerProxy.json";
-import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
-import LinkerRouterProxy from "~/lib/contract/json/LinkerRouterProxy.json";
-import LinkerRouter from "~/lib/contract/json/LinkerRouter.json";
-import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import { ellipse, toArray, loaderColor, parseError } from "~/lib/utils";
 import { TOKEN_LINKERS_DATA, TOKEN_ADDRESSES_DATA } from "~/reducers/types";
+
+import Copy from "../copy";
+import Image from "../image";
+import Wallet from "../wallet";
+import RegisterOriginTokenButton from "./register-origin-token-button";
 
 const GAS_LIMIT = 2500000;
 

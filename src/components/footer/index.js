@@ -1,5 +1,5 @@
-import moment from "moment";
 import { shallowEqual, useSelector } from "react-redux";
+import moment from "moment";
 
 import _package from "../../../package.json";
 

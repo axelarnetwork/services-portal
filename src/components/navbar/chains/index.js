@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useSelector, shallowEqual } from "react-redux";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useSelector, shallowEqual } from "react-redux";
 
-import Items from "./items";
-import Image from "../../image";
 import { getChain } from "~/lib/chain/utils";
+
+import Image from "../../image";
+import Items from "./items";
 
 export default () => {
   const { evm_chains, wallet } = useSelector(

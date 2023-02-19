@@ -1,7 +1,7 @@
 import { utils } from "ethers";
-import numeral from "numeral";
 import _ from "lodash";
 import moment from "moment";
+import numeral from "numeral";
 
 const toCase = (string, to_case = "normal") => {
   if (typeof string === "string") {
@@ -236,14 +236,14 @@ export const name = (s, data) =>
 export const ellipse = (string, length = 10, prefix = "") =>
   string
     ? string.length < length * 2 + 3
-    ? string
-    : `${string.startsWith(prefix) ? prefix : ""}${string
-        .replace(prefix, "")
-        .slice(0, length)}...${string.replace(prefix, "").slice(-length)}`
+      ? string
+      : `${string.startsWith(prefix) ? prefix : ""}${string
+          .replace(prefix, "")
+          .slice(0, length)}...${string.replace(prefix, "").slice(-length)}`
     : "";
 
 export const equalsIgnoreCase = (a, b) =>
-  (!(a || b)) || a?.toLowerCase() === b?.toLowerCase();
+  !(a || b) || a?.toLowerCase() === b?.toLowerCase();
 
 export const paramsToObj = (s) =>
   s &&

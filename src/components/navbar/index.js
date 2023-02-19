@@ -1,20 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import _ from "lodash";
-import { providers } from "ethers";
 import { AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
+import { providers } from "ethers";
+import _ from "lodash";
 
-import Logo from "./logo";
-import DropdownNavigations from "./navigations/dropdown";
-import Navigations from "./navigations";
-import Chains from "./chains";
-import EnsProfile from "../ens-profile";
-import Wallet from "../wallet";
-import Theme from "./theme";
-import SubNavbar from "./sub-navbar";
-import Copy from "../copy";
-import { getChains, getAssets } from "~/lib/api/config";
 import { getAssetsPrice } from "~/lib/api/assets";
+import { getChains, getAssets } from "~/lib/api/config";
 import { getContracts } from "~/lib/api/contracts";
 import { equalsIgnoreCase, toArray, ellipse } from "~/lib/utils";
 import {
@@ -27,6 +18,16 @@ import {
   RPCS,
   SDK,
 } from "~/reducers/types";
+
+import Copy from "../copy";
+import EnsProfile from "../ens-profile";
+import Wallet from "../wallet";
+import Chains from "./chains";
+import Logo from "./logo";
+import Navigations from "./navigations";
+import DropdownNavigations from "./navigations/dropdown";
+import SubNavbar from "./sub-navbar";
+import Theme from "./theme";
 
 export default () => {
   const dispatch = useDispatch();

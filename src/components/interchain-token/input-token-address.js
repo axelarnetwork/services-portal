@@ -1,13 +1,14 @@
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useSelector, shallowEqual } from "react-redux";
-import _ from "lodash";
-import { utils } from "ethers";
 import { DebounceInput } from "react-debounce-input";
+import { useSelector, shallowEqual } from "react-redux";
+import { useRouter } from "next/router";
+import { utils } from "ethers";
+import _ from "lodash";
 
-import Chains from "./chains";
 import { getChain } from "~/lib/chain/utils";
 import { split, toArray } from "~/lib/utils";
+
+import Chains from "./chains";
 
 export default () => {
   const { evm_chains, wallet, token_linkers } = useSelector(

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { createStore, applyMiddleware } from "redux";
 import { composeWithDevTools } from "@redux-devtools/extension";
+import { createStore, applyMiddleware } from "redux";
 
 import reducers from "./reducers";
 
@@ -25,10 +25,14 @@ export const initializeStore = (preloadedState) => {
   }
 
   // For SSG and SSR always create a new store
-  if (typeof window === "undefined") { return _store; }
+  if (typeof window === "undefined") {
+    return _store;
+  }
 
   // Create the store once in the client
-  if (!store) { store = _store; }
+  if (!store) {
+    store = _store;
+  }
 
   return _store;
 };

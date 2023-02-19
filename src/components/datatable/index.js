@@ -1,15 +1,16 @@
 import { useEffect, useRef, forwardRef } from "react";
-import _ from "lodash";
-import { useTable, useSortBy, usePagination, useRowSelect } from "react-table";
 import {
   BiChevronDown,
   BiChevronUp,
   BiLeftArrowAlt,
   BiRightArrowAlt,
 } from "react-icons/bi";
+import { useTable, useSortBy, usePagination, useRowSelect } from "react-table";
+import _ from "lodash";
+
+import { toArray } from "~/lib/utils";
 
 import { PageWithText, Pagination } from "../paginations";
-import { toArray } from "~/lib/utils";
 
 const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
   const defaultRef = useRef();

@@ -1,6 +1,6 @@
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { DebounceInput } from "react-debounce-input";
+import { useRouter } from "next/router";
 
 import { split } from "~/lib/utils";
 

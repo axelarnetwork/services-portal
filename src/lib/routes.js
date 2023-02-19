@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { split } from "./utils";
 import services from "../config/services";
+import { split } from "./utils";
 
 export const routes = _.concat(
   [{ pathname: "/" }],
@@ -20,7 +20,9 @@ export const routes = _.concat(
 
 export const isRouteExist = (pathname) =>
   routes.findIndex((r, i) => {
-    if (r.pathname === pathname) { return true; }
+    if (r.pathname === pathname) {
+      return true;
+    }
 
     const route_paths = split(r.pathname, "lower", "/");
     const paths = split(pathname, "lower", "/");

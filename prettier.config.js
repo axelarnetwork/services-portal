@@ -1,28 +1,18 @@
+// @ts-check
+
+/** @type {import("@ianvs/prettier-plugin-sort-imports").PrettierConfig} */
 module.exports = {
-  printWidth: 80,
-  importOrderSeparation: false,
-  importOrderSortSpecifiers: true,
+  plugins: [
+    require("prettier-plugin-tailwindcss"),
+    require("@ianvs/prettier-plugin-sort-imports"),
+  ],
   importOrder: [
-    "<TYPES>",
-    "^(react/(.*)$)|^(react$)",
-    "^(next/(.*)$)|^(next$)",
+    "^react",
+    "^next",
     "<THIRD_PARTY_MODULES>",
     "",
-    "^~/config(.*)$",
-    "^~/components(.*)$",
-    "",
-    "^~/features(.*)$",
-    "",
-    "^~/store(.*)$",
-    "",
-    "^[~/]",
+    "^~/(.*)$",
     "",
     "^[./]",
-    "",
-    ".css$",
-  ],
-  plugins: [
-    require("@ianvs/prettier-plugin-sort-imports"),
-    require("prettier-plugin-tailwindcss"),
   ],
 };

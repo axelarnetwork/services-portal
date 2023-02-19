@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { providers, utils } from "ethers";
 import _ from "lodash";
 import Web3Modal from "web3modal";
-import { providers, utils } from "ethers";
 
 import { getChain } from "~/lib/chain/utils";
 import { WALLET_DATA, WALLET_RESET } from "~/reducers/types";

@@ -1,5 +1,5 @@
-import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { RiMoonFill, RiSunLine } from "react-icons/ri";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 
 import { THEME } from "~/reducers/types";
 

@@ -1,12 +1,13 @@
+import { useState, useEffect } from "react";
+import { BsArrowRightShort } from "react-icons/bs";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
 import _ from "lodash";
-import { BsArrowRightShort } from "react-icons/bs";
 
-import Image from "../image";
 import services from "~/config/services";
 import { split, toArray } from "~/lib/utils";
+
+import Image from "../image";
 
 export default () => {
   const router = useRouter();

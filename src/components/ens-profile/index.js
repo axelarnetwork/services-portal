@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { useEffect, useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+
+import { ens as getEns } from "~/lib/api/ens";
+import { ellipse, toArray } from "~/lib/utils";
+import { ENS_DATA } from "~/reducers/types";
 
 import Copy from "../copy";
-import { ens as getEns } from "~/lib/api/ens";
-import { toArray, ellipse } from "~/lib/utils";
-import { ENS_DATA } from "~/reducers/types";
 
 export default ({
   address,

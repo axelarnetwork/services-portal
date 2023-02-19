@@ -1,15 +1,14 @@
 import { useEffect } from "react";
+import TagManager from "react-gtm-module";
+import { Provider } from "react-redux";
 import Head from "next/head";
 import Router from "next/router";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
-import TagManager from "react-gtm-module";
-import { Provider } from "react-redux";
 
 import Layout from "../layouts";
 import * as ga from "../lib/ga";
 import { useStore } from "../store";
-
 import "../styles/globals.css";
 import "../styles/animate.css";
 import "../styles/layout.css";

@@ -1,18 +1,14 @@
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useSelector, shallowEqual } from "react-redux";
-import _ from "lodash";
-import { Contract, utils } from "ethers";
 import { DebounceInput } from "react-debounce-input";
-import { Oval } from "react-loader-spinner";
-import { MdAdd } from "react-icons/md";
-import { IoClose } from "react-icons/io5";
 import { BiCheck, BiX } from "react-icons/bi";
+import { IoClose } from "react-icons/io5";
+import { MdAdd } from "react-icons/md";
+import { Oval } from "react-loader-spinner";
+import { useSelector, shallowEqual } from "react-redux";
+import { useRouter } from "next/router";
+import { Contract, utils } from "ethers";
+import _ from "lodash";
 
-import Modal from "../modal";
-import Image from "../image";
-import Copy from "../copy";
-import Wallet from "../wallet";
 import { searchGMP } from "~/lib/api/gmp";
 import { getChain } from "~/lib/chain/utils";
 import ERC20 from "~/lib/contract/json/ERC20.json";
@@ -25,6 +21,11 @@ import {
   loaderColor,
   sleep,
 } from "~/lib/utils";
+
+import Copy from "../copy";
+import Image from "../image";
+import Modal from "../modal";
+import Wallet from "../wallet";
 
 const DEFAULT_PRE_EXISTING_TOKEN = false;
 

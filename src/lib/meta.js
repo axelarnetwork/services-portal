@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { split, name } from "./utils";
 import services from "../config/services";
+import { split, name } from "./utils";
 
 export default (path, data, pathname) => {
   path = path ? path.toLowerCase() : "/";

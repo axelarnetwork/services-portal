@@ -7,7 +7,9 @@
     "build": "next build",
     "dev-testnet": "env-cmd -f .env.testnet next dev",
     "build-testnet": "env-cmd -f .env.testnet next build",
-    "pretty-quick": "pretty-quick"
+    "pretty-quick": "pretty-quick",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix"
   },
   "repository": {
     "type": "git",
@@ -57,6 +59,8 @@
     "@types/node": "^18.14.0",
     "@types/react": "^18.0.28",
     "autoprefixer": "^10.4.13",
+    "eslint": "^8.34.0",
+    "eslint-config-next": "^13.1.6",
     "husky": "^8.0.3",
     "postcss": "^8.4.21",
     "postcss-color-function": "^4.1.0",

@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 
-import Navbar from "../../components/navbar";
-import Footer from "../../components/footer";
-import meta from "../../lib/meta";
-import { THEME } from "../../reducers/types";
+import Navbar from "~/components/navbar";
+import Footer from "~/components/footer";
+import meta from "~/lib/meta";
+import { THEME } from "~/reducers/types";
 
 export default ({ children }) => {
   const dispatch = useDispatch();

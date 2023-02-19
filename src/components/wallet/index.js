@@ -4,8 +4,8 @@ import _ from "lodash";
 import Web3Modal from "web3modal";
 import { providers, utils } from "ethers";
 
-import { getChain } from "../../lib/chain/utils";
-import { WALLET_DATA, WALLET_RESET } from "../../reducers/types";
+import { getChain } from "~/lib/chain/utils";
+import { WALLET_DATA, WALLET_RESET } from "~/reducers/types";
 
 const providerOptions = {};
 

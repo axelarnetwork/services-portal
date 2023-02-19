@@ -6,8 +6,8 @@ import { utils } from "ethers";
 import { DebounceInput } from "react-debounce-input";
 
 import Chains from "./chains";
-import { getChain } from "../../lib/chain/utils";
-import { split, toArray } from "../../lib/utils";
+import { getChain } from "~/lib/chain/utils";
+import { split, toArray } from "~/lib/utils";
 
 export default () => {
   const { evm_chains, wallet, token_linkers } = useSelector(

@@ -5,8 +5,8 @@ import _ from "lodash";
 import { BsArrowRightShort } from "react-icons/bs";
 
 import Image from "../image";
-import services from "../../config/services";
-import { split, toArray } from "../../lib/utils";
+import services from "~/config/services";
+import { split, toArray } from "~/lib/utils";
 
 export default () => {
   const router = useRouter();

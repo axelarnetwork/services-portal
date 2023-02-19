@@ -1,7 +1,7 @@
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { RiMoonFill, RiSunLine } from "react-icons/ri";
 
-import { THEME } from "../../../reducers/types";
+import { THEME } from "~/reducers/types";
 
 export default () => {
   const dispatch = useDispatch();

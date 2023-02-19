@@ -13,10 +13,10 @@ import Wallet from "../wallet";
 import Theme from "./theme";
 import SubNavbar from "./sub-navbar";
 import Copy from "../copy";
-import { getChains, getAssets } from "../../lib/api/config";
-import { getAssetsPrice } from "../../lib/api/assets";
-import { getContracts } from "../../lib/api/contracts";
-import { equalsIgnoreCase, toArray, ellipse } from "../../lib/utils";
+import { getChains, getAssets } from "~/lib/api/config";
+import { getAssetsPrice } from "~/lib/api/assets";
+import { getContracts } from "~/lib/api/contracts";
+import { equalsIgnoreCase, toArray, ellipse } from "~/lib/utils";
 import {
   EVM_CHAINS_DATA,
   COSMOS_CHAINS_DATA,
@@ -26,7 +26,7 @@ import {
   GAS_SERVICE_ADDRESSES_DATA,
   RPCS,
   SDK,
-} from "../../reducers/types";
+} from "~/reducers/types";
 
 export default () => {
   const dispatch = useDispatch();

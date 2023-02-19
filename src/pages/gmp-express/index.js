@@ -1,4 +1,4 @@
-import GMPExress from "../../components/gmp-express";
+import GMPExress from "~/components/gmp-express";
 
 export default () => {
   return (

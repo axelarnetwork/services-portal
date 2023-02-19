@@ -1,4 +1,4 @@
-import { toArray } from "../../utils";
+import { toArray } from "~/utils";
 
 const _module = "data";
 

@@ -13,9 +13,9 @@ import Modal from "../modal";
 import Image from "../image";
 import Copy from "../copy";
 import Wallet from "../wallet";
-import { searchGMP } from "../../lib/api/gmp";
-import { getChain } from "../../lib/chain/utils";
-import ERC20 from "../../lib/contract/json/ERC20.json";
+import { searchGMP } from "~/lib/api/gmp";
+import { getChain } from "~/lib/chain/utils";
+import ERC20 from "~/lib/contract/json/ERC20.json";
 import {
   equalsIgnoreCase,
   ellipse,
@@ -24,7 +24,7 @@ import {
   toArray,
   loaderColor,
   sleep,
-} from "../../lib/utils";
+} from "~/lib/utils";
 
 const DEFAULT_PRE_EXISTING_TOKEN = false;
 
@@ -1216,29 +1216,17 @@ export default ({
                 <button
                   disabled={
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
                   }
                   onClick={() => _deployToken()}
                   className={`${
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
                       ? "cursor-not-allowed bg-blue-300 dark:bg-blue-400"
                       : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
                   } flex items-center justify-center rounded-lg ${
                     disabled ||
-                    !(
-                      tokenData?.name &&
-                      tokenData.symbol &&
-                      tokenData.decimals
-                    )
+                    !(tokenData?.name && tokenData.symbol && tokenData.decimals)
                       ? "text-slate-50"
                       : "text-white"
                   } py-1 px-2.5 text-base font-medium`}

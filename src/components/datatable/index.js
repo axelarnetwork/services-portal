@@ -9,7 +9,7 @@ import {
 } from "react-icons/bi";
 
 import { PageWithText, Pagination } from "../paginations";
-import { toArray } from "../../lib/utils";
+import { toArray } from "~/lib/utils";
 
 const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
   const defaultRef = useRef();

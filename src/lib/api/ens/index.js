@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { toArray, equalsIgnoreCase } from "../../utils";
+import { toArray, equalsIgnoreCase } from "~/utils";
 
 const request = async (params) => {
   const response = await fetch(

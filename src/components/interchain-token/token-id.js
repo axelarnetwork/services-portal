@@ -3,9 +3,9 @@ import { useSelector, shallowEqual } from "react-redux";
 import { Contract, constants } from "ethers";
 
 import Copy from "../copy";
-import InterchainTokenLinker from "../../lib/contract/json/InterchainTokenLinker.json";
-import { getChain } from "../../lib/chain/utils";
-import { ellipse } from "../../lib/utils";
+import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
+import { getChain } from "~/lib/chain/utils";
+import { ellipse } from "~/lib/utils";
 
 export default ({ chain, tokenAddress }) => {
   const { evm_chains, rpc_providers, token_linkers } = useSelector(

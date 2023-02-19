@@ -1,5 +1,5 @@
 .skeleton {
-  @apply bg-slate-100 dark:bg-slate-800 rounded;
+  @apply rounded bg-slate-100 dark:bg-slate-800;
 
   position: relative;
   overflow: hidden;
@@ -20,7 +20,7 @@
       rgba(255, 255, 255, 0)
     );
     animation: shimmer 3s infinite;
-    content: '';
+    content: "";
   }
 }
 @keyframes shimmer {

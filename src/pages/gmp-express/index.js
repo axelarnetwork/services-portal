@@ -1,9 +1,9 @@
-import GMPExress from '../../components/gmp-express'
+import GMPExress from "../../components/gmp-express";
 
 export default () => {
   return (
-    <div className="mt-2 mb-8 mx-auto">
+    <div className="mx-auto mt-2 mb-8">
       <GMPExress />
     </div>
-  )
-}
+  );
+};

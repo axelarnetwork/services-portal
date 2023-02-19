@@ -1,6 +1,6 @@
 .form-element {
   &:not(.form-element-inline) {
-    @apply flex flex-col mb-4;
+    @apply mb-4 flex flex-col;
     .form-label {
       @apply mb-2;
     }
@@ -21,18 +21,18 @@
   }
   .form-input,
   .form-textarea {
-    @apply w-full block text-xs xl:text-base py-2 px-3;
+    @apply block w-full py-2 px-3 text-xs xl:text-base;
     &.form-input-valid {
       @apply border border-green-500;
     }
     &.form-input-invalid {
       @apply border border-red-500;
     }
-    @apply bg-slate-50 border-slate-50;
+    @apply border-slate-50 bg-slate-50;
     [data-background="dark"] & {
-      @apply bg-slate-800 border-slate-800 text-white;
+      @apply border-slate-800 bg-slate-800 text-white;
       &::placeholder {
-        color: #6B7280;/*theme('colors.white');*/
+        color: #6b7280; /*theme('colors.white');*/
       }
     }
   }
@@ -40,20 +40,14 @@
     @apply h-9;
   }
   .form-select {
-    @apply w-full h-9 block appearance-none text-xs xl:text-base py-2 px-3;
+    @apply block h-9 w-full appearance-none py-2 px-3 text-xs xl:text-base;
     line-height: normal;
-    background-image:
-      linear-gradient(45deg, transparent 50%, gray 50%),
+    background-image: linear-gradient(45deg, transparent 50%, gray 50%),
       linear-gradient(135deg, gray 50%, transparent 50%),
       linear-gradient(to right, transparent, transparent);
-    background-position:
-      calc(100% - 20px) 1em,
-      calc(100% - 15px) 1em,
+    background-position: calc(100% - 20px) 1em, calc(100% - 15px) 1em,
       calc(100% - 2.5em) 0.5em;
-    background-size:
-      5px 5px,
-      5px 5px,
-      1px 1.5em;
+    background-size: 5px 5px, 5px 5px, 1px 1.5em;
     background-repeat: no-repeat;
     &.form-select-valid {
       @apply border border-green-500;
@@ -62,35 +56,35 @@
       @apply border border-red-500;
     }
     [data-background="dark"] & {
-      @apply bg-slate-800 border-slate-700 text-white;
+      @apply border-slate-700 bg-slate-800 text-white;
     }
   }
   .form-radio {
     &.form-radio-valid {
       @apply text-green-500;
       + span {
-      @apply text-green-500;
+        @apply text-green-500;
       }
     }
     &.form-radio-invalid {
       @apply text-red-500;
       + span {
-      @apply text-red-500;
+        @apply text-red-500;
       }
     }
   }
   .form-hint {
-    @apply text-sm text-slate-500 whitespace-nowrap;
+    @apply whitespace-nowrap text-sm text-slate-500;
   }
   .form-error {
-    @apply text-sm text-red-500 whitespace-nowrap;
+    @apply whitespace-nowrap text-sm text-red-500;
   }
   .form-success {
-    @apply text-sm text-green-500 whitespace-nowrap;
+    @apply whitespace-nowrap text-sm text-green-500;
   }
 }
 .form-icon {
-  @apply h-4 w-4 stroke-current absolute bottom-0;
+  @apply absolute bottom-0 h-4 w-4 stroke-current;
   margin-bottom: 10px;
   &.form-success {
     @apply text-red-500;

@@ -1,5 +1,5 @@
 .table {
-  @apply w-full table-auto block lg:inline-table overflow-x-scroll;
+  @apply block w-full table-auto overflow-x-scroll lg:inline-table;
   &.inline-table {
     display: inline-table;
   }
@@ -11,10 +11,10 @@
     @apply border-0 border-none;
   }
   thead tr th {
-    @apply px-3 py-2 border-b text-xs leading-4 font-medium uppercase tracking-wider;
+    @apply border-b px-3 py-2 text-xs font-medium uppercase leading-4 tracking-wider;
   }
   tbody tr td {
-    @apply px-3 py-2 border-b whitespace-nowrap align-top;
+    @apply whitespace-nowrap border-b px-3 py-2 align-top;
   }
   &.table-sm {
     thead tr th {
@@ -41,7 +41,7 @@
 }
 
 .table {
-  @apply shadow text-left;
+  @apply text-left shadow;
   thead tr th,
   tbody tr td {
     @apply text-left;
@@ -59,8 +59,8 @@
     thead tr th {
       @apply border-slate-200;
       @apply text-slate-500;
-      background: color(theme('colors.slate.100') tint(3%));
-      border-color: color(theme('colors.slate.100') tint(3%));
+      background: color(theme("colors.slate.100") tint(3%));
+      border-color: color(theme("colors.slate.100") tint(3%));
     }
     tbody tr td {
       border-color: color(#fff shade(6%));
@@ -70,7 +70,7 @@
         @apply bg-white;
       }
       tbody tr:nth-child(even) td {
-        background: color(theme('colors.slate.100') tint(3%));
+        background: color(theme("colors.slate.100") tint(3%));
       }
     }
   }
@@ -80,21 +80,21 @@
   .table {
     @apply shadow-slate-700;
     thead tr th {
-      background: color(theme('colors.black') tint(5%));
-      border-color: color(theme('colors.black') tint(5%));
+      background: color(theme("colors.black") tint(5%));
+      border-color: color(theme("colors.black") tint(5%));
       @apply text-slate-200;
     }
     tbody tr td {
-      border-color: color(theme('colors.black') tint(0%));
+      border-color: color(theme("colors.black") tint(0%));
     }
     &.striped {
       tbody tr:nth-child(odd) td {
-        background: color(theme('colors.black') tint(3%));
-        border-color: color(theme('colors.black') tint(3%));
+        background: color(theme("colors.black") tint(3%));
+        border-color: color(theme("colors.black") tint(3%));
       }
       tbody tr:nth-child(even) td {
-        background: color(theme('colors.black') tint(5%));
-        border-color: color(theme('colors.black') tint(5%));
+        background: color(theme("colors.black") tint(5%));
+        border-color: color(theme("colors.black") tint(5%));
       }
     }
   }

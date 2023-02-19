@@ -1,24 +1,23 @@
-import { TOKEN_LINKERS_DATA } from './types'
+import { TOKEN_LINKERS_DATA } from "./types";
 
 export default (
   state = {
     [TOKEN_LINKERS_DATA]: null,
   },
-  action,
+  action
 ) => {
   switch (action.type) {
     case TOKEN_LINKERS_DATA:
       return {
         ...state,
-        [TOKEN_LINKERS_DATA]:
-          action.value ?
-            {
+        [TOKEN_LINKERS_DATA]: action.value
+          ? {
               ...state[TOKEN_LINKERS_DATA],
               ...action.value,
-            } :
-            null,
-      }
+            }
+          : null,
+      };
     default:
-      return state
+      return state;
   }
-}
+};

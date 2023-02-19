@@ -1,9 +1,9 @@
-import InterchainToken from '../../components/interchain-token'
+import InterchainToken from "../../components/interchain-token";
 
 export default () => {
   return (
-    <div className="mt-2 mb-8 mx-auto">
+    <div className="mx-auto mt-2 mb-8">
       <InterchainToken />
     </div>
-  )
-}
+  );
+};

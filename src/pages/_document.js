@@ -1,5 +1,5 @@
-import React from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+import React from "react";
+import Document, { Html, Head, Main, NextScript } from "next/document";
 
 class MyDocument extends Document {
   render() {
@@ -15,8 +15,7 @@ class MyDocument extends Document {
               />
               <script
                 dangerouslySetInnerHTML={{
-                  __html:
-                    `
+                  __html: `
                       window.dataLayer = window.dataLayer || [];
                       function gtag(){dataLayer.push(arguments);}
                       gtag('js', new Date());
@@ -34,8 +33,8 @@ class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
-export default MyDocument
+export default MyDocument;

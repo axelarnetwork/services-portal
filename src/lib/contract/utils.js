@@ -1,65 +1,50 @@
-import { Contract, ContractFactory, utils } from 'ethers'
+import { Contract, ContractFactory, utils } from "ethers";
 
 export const deployContract = async (
   contract_json,
   signer,
   args = [],
-  options = {},
+  options = {}
 ) => {
-  let contract
+  let contract;
 
-  const {
-    abi,
-    bytecode,
-  } = { ...contract_json }
+  const { abi, bytecode } = { ...contract_json };
 
   if (abi && bytecode && signer) {
-    const contract_factory = new ContractFactory(abi, bytecode, signer)
+    const contract_factory = new ContractFactory(abi, bytecode, signer);
 
-    contract = await contract_factory.deploy(...args, { ...options })
+    contract = await contract_factory.deploy(...args, { ...options });
 
-    await contract.deployed()
+    await contract.deployed();
   }
 
-  return contract
-}
+  return contract;
+};
 
 export const isContractDeployed = async (
   contract_address,
   contract_json,
-  signer,
+  signer
 ) => {
-  let deployed
+  let deployed;
 
-  const {
-    abi,
-  } = { ...contract_json }
+  const { abi } = { ...contract_json };
 
   if (contract_address && abi && signer) {
     try {
-      const contract = new Contract(contract_address, abi, signer)
+      const contract = new Contract(contract_address, abi, signer);
 
-      deployed = !!(await contract.deployed())
+      deployed = !!(await contract.deployed());
     } catch (error) {
-      deployed = false
+      deployed = false;
     }
   }
 
-  return deployed
-}
+  return deployed;
+};
 
-export const getSaltFromKey = key =>
-  utils.keccak256(
-    utils.defaultAbiCoder
-      .encode(
-        ['string'],
-        [key],
-      )
-  )
+export const getSaltFromKey = (key) =>
+  utils.keccak256(utils.defaultAbiCoder.encode(["string"], [key]));
 
-export const getContractAddressByChain = (
-  chain,
-  data,
-) =>
-  chain && Array.isArray(data) &&
-  data.find(d => d?.chain === chain)?.address
+export const getContractAddressByChain = (chain, data) =>
+  chain && Array.isArray(data) && data.find((d) => d?.chain === chain)?.address;

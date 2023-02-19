@@ -67,7 +67,7 @@ export default ({ Component, pageProps }) => {
           <div id="portal" />
           <Component {...pageProps} />
         </Layout>
-        <div className="grid-cols-2 grid-ceols-3 grid-cols-4" />
+        <div className="grid-ceols-3 grid-cols-2 grid-cols-4" />
       </Provider>
     </>
   );

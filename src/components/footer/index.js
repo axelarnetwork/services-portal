@@ -3,7 +3,7 @@ import moment from "moment";
 
 import _package from "../../../package.json";
 
-export default () => {
+const Footer = () => {
   const { preferences } = useSelector(
     (state) => ({
       preferences: state.preferences,
@@ -74,3 +74,5 @@ export default () => {
     </div>
   );
 };
+
+export default Footer;

@@ -3,7 +3,7 @@ import _ from "lodash";
 import services from "../config/services";
 import { split, name } from "./utils";
 
-export default (path, data, pathname) => {
+const Meta = (path, data, pathname) => {
   path = path ? path.toLowerCase() : "/";
   path = path.includes("?") ? path.substring(0, path.indexOf("?")) : path;
 
@@ -51,3 +51,5 @@ export default (path, data, pathname) => {
     image,
   };
 };
+
+export default Meta;

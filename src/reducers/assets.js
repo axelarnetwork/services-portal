@@ -1,6 +1,6 @@
 import { ASSETS_DATA } from "./types";
 
-export default (
+export const assets = (
   state = {
     [ASSETS_DATA]: null,
   },

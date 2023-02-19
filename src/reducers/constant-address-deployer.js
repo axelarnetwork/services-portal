@@ -1,6 +1,6 @@
 import { CONSTANT_ADDRESS_DEPLOYER } from "./types";
 
-export default (
+export const constant_address_deployer = (
   state = {
     [CONSTANT_ADDRESS_DEPLOYER]: null,
   },

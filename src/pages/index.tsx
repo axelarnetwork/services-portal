@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-import Dashboard from "../components/dashboard";
-import { isRouteExist } from "../lib/routes";
+import Dashboard from "~/components/dashboard";
+import { isRouteExist } from "~/lib/routes";
 
-export default () => {
+const IndexPage = () => {
   const router = useRouter();
   const { pathname, asPath } = { ...router };
 
@@ -30,3 +30,5 @@ export default () => {
     )
   );
 };
+
+export default IndexPage;

@@ -9,7 +9,7 @@ import { split, toArray } from "~/lib/utils";
 
 import Image from "../image";
 
-export default () => {
+const Dashboard = () => {
   const router = useRouter();
   const { query } = { ...router };
   const { search } = { ...query };
@@ -78,6 +78,7 @@ export default () => {
                   width={256}
                   height={134.4}
                   className="w-full rounded-xl"
+                  alt={title}
                 />
                 <h3 className="mt-8 text-xl font-extrabold text-blue-600 dark:text-white sm:text-2xl">
                   {title}
@@ -91,7 +92,7 @@ export default () => {
                   {toArray(tags).map((t, j) => {
                     return (
                       <div
-                        key={j}
+                        key={t}
                         className="mr-1 mb-1 rounded-lg bg-slate-200 py-1 px-2 text-sm font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200"
                       >
                         {t}
@@ -118,3 +119,5 @@ export default () => {
     </div>
   );
 };
+
+export default Dashboard;

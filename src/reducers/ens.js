@@ -1,6 +1,6 @@
 import { ENS_DATA } from "./types";
 
-export default (
+export const ens = (
   state = {
     [ENS_DATA]: null,
   },

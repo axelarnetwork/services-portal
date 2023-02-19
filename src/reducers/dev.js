@@ -1,6 +1,6 @@
 import { SDK } from "./types";
 
-export default (
+export const dev = (
   state = {
     [SDK]: null,
   },

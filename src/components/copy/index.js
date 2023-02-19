@@ -3,7 +3,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { HiCheckCircle } from "react-icons/hi";
 import { IoMdCopy } from "react-icons/io";
 
-export default ({ size = 18, value, title, onCopy, className = "" }) => {
+const Copy = ({ size = 18, value, title, onCopy, className = "" }) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -48,3 +48,5 @@ export default ({ size = 18, value, title, onCopy, className = "" }) => {
     </CopyToClipboard>
   );
 };
+
+export default Copy;

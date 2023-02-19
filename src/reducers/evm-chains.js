@@ -1,6 +1,6 @@
 import { EVM_CHAINS_DATA } from "./types";
 
-export default (
+export const evm_chains = (
   state = {
     [EVM_CHAINS_DATA]: null,
   },

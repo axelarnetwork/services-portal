@@ -1,6 +1,6 @@
 import { COSMOS_CHAINS_DATA } from "./types";
 
-export default (
+export const cosmos_chains = (
   state = {
     [COSMOS_CHAINS_DATA]: null,
   },

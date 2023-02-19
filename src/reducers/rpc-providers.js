@@ -1,6 +1,6 @@
 import { RPCS } from "./types";
 
-export default (
+export const rpc_providers = (
   state = {
     [RPCS]: null,
   },

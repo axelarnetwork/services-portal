@@ -1,6 +1,6 @@
 import { TOKEN_ADDRESSES_DATA } from "./types";
 
-export default (
+export const token_addresses = (
   state = {
     [TOKEN_ADDRESSES_DATA]: null,
   },

@@ -1,6 +1,6 @@
 import { GAS_SERVICE_ADDRESSES_DATA } from "./types";
 
-export default (
+export const gas_service_addresses = (
   state = {
     [GAS_SERVICE_ADDRESSES_DATA]: null,
   },

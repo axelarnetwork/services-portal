@@ -1,5 +1,7 @@
 import Layout from "./layout";
 
-export default ({ children }) => {
+const MainLayout = ({ children }) => {
   return <Layout>{children}</Layout>;
 };
+
+export default MainLayout;

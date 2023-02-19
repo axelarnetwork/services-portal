@@ -1,6 +1,6 @@
 import { GATEWAY_ADDRESSES_DATA } from "./types";
 
-export default (
+export const gateway_addresses = (
   state = {
     [GATEWAY_ADDRESSES_DATA]: null,
   },

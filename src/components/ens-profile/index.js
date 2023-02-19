@@ -7,7 +7,7 @@ import { ENS_DATA } from "~/reducers/types";
 
 import Copy from "../copy";
 
-export default ({
+const ENSProfile = ({
   address,
   noCopy = false,
   noImage = false,
@@ -102,3 +102,5 @@ export default ({
     fallback
   );
 };
+
+export default ENSProfile;

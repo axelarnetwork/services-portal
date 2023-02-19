@@ -4,7 +4,7 @@ import Link from "next/link";
 import _ from "lodash";
 import moment from "moment";
 
-export default () => {
+const GMPExpress = () => {
   const { preferences, evm_chains, cosmos_chains, assets } = useSelector(
     (state) => ({
       preferences: state.preferences,
@@ -21,3 +21,5 @@ export default () => {
 
   return <div className="space-y-8" />;
 };
+
+export default GMPExpress;

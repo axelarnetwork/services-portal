@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import { split } from "~/lib/utils";
 
-export default () => {
+const InputSearch = () => {
   const router = useRouter();
   const { pathname, query } = { ...router };
   const { search } = { ...query };
@@ -43,3 +43,5 @@ export default () => {
     />
   );
 };
+
+export default InputSearch;

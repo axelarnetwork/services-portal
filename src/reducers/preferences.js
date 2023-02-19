@@ -1,6 +1,6 @@
 import { THEME } from "./types";
 
-export default (
+export const preferences = (
   state = {
     [THEME]: "light",
   },

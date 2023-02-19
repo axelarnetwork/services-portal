@@ -9,7 +9,7 @@ const initial_wallet_data = {
   address: null,
 };
 
-export default (
+export const wallet = (
   state = {
     [WALLET_DATA]: initial_wallet_data,
   },

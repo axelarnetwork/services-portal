@@ -1,6 +1,6 @@
 import { TOKEN_LINKERS_DATA } from "./types";
 
-export default (
+export const token_linkers = (
   state = {
     [TOKEN_LINKERS_DATA]: null,
   },

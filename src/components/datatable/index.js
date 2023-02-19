@@ -30,7 +30,7 @@ const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
   );
 });
 
-export default ({
+const DataTable = ({
   columns,
   size,
   data,
@@ -58,7 +58,7 @@ export default ({
     nextPage,
     previousPage,
     setPageSize,
-    state: { pageIndex, pageSize, selectedRowIds },
+    state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
@@ -98,7 +98,7 @@ export default ({
     if (pageIndex + 1 > pageCount) {
       gotoPage(pageCount - 1);
     }
-  }, [pageIndex, pageCount]);
+  }, [pageIndex, pageCount, gotoPage]);
 
   const loading = toArray(data).findIndex((d) => d.skeleton) > -1;
 
@@ -114,9 +114,10 @@ export default ({
       >
         <thead>
           {headerGroups.map((hg) => (
-            <tr {...hg.getHeaderGroupProps()}>
+            <tr key={`tr-${hg.headers[0].id}`} {...hg.getHeaderGroupProps()}>
               {hg.headers.map((c, i) => (
                 <th
+                  key={`th-${i}`}
                   {...c.getHeaderProps(c.getSortByToggleProps())}
                   className={`${
                     i === 0
@@ -154,9 +155,10 @@ export default ({
             prepareRow(row);
 
             return (
-              <tr {...row.getRowProps()}>
+              <tr key={`row-${i}`} {...row.getRowProps()}>
                 {row.cells.map((cell, j) => (
                   <td
+                    key={`cell-${j}`}
                     {...cell.getCellProps()}
                     className={_.head(headerGroups)?.headers[j]?.className}
                   >
@@ -184,7 +186,11 @@ export default ({
               className="form-select w-24 cursor-pointer appearance-none rounded border-zinc-100 bg-slate-100 py-2 px-3 text-center shadow outline-none hover:bg-slate-200 dark:border-zinc-900 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               {pageSizes.map((s, i) => (
-                <option key={i} value={s} className="text-xs font-medium">
+                <option
+                  key={`page-size-${i}`}
+                  value={s}
+                  className="text-xs font-medium"
+                >
                   Show {s}
                 </option>
               ))}
@@ -277,3 +283,5 @@ export default ({
     </>
   );
 };
+
+export default DataTable;

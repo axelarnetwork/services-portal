@@ -21,5 +21,8 @@ module.exports = {
     "",
     ".css$",
   ],
-  plugins: [require("@ianvs/prettier-plugin-sort-imports")],
+  plugins: [
+    require("@ianvs/prettier-plugin-sort-imports"),
+    require("prettier-plugin-tailwindcss"),
+  ],
 };

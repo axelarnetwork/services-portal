@@ -1,59 +1,49 @@
-import Head from 'next/head'
-import Router from 'next/router'
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import { Provider } from 'react-redux'
-import NProgress from 'nprogress'
-import TagManager from 'react-gtm-module'
+import { useEffect } from "react";
+import Head from "next/head";
+import Router from "next/router";
+import { useRouter } from "next/router";
+import NProgress from "nprogress";
+import TagManager from "react-gtm-module";
+import { Provider } from "react-redux";
 
-import Layout from '../layouts'
-import { useStore } from '../store'
-import * as ga from '../lib/ga'
-import '../styles/globals.css'
-import '../styles/animate.css'
-import '../styles/layout.css'
-import '../styles/tailwind.css'
-import '../styles/components/button.css'
-import '../styles/components/dropdown.css'
-import '../styles/components/forms.css'
-import '../styles/components/modals.css'
-import '../styles/components/navbar.css'
-import '../styles/components/notifications.css'
-import '../styles/components/nprogress.css'
-import '../styles/components/skeleton.css'
-import '../styles/components/table.css'
+import Layout from "../layouts";
+import * as ga from "../lib/ga";
+import { useStore } from "../src/store";
 
-Router.events.on('routeChangeStart', () => NProgress.start())
-Router.events.on('routeChangeComplete', () => NProgress.done())
-Router.events.on('routeChangeError', () => NProgress.done())
+import "../styles/globals.css";
+import "../styles/animate.css";
+import "../styles/layout.css";
+import "../styles/tailwind.css";
+import "../styles/components/button.css";
+import "../styles/components/dropdown.css";
+import "../styles/components/forms.css";
+import "../styles/components/modals.css";
+import "../styles/components/navbar.css";
+import "../styles/components/notifications.css";
+import "../styles/components/nprogress.css";
+import "../styles/components/skeleton.css";
+import "../styles/components/table.css";
 
-export default (
-  {
-    Component,
-    pageProps,
-  },
-) => {
-  const router = useRouter()
-  const store = useStore(pageProps.initialReduxState)
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
 
-  useEffect(
-    () => {
-      const handleRouteChange = url => ga.pageview(url)
+export default ({ Component, pageProps }) => {
+  const router = useRouter();
+  const store = useStore(pageProps.initialReduxState);
 
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => router.events.off('routeChangeComplete', handleRouteChange)
-    },
-    [router.events],
-  )
+  useEffect(() => {
+    const handleRouteChange = (url) => ga.pageview(url);
 
-  useEffect(
-    () => {
-      if (process.env.NEXT_PUBLIC_GTM_ID) {
-        TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
-      }
-    },
-    [],
-  )
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => router.events.off("routeChangeComplete", handleRouteChange);
+  }, [router.events]);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_GTM_ID) {
+      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID });
+    }
+  }, []);
 
   return (
     <>
@@ -62,39 +52,23 @@ export default (
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        <meta
-          charSet="utf-8"
-        />
-        <link
-          rel="manifest"
-          href="/manifest.json"
-        />
-        <link
-          rel="shortcut icon"
-          href="/favicon.png"
-        />
-        <meta
-          name="msapplication-TileColor"
-          content="#050707"
-        />
+        <meta charSet="utf-8" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="shortcut icon" href="/favicon.png" />
+        <meta name="msapplication-TileColor" content="#050707" />
         <meta
           name="msapplication-TileImage"
           content="/icons/mstile-150x150.png"
         />
-        <meta
-          name="theme-color"
-          content="#050707"
-        />
+        <meta name="theme-color" content="#050707" />
       </Head>
       <Provider store={store}>
         <Layout>
           <div id="portal" />
-          <Component
-            { ...pageProps }
-          />
+          <Component {...pageProps} />
         </Layout>
-        <div className="grid-cols-2 grid-cols-3 grid-cols-4" />
+        <div className="grid-cols-2 grid-ceols-3 grid-cols-4" />
       </Provider>
     </>
-  )
-}
+  );
+};

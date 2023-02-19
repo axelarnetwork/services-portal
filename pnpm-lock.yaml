@@ -6,6 +6,7 @@ specifiers:
   '@ianvs/prettier-plugin-sort-imports': ^3.7.1
   '@material-tailwind/react': ^1.2.5
   '@redux-devtools/extension': ^3.2.5
+  '@types/lodash': ^4.14.191
   '@types/node': ^18.14.0
   '@types/react': ^18.0.28
   autoprefixer: ^10.4.13
@@ -71,6 +72,7 @@ dependencies:
 
 devDependencies:
   '@ianvs/prettier-plugin-sort-imports': 3.7.1_prettier@2.8.4
+  '@types/lodash': 4.14.191
   '@types/node': 18.14.0
   '@types/react': 18.0.28
   autoprefixer: 10.4.13_postcss@8.4.21
@@ -1515,6 +1517,10 @@ packages:
     dependencies:
       '@types/node': 18.14.0
     dev: false
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
+    dev: true
 
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}

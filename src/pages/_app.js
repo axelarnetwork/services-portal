@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 
 import Layout from "../layouts";
 import * as ga from "../lib/ga";
-import { useStore } from "../src/store";
+import { useStore } from "../store";
 
 import "../styles/globals.css";
 import "../styles/animate.css";

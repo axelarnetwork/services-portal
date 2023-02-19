@@ -4,7 +4,7 @@ import { BsQuestionCircle } from "react-icons/bs";
 
 import Items from "./items";
 import Image from "../../image";
-import { getChain } from "../../../lib/chain/utils";
+import { getChain } from "~/lib/chain/utils";
 
 export default ({ chain, onSelect }) => {
   const { evm_chains, wallet } = useSelector(

@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import services from "../../../config/services";
+import services from "~/config/services";
 
 export default _.concat(
   [

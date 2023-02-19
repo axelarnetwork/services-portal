@@ -4,7 +4,7 @@ import { split, name } from "./utils";
 import services from "../config/services";
 
 export default (path, data, pathname) => {
-  path = !path ? "/" : path.toLowerCase();
+  path = path ? path.toLowerCase() : "/";
   path = path.includes("?") ? path.substring(0, path.indexOf("?")) : path;
 
   const _paths = split(path, "normal", "/");

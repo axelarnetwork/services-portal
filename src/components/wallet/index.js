@@ -174,23 +174,23 @@ export default ({
   useEffect(() => {
     if (provider?.on) {
       const handleChainChanged = (chainId) => {
-        if (!chainId) {
-          disconnect();
-        } else {
+        if (chainId) {
           connect();
+        } else {
+          disconnect();
         }
       };
 
       const handleAccountsChanged = (accounts) => {
-        if (!_.head(accounts)) {
-          disconnect();
-        } else {
+        if (_.head(accounts)) {
           dispatch({
             type: WALLET_DATA,
             value: {
               address: _.head(accounts),
             },
           });
+        } else {
+          disconnect();
         }
       };
 

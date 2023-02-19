@@ -5,15 +5,8 @@ import { useSelector, shallowEqual } from "react-redux";
 import ServicesInputSearch from "../../dashboard/input-search";
 import InterchainTokenInputAddress from "../../interchain-token/input-token-address";
 import InterchainTokenTokenId from "../../interchain-token/token-id";
-import Copy from "../../copy";
-import Image from "../../image";
-import services from "../../../config/services";
-import {
-  numberFormat,
-  equalsIgnoreCase,
-  toArray,
-  ellipse,
-} from "../../../lib/utils";
+import services from "~/config/services";
+import { equalsIgnoreCase, toArray } from "~/lib/utils";
 
 export default () => {
   const { wallet } = useSelector(
@@ -29,13 +22,17 @@ export default () => {
   const { pathname, query } = { ...router };
   const { address, tx, id, chain, token_address } = { ...query };
 
-  let title, subtitle, right, path;
+  let title;
+  let subtitle;
+  let right;
+  let path;
 
   switch (pathname) {
-    case "/":
+    case "/": {
       title = "All Services";
       right = <ServicesInputSearch />;
       break;
+    }
     default:
       const service = services.find(
         (s) =>
@@ -52,7 +49,7 @@ export default () => {
 
       switch (pathname) {
         case "/interchain-token":
-        case "/interchain-token/[chain]/[token_address]":
+        case "/interchain-token/[chain]/[token_address]": {
           right = signer && (
             <div className="flex w-full flex-col space-y-1 sm:max-w-md sm:items-end">
               <InterchainTokenInputAddress />
@@ -63,6 +60,7 @@ export default () => {
             </div>
           );
           break;
+        }
       }
       break;
   }

@@ -20,18 +20,18 @@ const domains = async (params) => {
   const size = typeof params?.size === "number" ? params.size : 1000;
 
   if (typeof params?.size !== "undefined") {
-    delete params.size;
+    params.size = undefined;
   }
 
   const where = params?.where;
 
   if (typeof params?.where !== "undefined") {
-    delete params.where;
+    params.where = undefined;
   }
 
-  let data,
-    skip = 0,
-    hasMore = true;
+  let data;
+  let skip = 0;
+  let hasMore = true;
 
   while (hasMore) {
     const query = `{

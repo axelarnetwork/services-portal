@@ -3,7 +3,7 @@ import { FiMenu } from "react-icons/fi";
 
 import Items from "./items";
 
-export default () => {
+const Dropdown = () => {
   const [hidden, setHidden] = useState(true);
 
   const buttonRef = useRef(null);
@@ -50,3 +50,5 @@ export default () => {
     </div>
   );
 };
+
+export default Dropdown;

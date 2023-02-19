@@ -8,7 +8,7 @@ import Navbar from "~/components/navbar";
 import meta from "~/lib/meta";
 import { THEME } from "~/reducers/types";
 
-export default ({ children }) => {
+const Layout = ({ children }) => {
   const dispatch = useDispatch();
   const { preferences } = useSelector(
     (state) => ({
@@ -21,18 +21,22 @@ export default ({ children }) => {
   const router = useRouter();
   const { pathname, asPath } = { ...router };
 
-  useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      localStorage.getItem(THEME) &&
-      localStorage.getItem(THEME) !== theme
-    ) {
-      dispatch({
-        type: THEME,
-        value: localStorage.getItem(THEME),
-      });
-    }
-  }, [theme]);
+  useEffect(
+    () => {
+      if (
+        typeof window !== "undefined" &&
+        localStorage.getItem(THEME) &&
+        localStorage.getItem(THEME) !== theme
+      ) {
+        dispatch({
+          type: THEME,
+          value: localStorage.getItem(THEME),
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [theme]
+  );
 
   let data;
 
@@ -93,3 +97,5 @@ export default ({ children }) => {
     </>
   );
 };
+
+export default Layout;

@@ -4,7 +4,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import Image from "../../image";
 import Wallet from "../../wallet";
 
-export default ({ value, onClick }) => {
+const ChainItems = ({ value, onClick }) => {
   const { evm_chains, token_linkers } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -92,3 +92,5 @@ export default ({ value, onClick }) => {
     )
   );
 };
+
+export default ChainItems;

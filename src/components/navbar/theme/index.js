@@ -3,7 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 
 import { THEME } from "~/reducers/types";
 
-export default () => {
+const Theme = () => {
   const dispatch = useDispatch();
   const { preferences } = useSelector(
     (state) => ({
@@ -29,3 +29,5 @@ export default () => {
     </button>
   );
 };
+
+export default Theme;

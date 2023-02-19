@@ -9,7 +9,7 @@ import ServicesInputSearch from "../../dashboard/input-search";
 import InterchainTokenInputAddress from "../../interchain-token/input-token-address";
 import InterchainTokenTokenId from "../../interchain-token/token-id";
 
-export default () => {
+const SubNavbar = () => {
   const { wallet } = useSelector(
     (state) => ({
       wallet: state.wallet,
@@ -98,3 +98,5 @@ export default () => {
     </div>
   );
 };
+
+export default SubNavbar;

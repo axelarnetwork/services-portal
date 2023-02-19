@@ -40,7 +40,7 @@ import RegisterOriginTokenButton from "./register-origin-token-button";
 
 const GAS_LIMIT = 2500000;
 
-export default () => {
+const InterchainToken = () => {
   const dispatch = useDispatch();
   const {
     preferences,
@@ -1457,3 +1457,5 @@ export default () => {
     </div>
   );
 };
+
+export default InterchainToken;

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 import menus from "./menus";
 
-export default () => {
+const Navigation = () => {
   const router = useRouter();
   const { pathname } = { ...router };
 
@@ -46,3 +46,5 @@ export default () => {
     </div>
   );
 };
+
+export default Navigation;

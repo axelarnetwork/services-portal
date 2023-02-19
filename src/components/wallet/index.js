@@ -32,7 +32,7 @@ const getNetwork = (chain_id) => {
 
 let web3Modal;
 
-export default ({
+const Wallet = ({
   mainController = false,
   hidden = false,
   disabled = false,
@@ -64,28 +64,32 @@ export default ({
     }
   }, [connectChainId]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (web3_provider) {
-        dispatch({
-          type: WALLET_DATA,
-          value: {
-            default_chain_id: defaultChainId,
-          },
+  useEffect(
+    () => {
+      if (typeof window !== "undefined") {
+        if (web3_provider) {
+          dispatch({
+            type: WALLET_DATA,
+            value: {
+              default_chain_id: defaultChainId,
+            },
+          });
+        }
+
+        web3Modal = new Web3Modal({
+          network:
+            getNetwork(defaultChainId) ||
+            (process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet"
+              ? "mainnet"
+              : "goerli"),
+          cacheProvider: true,
+          providerOptions,
         });
       }
-
-      web3Modal = new Web3Modal({
-        network:
-          getNetwork(defaultChainId) ||
-          (process.env.NEXT_PUBLIC_ENVIRONMENT === "mainnet"
-            ? "mainnet"
-            : "goerli"),
-        cacheProvider: true,
-        providerOptions,
-      });
-    }
-  }, [defaultChainId]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [defaultChainId]
+  );
 
   useEffect(() => {
     if (web3Modal?.cachedProvider) {
@@ -257,3 +261,5 @@ export default ({
     )
   );
 };
+
+export default Wallet;

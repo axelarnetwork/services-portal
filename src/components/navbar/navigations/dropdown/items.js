@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 import menus from "../menus";
 
-export default ({ onClick }) => {
+const DropdownItems = ({ onClick }) => {
   const router = useRouter();
   const { pathname } = { ...router };
 
@@ -51,3 +51,5 @@ export default ({ onClick }) => {
     </div>
   );
 };
+
+export default DropdownItems;

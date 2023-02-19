@@ -1,5 +1,7 @@
-import Image from "next/image";
+import Image_ from "next/image";
 
-export default ({ alt = "", ...rest }) => {
-  return <Image alt={alt} {...rest} />;
+const Image = ({ alt = "", ...rest }) => {
+  return <Image_ alt={alt} {...rest} />;
 };
+
+export default Image;

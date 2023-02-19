@@ -7,7 +7,7 @@ import { getChain } from "~/lib/chain/utils";
 import Image from "../../image";
 import Items from "./items";
 
-export default () => {
+const Chains = () => {
   const { evm_chains, wallet } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -60,7 +60,13 @@ export default () => {
         className="flex h-16 w-12 items-center justify-center"
       >
         {image ? (
-          <Image src={image} width={24} height={24} className="rounded-full" />
+          <Image
+            src={image}
+            width={24}
+            height={24}
+            className="rounded-full"
+            alt="Chain Logo"
+          />
         ) : (
           <BsQuestionCircle
             size={24}
@@ -81,3 +87,5 @@ export default () => {
     </div>
   );
 };
+
+export default Chains;

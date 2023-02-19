@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
 import { providers } from "ethers";
@@ -29,7 +29,7 @@ import DropdownNavigations from "./navigations/dropdown";
 import SubNavbar from "./sub-navbar";
 import Theme from "./theme";
 
-export default () => {
+const Navbar = () => {
   const dispatch = useDispatch();
   const { evm_chains, assets, rpc_providers, wallet } = useSelector(
     (state) => ({
@@ -305,3 +305,5 @@ export default () => {
     </>
   );
 };
+
+export default Navbar;

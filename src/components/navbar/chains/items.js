@@ -4,7 +4,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import Image from "../../image";
 import Wallet from "../../wallet";
 
-export default ({ onClick }) => {
+const Chains = ({ onClick }) => {
   const { evm_chains, wallet } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -45,6 +45,7 @@ export default ({ onClick }) => {
                 width={24}
                 height={24}
                 className="rounded-full"
+                alt={name}
               />
               <span
                 className={`whitespace-nowrap normal-case ${
@@ -87,3 +88,5 @@ export default ({ onClick }) => {
     )
   );
 };
+
+export default Chains;

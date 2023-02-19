@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { FiX } from "react-icons/fi";
 import { useSelector, shallowEqual } from "react-redux";
 import { Tooltip } from "@material-tailwind/react";
 
 import Portal from "../portal";
 
-export default ({
+const Modal = ({
   id = "portal",
   hidden,
   disabled,
@@ -192,3 +191,5 @@ export default ({
     </>
   );
 };
+
+export default Modal;

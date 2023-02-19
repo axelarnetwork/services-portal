@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BiX } from "react-icons/bi";
 
 import Portal from "../portal";
 
-export default ({
+const Notifications = ({
   visible = true,
   outerClassNames,
   innerClassNames,
@@ -57,3 +57,5 @@ export default ({
     </>
   );
 };
+
+export default Notifications;

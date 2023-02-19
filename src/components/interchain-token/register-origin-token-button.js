@@ -97,7 +97,7 @@ const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
     .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
     .map((c) => c.chain_name);
 
-export default ({
+const RegisterOriginTokenButton = ({
   buttonTitle = <MdAdd size={18} />,
   buttonClassName = "hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:bg-opacity-50 rounded-full text-blue-500 dark:text-blue-600 p-1.5",
   tooltip,
@@ -1372,3 +1372,5 @@ export default ({
     />
   );
 };
+
+export default RegisterOriginTokenButton;

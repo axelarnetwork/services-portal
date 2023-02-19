@@ -8,7 +8,7 @@ import { ellipse } from "~/lib/utils";
 
 import Copy from "../copy";
 
-export default ({ chain, tokenAddress }) => {
+const TokenId = ({ chain, tokenAddress }) => {
   const { evm_chains, rpc_providers, token_linkers } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -78,3 +78,5 @@ export default ({ chain, tokenAddress }) => {
     )
   );
 };
+
+export default TokenId;

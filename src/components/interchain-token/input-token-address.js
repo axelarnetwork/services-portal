@@ -10,7 +10,7 @@ import { split, toArray } from "~/lib/utils";
 
 import Chains from "./chains";
 
-export default () => {
+const InputAddress = () => {
   const { evm_chains, wallet, token_linkers } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -97,3 +97,5 @@ export default () => {
     )
   );
 };
+
+export default InputAddress;

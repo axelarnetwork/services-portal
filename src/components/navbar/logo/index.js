@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import Image from "../../image";
+import Image from "~/components/image";
 
-export default () => {
+export const NavbarLogo = () => {
   return (
     <div className="logo ml-3 mr-1 sm:mr-3">
       <div className="flex flex-col items-start">
@@ -14,6 +14,7 @@ export default () => {
                 width={32}
                 height={32}
                 className="h-6 w-6 sm:h-8 sm:w-8"
+                alt="logo"
               />
             </div>
             <div className="hidden dark:block">
@@ -22,6 +23,7 @@ export default () => {
                 width={32}
                 height={32}
                 className="h-6 w-6 sm:h-8 sm:w-8"
+                alt="logo"
               />
             </div>
           </Link>
@@ -45,3 +47,5 @@ export default () => {
     </div>
   );
 };
+
+export default NavbarLogo;

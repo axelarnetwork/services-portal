@@ -1,0 +1,86 @@
+.modal-backdrop {
+  @apply pointer-events-none invisible fixed inset-0 z-10 h-full w-full transform cursor-none overflow-hidden bg-black opacity-0 duration-150 ease-in-out;
+  &.fade-in {
+    @apply pointer-events-auto visible z-10 cursor-pointer opacity-25;
+    animation-name: fadeInModalBackdrop;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.15s;
+  }
+}
+
+.modal {
+  @apply fixed inset-0 z-20 flex transform items-center justify-center overflow-hidden outline-none;
+  &.show {
+    animation-name: modalShow;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.3s;
+  }
+  .modal-header {
+    @apply flex items-center justify-between rounded-t border-b border-solid p-4;
+    .modal-close {
+      @apply ml-auto;
+    }
+  }
+  .modal-content {
+    @apply relative flex w-full flex-col rounded-lg border-0 shadow-lg outline-none;
+  }
+  .modal-footer {
+    @apply flex items-center justify-end rounded-b border-t border-solid p-4;
+  }
+}
+
+@keyframes fadeInModalBackdrop {
+  0% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(0px, 0px);
+  }
+  100% {
+    visibility: visible;
+    opacity: 0.5;
+    transform: translate(0px, 0px);
+  }
+}
+@keyframes modalShow {
+  0% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(0, -10px);
+  }
+  100% {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+}
+
+[data-background="light"] {
+  &.modal {
+    .modal-header {
+      @apply border-slate-200 bg-white text-slate-900;
+    }
+    .modal-footer {
+      @apply border-slate-200 bg-white text-slate-900;
+    }
+    .modal-content {
+      @apply bg-white text-slate-900;
+    }
+  }
+}
+
+[data-background="dark"] {
+  &.modal {
+    .modal-header {
+      @apply border-slate-800 bg-slate-900 text-white;
+    }
+    .modal-footer {
+      @apply border-slate-800 bg-slate-900 text-white;
+    }
+    .modal-content {
+      @apply bg-slate-900 text-white;
+    }
+  }
+}

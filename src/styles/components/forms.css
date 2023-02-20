@@ -1,0 +1,96 @@
+.form-element {
+  &:not(.form-element-inline) {
+    @apply mb-4 flex flex-col;
+    .form-label {
+      @apply mb-2;
+    }
+    .form-hint,
+    .form-error,
+    .form-success {
+      @apply mt-2;
+    }
+  }
+  &.form-element-inline {
+    @apply flex flex-row items-center justify-start;
+    .form-label {
+      @apply whitespace-nowrap;
+    }
+    > * {
+      @apply mr-2;
+    }
+  }
+  .form-input,
+  .form-textarea {
+    @apply block w-full py-2 px-3 text-xs xl:text-base;
+    &.form-input-valid {
+      @apply border border-green-500;
+    }
+    &.form-input-invalid {
+      @apply border border-red-500;
+    }
+    @apply border-slate-50 bg-slate-50;
+    [data-background="dark"] & {
+      @apply border-slate-800 bg-slate-800 text-white;
+      &::placeholder {
+        color: #6b7280; /*theme('colors.white');*/
+      }
+    }
+  }
+  .form-input {
+    @apply h-9;
+  }
+  .form-select {
+    @apply block h-9 w-full appearance-none py-2 px-3 text-xs xl:text-base;
+    line-height: normal;
+    background-image: linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, transparent, transparent);
+    background-position: calc(100% - 20px) 1em, calc(100% - 15px) 1em,
+      calc(100% - 2.5em) 0.5em;
+    background-size: 5px 5px, 5px 5px, 1px 1.5em;
+    background-repeat: no-repeat;
+    &.form-select-valid {
+      @apply border border-green-500;
+    }
+    &.form-select-invalid {
+      @apply border border-red-500;
+    }
+    [data-background="dark"] & {
+      @apply border-slate-700 bg-slate-800 text-white;
+    }
+  }
+  .form-radio {
+    &.form-radio-valid {
+      @apply text-green-500;
+      + span {
+        @apply text-green-500;
+      }
+    }
+    &.form-radio-invalid {
+      @apply text-red-500;
+      + span {
+        @apply text-red-500;
+      }
+    }
+  }
+  .form-hint {
+    @apply whitespace-nowrap text-sm text-slate-500;
+  }
+  .form-error {
+    @apply whitespace-nowrap text-sm text-red-500;
+  }
+  .form-success {
+    @apply whitespace-nowrap text-sm text-green-500;
+  }
+}
+.form-icon {
+  @apply absolute bottom-0 h-4 w-4 stroke-current;
+  margin-bottom: 10px;
+  &.form-success {
+    @apply text-red-500;
+  }
+  &.form-error {
+    @apply text-green-500;
+  }
+  @apply right-0 mr-2;
+}

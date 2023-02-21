@@ -22,12 +22,13 @@ import "../styles/components/notifications.css";
 import "../styles/components/nprogress.css";
 import "../styles/components/skeleton.css";
 import "../styles/components/table.css";
+import { AppProps } from "next/app";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
-const App = ({ Component, pageProps }) => {
+const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
   const store = useStore(pageProps.initialReduxState);
 

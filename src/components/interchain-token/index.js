@@ -9,17 +9,10 @@ import { predictContractConstant } from "@axelar-network/axelar-gmp-sdk-solidity
 import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
 import ERC20MintableBurnable from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json";
 import { Tooltip } from "@material-tailwind/react";
-import {
-  Contract,
-  ContractFactory,
-  VoidSigner,
-  constants,
-  utils,
-} from "ethers";
+import { Contract, ContractFactory, VoidSigner, constants } from "ethers";
 import _ from "lodash";
 
 import { getChain, switchChain } from "~/lib/chain/utils";
-import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
 import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinkerProxy.json";
 import LinkerRouter from "~/lib/contract/json/LinkerRouter.json";
@@ -45,8 +38,6 @@ const InterchainToken = () => {
   const {
     preferences,
     evm_chains,
-    cosmos_chains,
-    assets,
     const_address_deployer,
     gateway_addresses,
     gas_service_addresses,
@@ -74,8 +65,6 @@ const InterchainToken = () => {
   );
   const { theme } = { ...preferences };
   const { evm_chains_data } = { ...evm_chains };
-  const { cosmos_chains_data } = { ...cosmos_chains };
-  const { assets_data } = { ...assets };
   const { constant_address_deployer } = { ...const_address_deployer };
   const { gateway_addresses_data } = { ...gateway_addresses };
   const { gas_service_addresses_data } = { ...gas_service_addresses };
@@ -84,7 +73,7 @@ const InterchainToken = () => {
   const { wallet_data } = { ...wallet };
   const { token_linkers_data } = { ...token_linkers };
   const { token_addresses_data } = { ...token_addresses };
-  const { chain_id, provider, web3_provider, signer, address } = {
+  const { chain_id, provider, signer, address } = {
     ...wallet_data,
   };
 
@@ -188,107 +177,6 @@ const InterchainToken = () => {
     }
 
     return contract;
-  };
-
-  const upgradeUpgradable = async (
-    proxy_contract_address,
-    contract_json,
-    args = [],
-    setup_params = "0x",
-    _signer = signer,
-    callback
-  ) => {
-    let response;
-
-    if (_signer && proxy_contract_address && contract_json) {
-      response = {
-        ...response,
-        proxy_contract_address,
-      };
-
-      const proxy = new Contract(
-        proxy_contract_address,
-        IUpgradable.abi,
-        _signer
-      );
-
-      const contract_factory = new ContractFactory(
-        contract_json.abi,
-        contract_json.bytecode,
-        _signer
-      );
-
-      try {
-        if (callback) {
-          callback({
-            status: "pending",
-            message: "Please confirm",
-          });
-        }
-
-        const contract = await contract_factory.deploy(...args);
-
-        if (callback) {
-          callback({
-            status: "waiting",
-            message: "Waiting for confirmation",
-          });
-        }
-
-        await contract.deployed();
-
-        const contract_address = contract.address;
-
-        response = {
-          ...response,
-          contract_address,
-        };
-
-        const contract_code = await _signer.provider.getCode(contract_address);
-
-        if (callback) {
-          callback({
-            status: "pending",
-            message: "Please confirm",
-          });
-        }
-
-        const transaction = await proxy.upgrade(
-          contract_address,
-          utils.keccak256(contract_code),
-          setup_params
-        );
-
-        if (callback) {
-          callback({
-            status: "waiting",
-            message: "Waiting for confirmation",
-          });
-        }
-
-        const receipt = await transaction.wait();
-
-        const { status } = { ...receipt };
-
-        const failed = !status;
-
-        response = {
-          ...response,
-          status: failed ? "failed" : "success",
-          message: failed
-            ? "Failed to upgrade contract"
-            : "Upgrade contract successful",
-          receipt,
-        };
-      } catch (error) {
-        response = {
-          status: "failed",
-          ...parseError(error),
-        };
-      }
-    }
-
-    return response;
   };
 
   const deployAndInitContractConstant = async (
@@ -652,43 +540,6 @@ const InterchainToken = () => {
 
     return response;
   };
-  /***** getter *****/
-
-  /***** setter *****/
-  const registerOriginToken = async (token_linker, token_address) => {
-    let response = { token_address };
-
-    if (signer && token_linker && token_address) {
-      try {
-        const transaction = await token_linker.registerOriginToken(
-          token_address
-        );
-
-        const receipt = await transaction.wait();
-
-        const { status } = { ...receipt };
-
-        const failed = !status;
-
-        response = {
-          ...response,
-          status: failed ? "failed" : "success",
-          message: failed
-            ? "Failed to register origin token"
-            : "Register origin token successful",
-          receipt,
-        };
-      } catch (error) {
-        response = {
-          ...response,
-          status: "failed",
-          ...parseError(error),
-        };
-      }
-    }
-
-    return response;
-  };
 
   const deployRemoteTokens = async (token_linker, token_id, chains) => {
     let response = { token_id, chains };
@@ -710,22 +561,14 @@ const InterchainToken = () => {
         const { symbol } = { ...nativeCurrency };
 
         const gas_values = await Promise.all(
-          chains.map(
-            (chain) =>
-              new Promise(async (resolve) => {
-                resolve(
-                  BigInt(
-                    await sdk.queryAPI.estimateGasFee(
-                      id,
-                      chain,
-                      symbol,
-                      GAS_LIMIT
-                    )
-                  )
-                );
-              })
+          chains.map(async (chain) =>
+            sdk.queryAPI
+              .estimateGasFee(id, chain, symbol, GAS_LIMIT)
+              .then(BigInt)
           )
         );
+
+        console.log("gas_values", gas_values);
 
         const transaction = await token_linker.deployRemoteTokens(
           token_id,
@@ -783,20 +626,10 @@ const InterchainToken = () => {
           const { symbol } = { ...nativeCurrency };
 
           gas_values = await Promise.all(
-            chains.map(
-              (chain) =>
-                new Promise(async (resolve) => {
-                  resolve(
-                    BigInt(
-                      await sdk.queryAPI.estimateGasFee(
-                        id,
-                        chain,
-                        symbol,
-                        GAS_LIMIT
-                      )
-                    )
-                  );
-                })
+            chains.map(async (chain) =>
+              sdk.queryAPI
+                .estimateGasFee(id, chain, symbol, GAS_LIMIT)
+                .then(BigInt)
             )
           );
         }
@@ -1053,7 +886,7 @@ const InterchainToken = () => {
 
                     return (
                       <div
-                        key={i}
+                        key={`token-linker-${i}`}
                         className="space-y-5 rounded-xl border border-slate-200 bg-white bg-opacity-100 py-5 px-4 dark:border-slate-800 dark:bg-slate-900 dark:bg-opacity-50"
                       >
                         <div className="flex items-center justify-between space-x-2.5">
@@ -1232,7 +1065,7 @@ const InterchainToken = () => {
 
                     return (
                       <div
-                        key={i}
+                        key={`token-linker-${i}`}
                         className="space-y-5 rounded-xl border border-slate-200 bg-white bg-opacity-100 py-5 px-4 dark:border-slate-800 dark:bg-slate-900 dark:bg-opacity-50"
                       >
                         <div className="flex items-center justify-between space-x-2.5">

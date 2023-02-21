@@ -288,7 +288,7 @@ export const loaderColor = (theme) => (theme === "dark" ? "white" : "#3b82f6");
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const parseError = (error) => {
-  const message = error?.reason || error?.data?.message || error?.message;
+  let message = error?.reason || error?.data?.message || error?.message;
 
   const code = _.slice(
     (message || "")
@@ -298,6 +298,11 @@ export const parseError = (error) => {
     0,
     2
   ).join("_");
+
+  if (message?.includes('insufficient funds for gas * price + value:')) {
+    const words = split(message, "normal", " ");
+    message = words.map((w, i) => Math.abs(i === words.indexOf("want") - i) === 1 ? numberFormat(utils.formatEther(w), "0,0.00000000", true) : w).join(" ");
+  }
 
   return {
     message,

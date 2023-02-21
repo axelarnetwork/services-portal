@@ -49,7 +49,7 @@ const SubNavbar = () => {
       }
 
       switch (pathname) {
-        case "/interchain-token":
+        // case "/interchain-token":
         case "/interchain-token/[chain]/[token_address]": {
           right = signer && (
             <div className="flex w-full flex-col space-y-1 sm:max-w-md sm:items-end">

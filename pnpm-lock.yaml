@@ -10,7 +10,9 @@ specifiers:
   "@redux-devtools/extension": ^3.2.5
   "@types/lodash": ^4.14.191
   "@types/node": ^18.14.0
+  "@types/nprogress": ^0.2.0
   "@types/react": ^18.0.28
+  "@types/react-gtm-module": ^2.0.1
   autoprefixer: ^10.4.13
   env-cmd: ^10.1.0
   eslint: ^8.34.0
@@ -80,7 +82,9 @@ devDependencies:
   "@ianvs/prettier-plugin-sort-imports": 3.7.1_prettier@2.8.4
   "@types/lodash": 4.14.191
   "@types/node": 18.14.0
+  "@types/nprogress": 0.2.0
   "@types/react": 18.0.28
+  "@types/react-gtm-module": 2.0.1
   autoprefixer: 10.4.13_postcss@8.4.21
   eslint: 8.34.0
   eslint-config-next: 13.1.6_7kw3g6rralp5ps6mg3uyzz6azm
@@ -2419,6 +2423,13 @@ packages:
       }
     dev: true
 
+  /@types/nprogress/0.2.0:
+    resolution:
+      {
+        integrity: sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==,
+      }
+    dev: true
+
   /@types/pbkdf2/3.1.0:
     resolution:
       {
@@ -2433,6 +2444,13 @@ packages:
       {
         integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==,
       }
+
+  /@types/react-gtm-module/2.0.1:
+    resolution:
+      {
+        integrity: sha512-T/DN9gAbCYk5wJ1nxf4pSwmXz4d1iVjM++OoG+mwMfz9STMAotGjSb65gJHOS5bPvl6vLSsJnuC+y/43OQrltg==,
+      }
+    dev: true
 
   /@types/react/18.0.28:
     resolution:

@@ -9,7 +9,7 @@ const request = async (params) => {
       method: "POST",
       body: JSON.stringify(params),
     }
-  ).catch((error) => {
+  ).catch(() => {
     return null;
   });
 
@@ -88,7 +88,7 @@ const domains = async (params) => {
 const reverseRecord = async (address) => {
   const response = await fetch(
     `https://ens.fafrd.workers.dev/ens/${address}`
-  ).catch((error) => {
+  ).catch(() => {
     return null;
   });
 

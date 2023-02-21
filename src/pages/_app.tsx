@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Provider } from "react-redux";
+import { AppProps } from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import { useRouter } from "next/router";
@@ -22,7 +23,6 @@ import "../styles/components/notifications.css";
 import "../styles/components/nprogress.css";
 import "../styles/components/skeleton.css";
 import "../styles/components/table.css";
-import { AppProps } from "next/app";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
@@ -33,7 +33,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   const store = useStore(pageProps.initialReduxState);
 
   useEffect(() => {
-    const handleRouteChange = (url) => ga.pageview(url);
+    const handleRouteChange = (url: string) => ga.pageview(url);
 
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);

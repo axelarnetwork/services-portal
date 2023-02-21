@@ -4,6 +4,7 @@
     "react/display-name": "off",
     "no-unused-expressions": "error",
     "no-unused-vars": "error",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "warn"
   }
 }

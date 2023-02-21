@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 
 import Image from "../../image";
-import Wallet from "../../wallet";
 
 const ChainItems = ({ value, onClick, displayName = false }) => {
   const { evm_chains, token_linkers } = useSelector(

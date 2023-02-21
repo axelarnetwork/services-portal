@@ -89,7 +89,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <div className="mt-8 flex items-center">
-                  {toArray(tags).map((t, j) => {
+                  {toArray(tags).map((t) => {
                     return (
                       <div
                         key={t}

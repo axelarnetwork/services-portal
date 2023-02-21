@@ -21,7 +21,7 @@ const SubNavbar = () => {
 
   const router = useRouter();
   const { pathname, query } = { ...router };
-  const { address, tx, id, chain, token_address } = { ...query };
+  const { chain, token_address } = { ...query };
 
   let title;
   let subtitle;

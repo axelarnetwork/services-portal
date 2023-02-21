@@ -12,7 +12,7 @@ const request = async (path, params) => {
   const response = await fetch(process.env.NEXT_PUBLIC_EXPLORER_API_URL, {
     method: "POST",
     body: JSON.stringify(params),
-  }).catch((error) => {
+  }).catch(() => {
     return null;
   });
 

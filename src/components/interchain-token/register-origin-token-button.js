@@ -202,6 +202,7 @@ export default (
   useEffect(
     () => {
       setChainData(initialChainData);
+      setRemoteChains(getDefaultRemoteChains(supportedEvmChains, initialChainData));
     },
     [initialChainData],
   )
@@ -496,6 +497,7 @@ export default (
               {!isOrigin ? "Deploy remote tokens from" : "Register origin token on"}
             </span>
             <Chains
+              disabled={disabled || currentStep > 1}
               chain={id}
               onSelect={c => setChainData(toArray(evm_chains_data).find(_c => _c.id === c))}
               displayName={true}

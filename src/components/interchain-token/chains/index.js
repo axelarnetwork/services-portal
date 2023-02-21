@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
+import { RxCaretDown } from "react-icons/rx";
 import { useSelector, shallowEqual } from "react-redux";
 
 import { getChain } from "~/lib/chain/utils";
@@ -9,6 +10,7 @@ import Items from "./items";
 
 export default (
   {
+    disabled = false,
     chain,
     onSelect,
     displayName = false,
@@ -79,15 +81,16 @@ export default (
     <div className="relative">
       <button
         ref={buttonRef}
+        disabled={disabled}
         onClick={onClick}
-        className={`${displayName ? "space-x-2" : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-full p-1"} flex items-center justify-center`}
+        className={`${displayName ? "" : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-full p-1"} ${disabled ? "cursor-not-allowed" : "cursor-pointer"} flex items-center justify-center`}
       >
         {image ?
           <Image
             src={image}
             width={20}
             height={20}
-            className="rounded-full"
+            className="rounded-full mr-2"
           /> :
           <BsQuestionCircle
             size={16}
@@ -97,9 +100,20 @@ export default (
         {
           displayName &&
           (
-            <span className="whitespace-nowrap text-base font-bold">
-              {name}
-            </span>
+            <>
+              <span className="whitespace-nowrap text-base font-bold">
+                {name}
+              </span>
+              {
+                !disabled &&
+                (
+                  <RxCaretDown
+                    size={18}
+                    className="ml-1"
+                  />
+                )
+              }
+            </>
           )
         }
       </button>

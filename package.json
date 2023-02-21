@@ -27,6 +27,11 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
   "dependencies": {
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.2.0",
     "@axelar-network/axelarjs-sdk": "0.12.5-alph.3",
@@ -65,6 +70,7 @@
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.1.6",
     "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
     "postcss": "^8.4.21",
     "postcss-color-function": "^4.1.0",
     "postcss-flexbugs-fixes": "^5.0.2",

@@ -18,7 +18,7 @@ import {
 } from "ethers";
 import _ from "lodash";
 
-import { getChain, switchChain } from "~/lib/chain/utils";
+import { getChain/*, switchChain*/ } from "~/lib/chain/utils";
 // import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
 import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinkerProxy.json";
@@ -108,7 +108,7 @@ export default () => {
   } = { ...token_addresses };
   const {
     chain_id,
-    provider,
+    // provider,
     signer,
     address,
   } = { ...wallet_data };
@@ -314,65 +314,65 @@ export default () => {
   //   return response;
   // }
 
-  const deployAndInitContractConstant = async (
-    key = "deployer",
-    contract_json,
-    args = [],
-    init_args = [],
-    _signer = signer,
-    callback,
-  ) => {
-    let contract;
+  // const deployAndInitContractConstant = async (
+  //   key = "deployer",
+  //   contract_json,
+  //   args = [],
+  //   init_args = [],
+  //   _signer = signer,
+  //   callback,
+  // ) => {
+  //   let contract;
 
-    if (constant_address_deployer && _signer && key && contract_json) {
-      const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode);
+  //   if (constant_address_deployer && _signer && key && contract_json) {
+  //     const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode);
 
-      const bytecode = contract_factory.getDeployTransaction(...args)?.data;
+  //     const bytecode = contract_factory.getDeployTransaction(...args)?.data;
 
-      const salt = getSaltFromKey(key);
+  //     const salt = getSaltFromKey(key);
 
-      const deployer = new Contract(constant_address_deployer, ConstAddressDeployer.abi, _signer);
+  //     const deployer = new Contract(constant_address_deployer, ConstAddressDeployer.abi, _signer);
 
-      const _address = await deployer.deployedAddress(bytecode, address, salt);
+  //     const _address = await deployer.deployedAddress(bytecode, address, salt);
 
-      contract = new Contract(_address, contract_json.abi, _signer);
+  //     contract = new Contract(_address, contract_json.abi, _signer);
 
-      const init_data = (await contract.populateTransaction.init(...init_args))?.data;
+  //     const init_data = (await contract.populateTransaction.init(...init_args))?.data;
 
-      try {
-        if (callback) {
-          callback(
-            {
-              status: "pending",
-              message: "Please confirm",
-            },
-          );
-        }
+  //     try {
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "pending",
+  //             message: "Please confirm",
+  //           },
+  //         );
+  //       }
 
-        const transaction = await deployer.connect(_signer).deployAndInit(bytecode, salt, init_data);
+  //       const transaction = await deployer.connect(_signer).deployAndInit(bytecode, salt, init_data);
 
-        if (callback) {
-          callback(
-            {
-              status: "waiting",
-              message: "Waiting for confirmation",
-            },
-          );
-        }
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "waiting",
+  //             message: "Waiting for confirmation",
+  //           },
+  //         );
+  //       }
 
-        await transaction.wait();
-      } catch (error) {
-        return (
-          {
-            status: "failed",
-            ...parseError(error),
-          }
-        );
-      }
-    }
+  //       await transaction.wait();
+  //     } catch (error) {
+  //       return (
+  //         {
+  //           status: "failed",
+  //           ...parseError(error),
+  //         }
+  //       );
+  //     }
+  //   }
 
-    return contract;
-  }
+  //   return contract;
+  // }
 
   // const _deployTokenLinker = async (
   //   _signer = signer,

@@ -1,11 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  ReactNode,
-  FC,
-  MouseEventHandler,
-} from "react";
+import { useState, useEffect, useRef, ReactNode, FC } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { Tooltip } from "@material-tailwind/react";
 import { placement } from "@material-tailwind/react/types/components/menu";

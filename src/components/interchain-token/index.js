@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import { BiMessage, BiCheck } from "react-icons/bi";
+import { /*BiMessage, */BiCheck } from "react-icons/bi";
 // import { BsFileEarmarkCheckFill } from "react-icons/bs";
 // import { IoClose } from "react-icons/io5";
 import { Blocks, Oval } from "react-loader-spinner";
@@ -14,16 +14,16 @@ import {
   ContractFactory,
   VoidSigner,
   constants,
-  utils,
+  // utils,
 } from "ethers";
 import _ from "lodash";
 
 import { getChain, switchChain } from "~/lib/chain/utils";
-import IUpgradable from "~/lib/contract/json/IUpgradable.json";
+// import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
 import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinkerProxy.json";
-import LinkerRouter from "~/lib/contract/json/LinkerRouter.json";
-import LinkerRouterProxy from "~/lib/contract/json/LinkerRouterProxy.json";
+// import LinkerRouter from "~/lib/contract/json/LinkerRouter.json";
+// import LinkerRouterProxy from "~/lib/contract/json/LinkerRouterProxy.json";
 import {
   deployContract,
   isContractDeployed,
@@ -46,7 +46,7 @@ export default () => {
   const {
     preferences,
     evm_chains,
-    cosmos_chains,
+    // cosmos_chains,
     const_address_deployer,
     gateway_addresses,
     gas_service_addresses,
@@ -60,7 +60,7 @@ export default () => {
       {
         preferences: state.preferences,
         evm_chains: state.evm_chains,
-        cosmos_chains: state.cosmos_chains,
+        // cosmos_chains: state.cosmos_chains,
         const_address_deployer: state.constant_address_deployer,
         gateway_addresses: state.gateway_addresses,
         gas_service_addresses: state.gas_service_addresses,
@@ -161,61 +161,61 @@ export default () => {
     return response;
   }
 
-  const deployUpgradable = async (
-    key = "deployer",
-    contract_json,
-    contract_proxy_json,
-    args = [],
-    proxy_args = [],
-    setup_params = "0x",
-    _signer = signer,
-    callback,
-  ) => {
-    let contract;
+  // const deployUpgradable = async (
+  //   key = "deployer",
+  //   contract_json,
+  //   contract_proxy_json,
+  //   args = [],
+  //   proxy_args = [],
+  //   setup_params = "0x",
+  //   _signer = signer,
+  //   callback,
+  // ) => {
+  //   let contract;
 
-    if (constant_address_deployer && _signer && key && contract_json && contract_proxy_json) {
-      const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode, _signer);
+  //   if (constant_address_deployer && _signer && key && contract_json && contract_proxy_json) {
+  //     const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode, _signer);
 
-      try {
-        if (callback) {
-          callback(
-            {
-              status: "pending",
-              message: "Please confirm",
-            },
-          );
-        }
+  //     try {
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "pending",
+  //             message: "Please confirm",
+  //           },
+  //         );
+  //       }
 
-        const _contract = await contract_factory.deploy(...args)
+  //       const _contract = await contract_factory.deploy(...args)
 
-        if (callback) {
-          callback(
-            {
-              status: "waiting",
-              message: "Waiting for confirmation",
-            },
-          );
-        }
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "waiting",
+  //             message: "Waiting for confirmation",
+  //           },
+  //         );
+  //       }
 
-        await _contract.deployed()
+  //       await _contract.deployed()
 
-        const proxy = await deployAndInitContractConstant(
-          key,
-          contract_proxy_json,
-          proxy_args,
-          [_contract.address, _signer.address, setup_params],
-          _signer,
-          callback ?
-            response => callback(response) :
-            undefined,
-        );
+  //       const proxy = await deployAndInitContractConstant(
+  //         key,
+  //         contract_proxy_json,
+  //         proxy_args,
+  //         [_contract.address, _signer.address, setup_params],
+  //         _signer,
+  //         callback ?
+  //           response => callback(response) :
+  //           undefined,
+  //       );
 
-        contract = new Contract(proxy.address, contract_json.abi, _signer);
-      } catch (error) {}
-    }
+  //       contract = new Contract(proxy.address, contract_json.abi, _signer);
+  //     } catch (error) {}
+  //   }
 
-    return contract;
-  }
+  //   return contract;
+  // }
 
   // const upgradeUpgradable = async (
   //   proxy_contract_address,
@@ -501,76 +501,76 @@ export default () => {
   //   return response;
   // }
 
-  const deployTokenLinker = async (
-    chain,
-    _signer,
-  ) => {
-    const chain_data = getChain(chain, evm_chains_data);
+  // const deployTokenLinker = async (
+  //   chain,
+  //   _signer,
+  // ) => {
+  //   const chain_data = getChain(chain, evm_chains_data);
 
-    if (chain_data?.chain_id !== chain_id && !_signer) {
-      setTokenLinkerDeployStatus(
-        {
-          chain,
-          status: "switching",
-          message: "Please switch network"
-        }
-      );
+  //   if (chain_data?.chain_id !== chain_id && !_signer) {
+  //     setTokenLinkerDeployStatus(
+  //       {
+  //         chain,
+  //         status: "switching",
+  //         message: "Please switch network"
+  //       }
+  //     );
 
-      const _signer = await switchChain(chain_data?.chain_id, provider, evm_chains_data);
+  //     const _signer = await switchChain(chain_data?.chain_id, provider, evm_chains_data);
 
-      if (_signer) {
-        deployTokenLinker(chain, _signer);
-      }
-      else {
-        setTokenLinkerDeployStatus(null);
-      }
-    }
-    else {
-      setTokenLinkerDeployStatus(
-        {
-          chain,
-          status: "pending",
-          message: "Deploying",
-        }
-      );
+  //     if (_signer) {
+  //       deployTokenLinker(chain, _signer);
+  //     }
+  //     else {
+  //       setTokenLinkerDeployStatus(null);
+  //     }
+  //   }
+  //   else {
+  //     setTokenLinkerDeployStatus(
+  //       {
+  //         chain,
+  //         status: "pending",
+  //         message: "Deploying",
+  //       }
+  //     );
 
-      const response = await _deployTokenLinker(
-        _signer,
-        updated_status => {
-          setTokenLinkerDeployStatus(
-            {
-              chain,
-              ...updated_status,
-            }
-          );
-        },
-      );
+  //     const response = await _deployTokenLinker(
+  //       _signer,
+  //       updated_status => {
+  //         setTokenLinkerDeployStatus(
+  //           {
+  //             chain,
+  //             ...updated_status,
+  //           }
+  //         );
+  //       },
+  //     );
 
-      const {
-        deployed,
-        status,
-        message,
-        code,
-      } = { ...response };
+  //     const {
+  //       deployed,
+  //       status,
+  //       message,
+  //       code,
+  //     } = { ...response };
 
-      setTokenLinkerDeployStatus(
-        deployed ||
-        [
-          "user_rejected",
-        ]
-        .includes(code) ?
-          null :
-          status === "failed" ?
-            {
-              ...response,
-              chain,
-              error_message: message,
-              message: "Deployment failed",
-            } :
-            response
-      );
-    }
-  }
+  //     setTokenLinkerDeployStatus(
+  //       deployed ||
+  //       [
+  //         "user_rejected",
+  //       ]
+  //       .includes(code) ?
+  //         null :
+  //         status === "failed" ?
+  //           {
+  //             ...response,
+  //             chain,
+  //             error_message: message,
+  //             message: "Deployment failed",
+  //           } :
+  //           response
+  //     );
+  //   }
+  // }
   /*** deployment ***/
 
   /***** getter *****/

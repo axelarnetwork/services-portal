@@ -52,7 +52,7 @@ const Wallet = ({
     shallowEqual
   );
   const { theme } = { ...preferences };
-  // const { evm_chains_data } = { ...evm_chains };
+  const { evm_chains_data } = { ...evm_chains };
   const { wallet_data } = { ...wallet };
   const { chain_id, provider, web3_provider } = { ...wallet_data };
 
@@ -162,7 +162,7 @@ const Wallet = ({
         if (code === 4902) {
           try {
             const { provider_params } = {
-              ...getChain(connectChainId, chains_data),
+              ...getChain(connectChainId, evm_chains_data),
             };
 
             await provider.request({

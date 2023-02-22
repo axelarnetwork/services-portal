@@ -1,10 +1,51 @@
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  FC,
+  MouseEventHandler,
+} from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { Tooltip } from "@material-tailwind/react";
+import { placement } from "@material-tailwind/react/types/components/menu";
 
 import Portal from "../portal";
 
-const Modal = ({
+type ModalProps = {
+  id?: string;
+  hidden?: boolean;
+  disabled?: boolean;
+  tooltip?: ReactNode;
+  placement?: placement;
+  onClick?: (open: boolean) => void;
+  buttonTitle?: ReactNode;
+  buttonClassName?: string;
+  title?: ReactNode;
+  icon?: ReactNode;
+  body?: ReactNode;
+  noCancelOnClickOutside?: boolean;
+  cancelDisabled?: boolean;
+  onCancel?: () => void;
+  cancelButtonTitle?: ReactNode;
+  cancelButtonClassName?: string;
+  confirmDisabled?: boolean;
+  onConfirm?: () => void;
+  onConfirmHide?: boolean;
+  confirmButtonTitle?: ReactNode;
+  confirmButtonClassName?: string;
+  onClose?: () => void;
+  noButtons?: boolean;
+  modalClassName?: string;
+};
+
+type PartialState = {
+  preferences: {
+    theme: string;
+  };
+};
+
+const Modal: FC<ModalProps> = ({
   id = "portal",
   hidden,
   disabled,
@@ -30,17 +71,14 @@ const Modal = ({
   noButtons,
   modalClassName = "",
 }) => {
-  const { preferences } = useSelector(
-    (state) => ({
-      preferences: state.preferences,
-    }),
+  const theme = useSelector<PartialState>(
+    (state) => state.preferences.theme,
     shallowEqual
   );
-  const { theme } = { ...preferences };
 
   const [open, setOpen] = useState(false);
 
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const show = () => {
     if (onClick) {
@@ -56,12 +94,12 @@ const Modal = ({
   };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (!modalRef?.current) {
         return false;
       }
 
-      if (!open || modalRef.current.contains(e.target)) {
+      if (!open || modalRef.current.contains(e.target as Node)) {
         return false;
       }
 

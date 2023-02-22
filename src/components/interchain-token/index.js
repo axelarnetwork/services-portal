@@ -6,12 +6,12 @@ import { Blocks, Oval } from "react-loader-spinner";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { useRouter } from "next/router";
 import { predictContractConstant } from "@axelar-network/axelar-gmp-sdk-solidity";
-import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
+// import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
 import ERC20MintableBurnable from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json";
 // import { Tooltip } from "@material-tailwind/react";
 import {
   Contract,
-  ContractFactory,
+  // ContractFactory,
   VoidSigner,
   constants,
   // utils,
@@ -27,7 +27,7 @@ import InterchainTokenLinkerProxy from "~/lib/contract/json/InterchainTokenLinke
 import {
   deployContract,
   isContractDeployed,
-  getSaltFromKey,
+  // getSaltFromKey,
   getContractAddressByChain,
 } from "~/lib/contract/utils";
 import { ellipse, toArray, loaderColor, parseError } from "~/lib/utils";
@@ -1309,7 +1309,7 @@ export default () => {
                   }
                 </div>
               </div>
-            // */
+            */
             <div className="w-full xl:px-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
                 {getSupportedEvmChains()

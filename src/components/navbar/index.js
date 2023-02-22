@@ -31,7 +31,7 @@ import Theme from "./theme";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { evm_chains, assets, rpc_providers, wallet } = useSelector(
+  const { evm_chains, rpc_providers, wallet } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
       assets: state.assets,
@@ -41,7 +41,6 @@ const Navbar = () => {
     shallowEqual
   );
   const { evm_chains_data } = { ...evm_chains };
-  const { assets_data } = { ...assets };
   const { rpcs } = { ...rpc_providers };
   const { wallet_data } = { ...wallet };
   const { default_chain_id, web3_provider, address } = { ...wallet_data };
@@ -189,7 +188,7 @@ const Navbar = () => {
 
   // rpcs
   useEffect(() => {
-    const init = (async) => {
+    const init = () => {
       if (evm_chains_data) {
         const _rpcs = {};
 
@@ -239,7 +238,7 @@ const Navbar = () => {
 
   // sdk
   useEffect(() => {
-    const init = (async) => {
+    const init = () => {
       dispatch({
         type: SDK,
         value: {

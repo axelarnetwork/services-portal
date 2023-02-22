@@ -43,7 +43,7 @@ const Wallet = ({
   childrenClassName = "bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 border-4 border-slate-200 dark:border-slate-700 rounded-lg whitespace-nowrap uppercase text-slate-700 hover:text-slate-800 dark:text-slate-200 dark:hover:text-slate-100 font-semibold py-1.5 px-2.5",
 }) => {
   const dispatch = useDispatch();
-  const { preferences, evm_chains, wallet } = useSelector(
+  const { preferences, wallet } = useSelector(
     (state) => ({
       preferences: state.preferences,
       evm_chains: state.evm_chains,
@@ -52,7 +52,7 @@ const Wallet = ({
     shallowEqual
   );
   const { theme } = { ...preferences };
-  const { evm_chains_data } = { ...evm_chains };
+  // const { evm_chains_data } = { ...evm_chains };
   const { wallet_data } = { ...wallet };
   const { chain_id, provider, web3_provider } = { ...wallet_data };
 

@@ -161,7 +161,7 @@ export const numberFormat = (number, format, is_exact) => {
           Number(Number(n).toFixed(fixed_decimals)) *
             Math.pow(10, fixed_decimals)
         )}${_.range(Number(e))
-          .map((i) => "0")
+          .map(() => "0")
           .join("")}`;
 
         _number = Number(
@@ -299,9 +299,15 @@ export const parseError = (error) => {
     2
   ).join("_");
 
-  if (message?.includes('insufficient funds for gas * price + value:')) {
+  if (message?.includes("insufficient funds for gas * price + value:")) {
     const words = split(message, "normal", " ");
-    message = words.map((w, i) => Math.abs(i === words.indexOf("want") - i) === 1 ? numberFormat(utils.formatEther(w), "0,0.00000000", true) : w).join(" ");
+    message = words
+      .map((w, i) =>
+        Math.abs(i === words.indexOf("want") - i) === 1
+          ? numberFormat(utils.formatEther(w), "0,0.00000000", true)
+          : w
+      )
+      .join(" ");
   }
 
   return {

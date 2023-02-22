@@ -67,7 +67,6 @@ const App = ({ Component, pageProps }: AppProps) => {
           <div id="portal" />
           <Component {...pageProps} />
         </Layout>
-        <div className="grid-cols-2 grid-cols-3 grid-cols-4" />
       </Provider>
     </>
   );

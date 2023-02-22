@@ -90,7 +90,7 @@ export default (
             src={image}
             width={20}
             height={20}
-            className="rounded-full mr-2"
+            className={`rounded-full ${displayName ? "mr-2" : ""}`}
           /> :
           <BsQuestionCircle
             size={16}

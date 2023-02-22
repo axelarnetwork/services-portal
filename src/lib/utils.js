@@ -303,7 +303,7 @@ export const parseError = (error) => {
     const words = split(message, "normal", " ");
     message = words
       .map((w, i) =>
-        Math.abs(i === words.indexOf("want") - i) === 1
+        Math.abs(words.indexOf("want") - i) === 1
           ? numberFormat(utils.formatEther(w), "0,0.00000000", true)
           : w
       )

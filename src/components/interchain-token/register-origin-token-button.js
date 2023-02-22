@@ -125,7 +125,6 @@ export default (
     evm_chains,
     rpc_providers,
     wallet,
-    token_linkers,
   } = useSelector(
     state => (
       {
@@ -133,7 +132,6 @@ export default (
         evm_chains: state.evm_chains,
         rpc_providers: state.rpc_providers,
         wallet: state.wallet,
-        token_linkers: state.token_linkers,
       }
     ),
     shallowEqual,
@@ -151,12 +149,8 @@ export default (
     wallet_data,
   } = { ...wallet };
   const {
-    token_linkers_data,
-  } = { ...token_linkers };
-  const {
     chain_id,
     signer,
-    address,
   } = { ...wallet_data };
 
   const router = useRouter();
@@ -173,7 +167,6 @@ export default (
 
   const [inputTokenAddress, setInputTokenAddress] = useState(fixedTokenAddress);
   const [tokenAddress, setTokenAddress] = useState(null);
-  const [validTokenAddress, setValidTokenAddress] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [remoteChains, setRemoteChains] = useState(null);
   const [calls, setCalls] = useState(null);
@@ -265,7 +258,6 @@ export default (
 
     setInputTokenAddress(fixedTokenAddress);
     setTokenAddress(null);
-    setValidTokenAddress(null);
     setTokenData(null);
     setRemoteChains(initialRemoteChains || getDefaultRemoteChains(supportedEvmChains, chainData));
     setCalls(null);
@@ -283,7 +275,6 @@ export default (
   const validate = async _chainData => {
     if (typeof inputTokenAddress === "string") {
       setTokenAddress(null);
-      setValidTokenAddress(null);
       setTokenData(null);
       setValidateResponse(null);
 
@@ -303,7 +294,6 @@ export default (
             const symbol = await contract.symbol();
             const decimals = await contract.decimals();
 
-            setValidTokenAddress(true);
             setTokenData(
               {
                 name,
@@ -319,7 +309,6 @@ export default (
               }
             );
           } catch (error) {
-            setValidTokenAddress(false);
             setTokenData(null);
             setValidateResponse(
               {
@@ -330,7 +319,6 @@ export default (
           }
         } catch (error) {
           setTokenAddress(null);
-          setValidTokenAddress(false);
           setTokenData(null);
           setValidateResponse(
             {
@@ -364,7 +352,6 @@ export default (
       default:
         if (token_address) {
           setTokenAddress(token_address);
-          setValidTokenAddress(true);
           setTokenData(
             {
               ...response,
@@ -443,7 +430,6 @@ export default (
   const {
     id,
     name,
-    image,
     explorer,
   } = { ...chainData };
   const {
@@ -584,7 +570,6 @@ export default (
                 .map(s => {
                   const {
                     id,
-                    title,
                     step,
                   } = { ...s };
 
@@ -1241,7 +1226,6 @@ export default (
                     if (_preExistingToken !== preExistingToken) {
                       setInputTokenAddress(null);
                       setTokenAddress(null);
-                      setValidTokenAddress(null);
                       setTokenData(null);
 
                       setValidating(false);

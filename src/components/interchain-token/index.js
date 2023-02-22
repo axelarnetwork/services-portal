@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { BiMessage, BiCheck } from "react-icons/bi";
-import { BsFileEarmarkCheckFill } from "react-icons/bs";
-import { IoClose } from "react-icons/io5";
+// import { BiMessage, BiCheck } from "react-icons/bi";
+// import { BsFileEarmarkCheckFill } from "react-icons/bs";
+// import { IoClose } from "react-icons/io5";
 import { Blocks, Oval } from "react-loader-spinner";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { useRouter } from "next/router";
 import { predictContractConstant } from "@axelar-network/axelar-gmp-sdk-solidity";
 import ConstAddressDeployer from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/deploy/ConstAddressDeployer.sol/ConstAddressDeployer.json";
 import ERC20MintableBurnable from "@axelar-network/axelar-gmp-sdk-solidity/artifacts/contracts/test/ERC20MintableBurnable.sol/ERC20MintableBurnable.json";
-import { Tooltip } from "@material-tailwind/react";
+// import { Tooltip } from "@material-tailwind/react";
 import {
   Contract,
   ContractFactory,
@@ -47,7 +47,6 @@ export default () => {
     preferences,
     evm_chains,
     cosmos_chains,
-    assets,
     const_address_deployer,
     gateway_addresses,
     gas_service_addresses,
@@ -62,7 +61,6 @@ export default () => {
         preferences: state.preferences,
         evm_chains: state.evm_chains,
         cosmos_chains: state.cosmos_chains,
-        assets: state.assets,
         const_address_deployer: state.constant_address_deployer,
         gateway_addresses: state.gateway_addresses,
         gas_service_addresses: state.gas_service_addresses,
@@ -81,12 +79,9 @@ export default () => {
   const {
     evm_chains_data,
   } = { ...evm_chains };
-  const {
-    cosmos_chains_data,
-  } = { ...cosmos_chains };
-  const {
-    assets_data,
-  } = { ...assets };
+  // const {
+  //   cosmos_chains_data,
+  // } = { ...cosmos_chains };
   const {
     constant_address_deployer,
   } = { ...const_address_deployer };
@@ -114,7 +109,6 @@ export default () => {
   const {
     chain_id,
     provider,
-    web3_provider,
     signer,
     address,
   } = { ...wallet_data };
@@ -132,7 +126,7 @@ export default () => {
   const [tokenAddress, setTokenAddress] = useState("");
   const [tokenId, setTokenId] = useState(null);
 
-  const [tokenLinkerDeployStatus, setTokenLinkerDeployStatus] = useState(null);
+  // const [tokenLinkerDeployStatus, setTokenLinkerDeployStatus] = useState(null);
 
   /*** deployment ***/
   const deployToken = async (
@@ -223,102 +217,102 @@ export default () => {
     return contract;
   }
 
-  const upgradeUpgradable = async (
-    proxy_contract_address,
-    contract_json,
-    args = [],
-    setup_params = "0x",
-    _signer = signer,
-    callback,
-  ) => {
-    let response;
+  // const upgradeUpgradable = async (
+  //   proxy_contract_address,
+  //   contract_json,
+  //   args = [],
+  //   setup_params = "0x",
+  //   _signer = signer,
+  //   callback,
+  // ) => {
+  //   let response;
 
-    if (_signer && proxy_contract_address && contract_json) {
-      response = {
-        ...response,
-        proxy_contract_address,
-      };
+  //   if (_signer && proxy_contract_address && contract_json) {
+  //     response = {
+  //       ...response,
+  //       proxy_contract_address,
+  //     };
 
-      const proxy = new Contract(proxy_contract_address, IUpgradable.abi, _signer);
+  //     const proxy = new Contract(proxy_contract_address, IUpgradable.abi, _signer);
 
-      const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode, _signer);
+  //     const contract_factory = new ContractFactory(contract_json.abi, contract_json.bytecode, _signer);
 
-      try {
-        if (callback) {
-          callback(
-            {
-              status: "pending",
-              message: "Please confirm",
-            },
-          );
-        }
+  //     try {
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "pending",
+  //             message: "Please confirm",
+  //           },
+  //         );
+  //       }
 
-        const contract = await contract_factory.deploy(...args);
+  //       const contract = await contract_factory.deploy(...args);
 
-        if (callback) {
-          callback(
-            {
-              status: "waiting",
-              message: "Waiting for confirmation",
-            },
-          );
-        }
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "waiting",
+  //             message: "Waiting for confirmation",
+  //           },
+  //         );
+  //       }
 
-        await contract.deployed();
+  //       await contract.deployed();
 
-        const contract_address = contract.address;
+  //       const contract_address = contract.address;
 
-        response = {
-          ...response,
-          contract_address,
-        };
+  //       response = {
+  //         ...response,
+  //         contract_address,
+  //       };
 
-        const contract_code = await _signer.provider.getCode(contract_address);
+  //       const contract_code = await _signer.provider.getCode(contract_address);
 
-        if (callback) {
-          callback(
-            {
-              status: "pending",
-              message: "Please confirm",
-            },
-          );
-        }
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "pending",
+  //             message: "Please confirm",
+  //           },
+  //         );
+  //       }
 
-        const transaction = await proxy.upgrade(contract_address, utils.keccak256(contract_code), setup_params);
+  //       const transaction = await proxy.upgrade(contract_address, utils.keccak256(contract_code), setup_params);
 
-        if (callback) {
-          callback(
-            {
-              status: "waiting",
-              message: "Waiting for confirmation",
-            },
-          );
-        }
+  //       if (callback) {
+  //         callback(
+  //           {
+  //             status: "waiting",
+  //             message: "Waiting for confirmation",
+  //           },
+  //         );
+  //       }
 
-        const receipt = await transaction.wait();
+  //       const receipt = await transaction.wait();
 
-        const {
-          status,
-        } = { ...receipt };
+  //       const {
+  //         status,
+  //       } = { ...receipt };
 
-        const failed = !status;
+  //       const failed = !status;
 
-        response = {
-          ...response,
-          status: failed ? "failed" : "success",
-          message: failed ? "Failed to upgrade contract" : "Upgrade contract successful",
-          receipt,
-        };
-      } catch (error) {
-        response = {
-          status: "failed",
-          ...parseError(error),
-        };
-      }
-    }
+  //       response = {
+  //         ...response,
+  //         status: failed ? "failed" : "success",
+  //         message: failed ? "Failed to upgrade contract" : "Upgrade contract successful",
+  //         receipt,
+  //       };
+  //     } catch (error) {
+  //       response = {
+  //         status: "failed",
+  //         ...parseError(error),
+  //       };
+  //     }
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
   const deployAndInitContractConstant = async (
     key = "deployer",
@@ -380,132 +374,132 @@ export default () => {
     return contract;
   }
 
-  const _deployTokenLinker = async (
-    _signer = signer,
-    callback,
-  ) => {
-    let response
+  // const _deployTokenLinker = async (
+  //   _signer = signer,
+  //   callback,
+  // ) => {
+  //   let response
 
-    if (evm_chains_data && constant_address_deployer && gateway_addresses_data && gas_service_addresses_data && _signer) {
-      const token_linker = await getTokenLinker(_signer);
+  //   if (evm_chains_data && constant_address_deployer && gateway_addresses_data && gas_service_addresses_data && _signer) {
+  //     const token_linker = await getTokenLinker(_signer);
 
-      const {
-        token_linker_address,
-        deployed,
-      } = { ...token_linker };
+  //     const {
+  //       token_linker_address,
+  //       deployed,
+  //     } = { ...token_linker };
 
-      const {
-        id,
-        chain_name,
-      } = { ...getChain(chain_id, evm_chains_data) };
+  //     const {
+  //       id,
+  //       chain_name,
+  //     } = { ...getChain(chain_id, evm_chains_data) };
 
-      const chain = chain_name || id;
+  //     const chain = chain_name || id;
 
-      const gateway_address = getContractAddressByChain(id, gateway_addresses_data);
+  //     const gateway_address = getContractAddressByChain(id, gateway_addresses_data);
 
-      const gas_service_address = getContractAddressByChain(id, gas_service_addresses_data);
+  //     const gas_service_address = getContractAddressByChain(id, gas_service_addresses_data);
 
-      response = {
-        ...token_linker,
-        chain,
-        gateway_address,
-        gas_service_address,
-      };
+  //     response = {
+  //       ...token_linker,
+  //       chain,
+  //       gateway_address,
+  //       gas_service_address,
+  //     };
 
-      if (token_linker_address && gateway_address && gas_service_address && !deployed) {
-        let remote_address_validator_address;
+  //     if (token_linker_address && gateway_address && gas_service_address && !deployed) {
+  //       let remote_address_validator_address;
 
-        try {
-          remote_address_validator_address = await predictContractConstant(
-            constant_address_deployer,
-            _signer,
-            LinkerRouterProxy,
-            "remoteAddressValidator",
-          );
-        } catch (error) {
-          response = {
-            ...response,
-            status: "failed",
-            ...parseError(error),
-          };
-        }
+  //       try {
+  //         remote_address_validator_address = await predictContractConstant(
+  //           constant_address_deployer,
+  //           _signer,
+  //           LinkerRouterProxy,
+  //           "remoteAddressValidator",
+  //         );
+  //       } catch (error) {
+  //         response = {
+  //           ...response,
+  //           status: "failed",
+  //           ...parseError(error),
+  //         };
+  //       }
 
-        if (remote_address_validator_address) {
-          try {
-            const token_linker_contract = await deployUpgradable(
-              "tokenLinker",
-              InterchainTokenLinker,
-              InterchainTokenLinkerProxy,
-              [gateway_address, gas_service_address, remote_address_validator_address, chain],
-              [],
-              [],
-              _signer,
-              callback ?
-                response => callback(response) :
-                undefined,
-            );
+  //       if (remote_address_validator_address) {
+  //         try {
+  //           const token_linker_contract = await deployUpgradable(
+  //             "tokenLinker",
+  //             InterchainTokenLinker,
+  //             InterchainTokenLinkerProxy,
+  //             [gateway_address, gas_service_address, remote_address_validator_address, chain],
+  //             [],
+  //             [],
+  //             _signer,
+  //             callback ?
+  //               response => callback(response) :
+  //               undefined,
+  //           );
 
-            const remote_address_validator_contract =
-              token_linker_contract?.address &&
-              await deployUpgradable(
-                "remoteAddressValidator",
-                LinkerRouter,
-                LinkerRouterProxy,
-                [token_linker_contract.address, [], []],
-                [],
-                [],
-                _signer,
-                callback ?
-                  response => callback(response) :
-                  undefined,
-              );
+  //           const remote_address_validator_contract =
+  //             token_linker_contract?.address &&
+  //             await deployUpgradable(
+  //               "remoteAddressValidator",
+  //               LinkerRouter,
+  //               LinkerRouterProxy,
+  //               [token_linker_contract.address, [], []],
+  //               [],
+  //               [],
+  //               _signer,
+  //               callback ?
+  //                 response => callback(response) :
+  //                 undefined,
+  //             );
 
-            const failed = !remote_address_validator_contract?.address;
+  //           const failed = !remote_address_validator_contract?.address;
 
-            response = {
-              ...response,
-              status: failed ? "failed" : "success",
-              message: failed ? "Failed to deploy contract" : "Deploy contract successful",
-            };
+  //           response = {
+  //             ...response,
+  //             status: failed ? "failed" : "success",
+  //             message: failed ? "Failed to deploy contract" : "Deploy contract successful",
+  //           };
 
-            if (!failed) {
-              response = {
-                ...response,
-                remote_address_validator_address,
-                deployed: await isContractDeployed(token_linker_address, InterchainTokenLinker, _signer),
-              };
+  //           if (!failed) {
+  //             response = {
+  //               ...response,
+  //               remote_address_validator_address,
+  //               deployed: await isContractDeployed(token_linker_address, InterchainTokenLinker, _signer),
+  //             };
 
-              const {
-                deployed,
-              } = { ...response };
+  //             const {
+  //               deployed,
+  //             } = { ...response };
 
-              if (deployed) {
-                dispatch(
-                  {
-                    type: TOKEN_LINKERS_DATA,
-                    value: {
-                      [id]: {
-                        ...token_linker,
-                        deployed,
-                      },
-                    },
-                  }
-                );
-              }
-            }
-          } catch (error) {
-            response = {
-              ...response,
-              status: "failed",
-              ...parseError(error),
-            };
-          }
-        }
-      }
-    }
+  //             if (deployed) {
+  //               dispatch(
+  //                 {
+  //                   type: TOKEN_LINKERS_DATA,
+  //                   value: {
+  //                     [id]: {
+  //                       ...token_linker,
+  //                       deployed,
+  //                     },
+  //                   },
+  //                 }
+  //               );
+  //             }
+  //           }
+  //         } catch (error) {
+  //           response = {
+  //             ...response,
+  //             status: "failed",
+  //             ...parseError(error),
+  //           };
+  //         }
+  //       }
+  //     }
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
   const deployTokenLinker = async (
     chain,
@@ -701,41 +695,41 @@ export default () => {
   /***** getter *****/
 
   /***** setter *****/
-  const registerOriginToken = async (
-    token_linker,
-    token_address,
-  ) => {
-    let response = { token_address };
+  // const registerOriginToken = async (
+  //   token_linker,
+  //   token_address,
+  // ) => {
+  //   let response = { token_address };
 
-    if (signer && token_linker && token_address) {
-      try {
-        const transaction = await token_linker.registerOriginToken(token_address);
+  //   if (signer && token_linker && token_address) {
+  //     try {
+  //       const transaction = await token_linker.registerOriginToken(token_address);
 
-        const receipt = await transaction.wait();
+  //       const receipt = await transaction.wait();
 
-        const {
-          status,
-        } = { ...receipt };
+  //       const {
+  //         status,
+  //       } = { ...receipt };
 
-        const failed = !status;
+  //       const failed = !status;
 
-        response = {
-          ...response,
-          status: failed ? "failed" : "success",
-          message: failed ? "Failed to register origin token" : "Register origin token successful",
-          receipt,
-        };
-      } catch (error) {
-        response = {
-          ...response,
-          status: "failed",
-          ...parseError(error),
-        };
-      }
-    }
+  //       response = {
+  //         ...response,
+  //         status: failed ? "failed" : "success",
+  //         message: failed ? "Failed to register origin token" : "Register origin token successful",
+  //         receipt,
+  //       };
+  //     } catch (error) {
+  //       response = {
+  //         ...response,
+  //         status: "failed",
+  //         ...parseError(error),
+  //       };
+  //     }
+  //   }
 
-    return response;
-  }
+  //   return response;
+  // }
 
   const deployRemoteTokens = async (
     token_linker,
@@ -1315,7 +1309,7 @@ export default () => {
                   }
                 </div>
               </div>
-            */
+            // */
             <div className="w-full xl:px-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
                 {getSupportedEvmChains()

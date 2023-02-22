@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useEffect } from "react";
 import { DebounceInput } from "react-debounce-input";
 import { useSelector, shallowEqual } from "react-redux";
@@ -10,7 +12,7 @@ import { split, toArray } from "~/lib/utils";
 
 import Chains from "./chains";
 
-const InputTokenAddress = () => {
+export default () => {
   const { evm_chains, wallet, token_linkers } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -73,11 +75,6 @@ const InputTokenAddress = () => {
     }
   }, [selectedChain, input]);
 
-  console.log({
-    selectedChain,
-    token_linkers_data,
-  });
-
   return (
     Object.values({ ...token_linkers_data }).filter((tl) => tl?.deployed)
       .length > 0 && (
@@ -102,4 +99,3 @@ const InputTokenAddress = () => {
     )
   );
 };
-export default InputTokenAddress;

@@ -1,3 +1,5 @@
+/* eslint-disable  */
+
 import { useState, useEffect, useRef } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
 import { RxCaretDown } from "react-icons/rx";
@@ -8,7 +10,7 @@ import { getChain } from "~/lib/chain/utils";
 import Image from "../../image";
 import Items from "./items";
 
-const Chains = ({ disabled = false, chain, onSelect, displayName = false }) => {
+export default ({ disabled = false, chain, onSelect, displayName = false }) => {
   const { evm_chains, wallet } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
@@ -115,5 +117,3 @@ const Chains = ({ disabled = false, chain, onSelect, displayName = false }) => {
     </div>
   );
 };
-
-export default Chains;

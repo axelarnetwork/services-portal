@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useEffect } from "react";
 import { DebounceInput } from "react-debounce-input";
 import { BiCheck, BiX } from "react-icons/bi";
@@ -98,7 +100,7 @@ const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
     .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
     .map((c) => c.chain_name);
 
-const RegisterOriginTokenButton = ({
+export default ({
   buttonTitle = <MdAdd size={18} />,
   buttonClassName = "hover:bg-blue-50 dark:hover:bg-blue-900 dark:hover:bg-opacity-50 rounded-full text-blue-500 dark:text-blue-600 p-1.5",
   tooltip,
@@ -115,18 +117,20 @@ const RegisterOriginTokenButton = ({
   registerOriginTokenAndDeployRemoteTokens,
   provider,
 }) => {
-  const { preferences, evm_chains, wallet } = useSelector(
+  const { preferences, evm_chains, wallet, token_linkers } = useSelector(
     (state) => ({
       preferences: state.preferences,
       evm_chains: state.evm_chains,
       wallet: state.wallet,
+      token_linkers: state.token_linkers,
     }),
     shallowEqual
   );
   const { theme } = { ...preferences };
   const { evm_chains_data } = { ...evm_chains };
   const { wallet_data } = { ...wallet };
-  const { chain_id, signer } = { ...wallet_data };
+  const { token_linkers_data } = { ...token_linkers };
+  const { chain_id, signer, address } = { ...wallet_data };
 
   const router = useRouter();
   const { pathname } = { ...router };
@@ -146,6 +150,7 @@ const RegisterOriginTokenButton = ({
 
   const [inputTokenAddress, setInputTokenAddress] = useState(fixedTokenAddress);
   const [tokenAddress, setTokenAddress] = useState(null);
+  const [validTokenAddress, setValidTokenAddress] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [remoteChains, setRemoteChains] = useState(null);
   const [calls, setCalls] = useState(null);
@@ -224,6 +229,7 @@ const RegisterOriginTokenButton = ({
 
     setInputTokenAddress(fixedTokenAddress);
     setTokenAddress(null);
+    setValidTokenAddress(null);
     setTokenData(null);
     setRemoteChains(
       initialRemoteChains ||
@@ -244,6 +250,7 @@ const RegisterOriginTokenButton = ({
   const validate = async () => {
     if (typeof inputTokenAddress === "string") {
       setTokenAddress(null);
+      setValidTokenAddress(null);
       setTokenData(null);
       setValidateResponse(null);
 
@@ -392,7 +399,7 @@ const RegisterOriginTokenButton = ({
     }
   };
 
-  const { id, name, explorer } = { ...chainData };
+  const { id, name, image, explorer } = { ...chainData };
   const { url, contract_path, transaction_path } = { ...explorer };
 
   const _chain_id = chainData?.chain_id;
@@ -521,7 +528,7 @@ const RegisterOriginTokenButton = ({
             </div>
             <div className="flex items-center justify-between space-x-1.5">
               {steps.map((s) => {
-                const { id, step } = { ...s };
+                const { id, title, step } = { ...s };
 
                 return (
                   <div
@@ -1123,6 +1130,7 @@ const RegisterOriginTokenButton = ({
                   if (_preExistingToken !== preExistingToken) {
                     setInputTokenAddress(null);
                     setTokenAddress(null);
+                    setValidTokenAddress(null);
                     setTokenData(null);
 
                     setValidating(false);
@@ -1379,5 +1387,3 @@ const RegisterOriginTokenButton = ({
     />
   );
 };
-
-export default RegisterOriginTokenButton;

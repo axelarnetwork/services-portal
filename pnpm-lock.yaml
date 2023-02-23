@@ -21,11 +21,8 @@ specifiers:
   eslint-config-next: ^13.1.6
   ethers: ^5.7.2
   husky: ^8.0.3
-<<<<<<< HEAD
   ky: ^0.33.2
-=======
   lint-staged: ^13.1.2
->>>>>>> main
   lodash: ^4.17.21
   moment: ^2.29.4
   next: ^13.1.6
@@ -52,11 +49,8 @@ specifiers:
   react-reveal: ^1.2.2
   react-table: ^7.8.0
   redux: ^4.2.1
-<<<<<<< HEAD
-  tailwind-styled-components: ^2.2.0
-=======
   rome: ^11.0.0
->>>>>>> main
+  tailwind-styled-components: ^2.2.0
   tailwindcss: ^3.2.6
   typescript: 4.9.5
   wagmi: ^0.11.6
@@ -2437,7 +2431,6 @@ packages:
       redux: 4.2.1
     dev: false
 
-<<<<<<< HEAD
   /@reduxjs/toolkit/1.9.3_k4ae6lp43ej6mezo3ztvx6pykq:
     resolution:
       {
@@ -2459,7 +2452,7 @@ packages:
       redux-thunk: 2.4.2_redux@4.2.1
       reselect: 4.1.7
     dev: false
-=======
+
   /@rometools/cli-darwin-arm64/11.0.0:
     resolution:
       {
@@ -2525,7 +2518,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
->>>>>>> main
 
   /@rushstack/eslint-patch/1.2.0:
     resolution:
@@ -3704,18 +3696,7 @@ packages:
       - utf-8-validate
     dev: false
 
-<<<<<<< HEAD
   /@walletconnect/socket-transport/1.8.0:
-=======
-  /@types/nprogress/0.2.0:
-    resolution:
-      {
-        integrity: sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==,
-      }
-    dev: true
-
-  /@types/pbkdf2/3.1.0:
->>>>>>> main
     resolution:
       {
         integrity: sha512-5DyIyWrzHXTcVp0Vd93zJ5XMW61iDM6bcWT4p8DTRfFsOtW46JquruMhxOLeCOieM4D73kcr3U7WtyR4JUsGuQ==,
@@ -3738,18 +3719,7 @@ packages:
       tslib: 1.14.1
     dev: false
 
-<<<<<<< HEAD
   /@walletconnect/types/1.8.0:
-=======
-  /@types/react-gtm-module/2.0.1:
-    resolution:
-      {
-        integrity: sha512-T/DN9gAbCYk5wJ1nxf4pSwmXz4d1iVjM++OoG+mwMfz9STMAotGjSb65gJHOS5bPvl6vLSsJnuC+y/43OQrltg==,
-      }
-    dev: true
-
-  /@types/react/18.0.28:
->>>>>>> main
     resolution:
       {
         integrity: sha512-Cn+3I0V0vT9ghMuzh1KzZvCkiAxTq+1TR2eSqw5E5AVWfmCtECFkVZBP6uUJZ8YjwLqXheI+rnjqPy7sVM4Fyg==,
@@ -4062,7 +4032,6 @@ packages:
       }
     dev: false
 
-<<<<<<< HEAD
   /aes-js/3.1.2:
     resolution:
       {
@@ -4083,7 +4052,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
-=======
+
   /aggregate-error/3.1.0:
     resolution:
       {
@@ -4094,7 +4063,6 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
     dev: true
->>>>>>> main
 
   /ajv/6.12.6:
     resolution:
@@ -4119,7 +4087,6 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-<<<<<<< HEAD
   /ansi-colors/4.1.1:
     resolution:
       {
@@ -4128,14 +4095,6 @@ packages:
     engines: { node: ">=6" }
     dev: false
 
-  /ansi-regex/4.1.1:
-    resolution:
-      {
-        integrity: sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g==,
-      }
-    engines: { node: ">=6" }
-    dev: false
-=======
   /ansi-escapes/4.3.2:
     resolution:
       {
@@ -4145,7 +4104,14 @@ packages:
     dependencies:
       type-fest: 0.21.3
     dev: true
->>>>>>> main
+
+  /ansi-regex/4.1.1:
+    resolution:
+      {
+        integrity: sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g==,
+      }
+    engines: { node: ">=6" }
+    dev: false
 
   /ansi-regex/5.0.1:
     resolution:
@@ -6106,7 +6072,6 @@ packages:
       is-obj: 2.0.0
     dev: true
 
-<<<<<<< HEAD
   /duplexify/4.1.2:
     resolution:
       {
@@ -6118,14 +6083,13 @@ packages:
       readable-stream: 3.6.0
       stream-shift: 1.0.1
     dev: false
-=======
+
   /eastasianwidth/0.2.0:
     resolution:
       {
         integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==,
       }
     dev: true
->>>>>>> main
 
   /ecc-jsbn/0.1.2:
     resolution:
@@ -8069,7 +8033,14 @@ packages:
     engines: { node: ">=10.17.0" }
     dev: true
 
-<<<<<<< HEAD
+  /human-signals/3.0.1:
+    resolution:
+      {
+        integrity: sha512-rQLskxnM/5OCldHo+wNXbpVgDn5A17CUoKX+7Sokwaknlq7CdSnphy0W39GU8dw59XiCXmFXDg4fRuckQRKewQ==,
+      }
+    engines: { node: ">=12.20.0" }
+    dev: true
+
   /humanize-ms/1.2.1:
     resolution:
       {
@@ -8078,15 +8049,6 @@ packages:
     dependencies:
       ms: 2.1.3
     dev: false
-=======
-  /human-signals/3.0.1:
-    resolution:
-      {
-        integrity: sha512-rQLskxnM/5OCldHo+wNXbpVgDn5A17CUoKX+7Sokwaknlq7CdSnphy0W39GU8dw59XiCXmFXDg4fRuckQRKewQ==,
-      }
-    engines: { node: ">=12.20.0" }
-    dev: true
->>>>>>> main
 
   /husky/8.0.3:
     resolution:
@@ -9007,48 +8969,6 @@ packages:
       }
     dev: true
 
-<<<<<<< HEAD
-  /lit-element/3.2.2:
-    resolution:
-      {
-        integrity: sha512-6ZgxBR9KNroqKb6+htkyBwD90XGRiqKDHVrW/Eh0EZ+l+iC+u+v+w3/BA5NGi4nizAVHGYvQBHUDuSmLjPp7NQ==,
-      }
-    dependencies:
-      "@lit/reactive-element": 1.6.1
-      lit-html: 2.6.1
-    dev: false
-
-  /lit-html/2.6.1:
-    resolution:
-      {
-        integrity: sha512-Z3iw+E+3KKFn9t2YKNjsXNEu/LRLI98mtH/C6lnFg7kvaqPIzPn124Yd4eT/43lyqrejpc5Wb6BHq3fdv4S8Rw==,
-      }
-    dependencies:
-      "@types/trusted-types": 2.0.3
-    dev: false
-
-  /lit/2.6.1:
-    resolution:
-      {
-        integrity: sha512-DT87LD64f8acR7uVp7kZfhLRrHkfC/N4BVzAtnw9Yg8087mbBJ//qedwdwX0kzDbxgPccWRW6mFwGbRQIxy0pw==,
-      }
-    dependencies:
-      "@lit/reactive-element": 1.6.1
-      lit-element: 3.2.2
-      lit-html: 2.6.1
-    dev: false
-
-  /locate-path/3.0.0:
-    resolution:
-      {
-        integrity: sha512-7AO748wWnIhNqAuaty2ZWHkQHRSNfPVIsPIfwEOWO22AmaoVrWavlOcMR5nzTLNYvp36X220/maaRsrec1G65A==,
-      }
-    engines: { node: ">=6" }
-    dependencies:
-      p-locate: 3.0.0
-      path-exists: 3.0.0
-    dev: false
-=======
   /lint-staged/13.1.2:
     resolution:
       {
@@ -9096,7 +9016,47 @@ packages:
       through: 2.3.8
       wrap-ansi: 7.0.0
     dev: true
->>>>>>> main
+
+  /lit-element/3.2.2:
+    resolution:
+      {
+        integrity: sha512-6ZgxBR9KNroqKb6+htkyBwD90XGRiqKDHVrW/Eh0EZ+l+iC+u+v+w3/BA5NGi4nizAVHGYvQBHUDuSmLjPp7NQ==,
+      }
+    dependencies:
+      "@lit/reactive-element": 1.6.1
+      lit-html: 2.6.1
+    dev: false
+
+  /lit-html/2.6.1:
+    resolution:
+      {
+        integrity: sha512-Z3iw+E+3KKFn9t2YKNjsXNEu/LRLI98mtH/C6lnFg7kvaqPIzPn124Yd4eT/43lyqrejpc5Wb6BHq3fdv4S8Rw==,
+      }
+    dependencies:
+      "@types/trusted-types": 2.0.3
+    dev: false
+
+  /lit/2.6.1:
+    resolution:
+      {
+        integrity: sha512-DT87LD64f8acR7uVp7kZfhLRrHkfC/N4BVzAtnw9Yg8087mbBJ//qedwdwX0kzDbxgPccWRW6mFwGbRQIxy0pw==,
+      }
+    dependencies:
+      "@lit/reactive-element": 1.6.1
+      lit-element: 3.2.2
+      lit-html: 2.6.1
+    dev: false
+
+  /locate-path/3.0.0:
+    resolution:
+      {
+        integrity: sha512-7AO748wWnIhNqAuaty2ZWHkQHRSNfPVIsPIfwEOWO22AmaoVrWavlOcMR5nzTLNYvp36X220/maaRsrec1G65A==,
+      }
+    engines: { node: ">=6" }
+    dependencies:
+      p-locate: 3.0.0
+      path-exists: 3.0.0
+    dev: false
 
   /locate-path/5.0.0:
     resolution:
@@ -9212,7 +9172,6 @@ packages:
         integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==,
       }
 
-<<<<<<< HEAD
   /log-symbols/4.1.0:
     resolution:
       {
@@ -9223,7 +9182,7 @@ packages:
       chalk: 4.1.2
       is-unicode-supported: 0.1.0
     dev: false
-=======
+
   /log-update/4.0.0:
     resolution:
       {
@@ -9236,7 +9195,6 @@ packages:
       slice-ansi: 4.0.0
       wrap-ansi: 6.2.0
     dev: true
->>>>>>> main
 
   /long/4.0.0:
     resolution:
@@ -11920,22 +11878,6 @@ packages:
       bn.js: 5.2.1
     dev: false
 
-<<<<<<< HEAD
-  /rpc-websockets/7.5.0:
-    resolution:
-      {
-        integrity: sha512-9tIRi1uZGy7YmDjErf1Ax3wtqdSSLIlnmL5OtOzgd5eqPKbsPpwDP5whUDO2LQay3Xp0CcHlcNSGzacNRluBaQ==,
-      }
-    dependencies:
-      "@babel/runtime": 7.20.13
-      eventemitter3: 4.0.7
-      uuid: 8.3.2
-      ws: 8.12.1_3cxu5zja4e2r5wmvge7mdcljwq
-    optionalDependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 5.0.10
-    dev: false
-=======
   /rome/11.0.0:
     resolution:
       {
@@ -11952,7 +11894,21 @@ packages:
       "@rometools/cli-win32-arm64": 11.0.0
       "@rometools/cli-win32-x64": 11.0.0
     dev: true
->>>>>>> main
+
+  /rpc-websockets/7.5.0:
+    resolution:
+      {
+        integrity: sha512-9tIRi1uZGy7YmDjErf1Ax3wtqdSSLIlnmL5OtOzgd5eqPKbsPpwDP5whUDO2LQay3Xp0CcHlcNSGzacNRluBaQ==,
+      }
+    dependencies:
+      "@babel/runtime": 7.20.13
+      eventemitter3: 4.0.7
+      uuid: 8.3.2
+      ws: 8.12.1_3cxu5zja4e2r5wmvge7mdcljwq
+    optionalDependencies:
+      bufferutil: 4.0.7
+      utf-8-validate: 5.0.10
+    dev: false
 
   /run-parallel/1.2.0:
     resolution:
@@ -11963,7 +11919,6 @@ packages:
       queue-microtask: 1.2.3
     dev: true
 
-<<<<<<< HEAD
   /rxjs/6.6.7:
     resolution:
       {
@@ -11973,7 +11928,7 @@ packages:
     dependencies:
       tslib: 1.14.1
     dev: false
-=======
+
   /rxjs/7.8.0:
     resolution:
       {
@@ -11982,7 +11937,6 @@ packages:
     dependencies:
       tslib: 2.5.0
     dev: true
->>>>>>> main
 
   /safe-buffer/5.1.2:
     resolution:
@@ -13992,7 +13946,6 @@ packages:
     engines: { node: ">=0.10.0" }
     dev: true
 
-<<<<<<< HEAD
   /workerpool/6.2.1:
     resolution:
       {
@@ -14012,8 +13965,6 @@ packages:
       strip-ansi: 5.2.0
     dev: false
 
-=======
->>>>>>> main
   /wrap-ansi/6.2.0:
     resolution:
       {
@@ -14024,11 +13975,6 @@ packages:
       ansi-styles: 4.3.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
-<<<<<<< HEAD
-    dev: false
-=======
-    dev: true
->>>>>>> main
 
   /wrap-ansi/7.0.0:
     resolution:
@@ -14268,7 +14214,14 @@ packages:
     engines: { node: ">= 6" }
     dev: true
 
-<<<<<<< HEAD
+  /yaml/2.2.1:
+    resolution:
+      {
+        integrity: sha512-e0WHiYql7+9wr4cWMx3TVQrNwejKaEe7/rHNmQmqRjazfOP5W8PB6Jpebb5o6fIapbz9o9+2ipcaTM2ZwDI6lw==,
+      }
+    engines: { node: ">= 14" }
+    dev: true
+
   /yargs-parser/13.1.2:
     resolution:
       {
@@ -14297,15 +14250,6 @@ packages:
       }
     engines: { node: ">=10" }
     dev: false
-=======
-  /yaml/2.2.1:
-    resolution:
-      {
-        integrity: sha512-e0WHiYql7+9wr4cWMx3TVQrNwejKaEe7/rHNmQmqRjazfOP5W8PB6Jpebb5o6fIapbz9o9+2ipcaTM2ZwDI6lw==,
-      }
-    engines: { node: ">= 14" }
-    dev: true
->>>>>>> main
 
   /yargs-parser/20.2.9:
     resolution:

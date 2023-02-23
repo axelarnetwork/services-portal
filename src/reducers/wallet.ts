@@ -64,6 +64,7 @@ export const walletSlice = createSlice({
       };
     },
     resetWalletData: (state) => {
+      // eslint-disable-next-line no-unused-vars
       state = INITIAL_STATE;
     },
   },

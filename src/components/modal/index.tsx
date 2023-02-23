@@ -11,6 +11,7 @@ type ModalProps = {
   disabled?: boolean;
   tooltip?: ReactNode;
   placement?: placement;
+  // eslint-disable-next-line no-unused-vars
   onClick?: (open: boolean) => void;
   buttonTitle?: ReactNode;
   buttonClassName?: string;

@@ -1,5 +1,4 @@
 import { FC, PropsWithChildren } from "react";
-import { getDefaultProvider } from "ethers";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import {
   mainnet,
@@ -31,9 +30,9 @@ const chainConfigs = [
   arbitrumGoerli,
 ];
 
-const { webSocketProvider, provider } = configureChains(chainConfigs, [publicProvider()]);
-
-// const providersss = configureChains(chainConfigs, [publicProvider()]);
+const { webSocketProvider, provider } = configureChains(chainConfigs, [
+  publicProvider(),
+]);
 
 const client = createClient({
   autoConnect: true,

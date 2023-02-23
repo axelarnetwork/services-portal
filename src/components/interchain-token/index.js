@@ -38,8 +38,10 @@ import Image from "../image";
 import Wallet from "../wallet";
 import InterchainTokenInputAddress from "./input-token-address";
 import RegisterOriginTokenButton from "./register-origin-token-button";
+import TokenInfo from "./token-info";
 
 const GAS_LIMIT = 2500000;
+const GAS_MULTIPLIER = 1.4;
 
 export default () => {
   const dispatch = useDispatch()
@@ -115,11 +117,13 @@ export default () => {
 
   const router = useRouter();
   const {
+    pathname,
     query,
   } = { ...router };
   const {
     chain,
     token_address,
+    refresh,
   } = { ...query };
 
   const [selectedChain, setSelectedChain] = useState(null);
@@ -159,7 +163,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
 
   // const deployUpgradable = async (
   //   key = "deployer",
@@ -215,7 +219,7 @@ export default () => {
   //   }
 
   //   return contract;
-  // }
+  // };
 
   // const upgradeUpgradable = async (
   //   proxy_contract_address,
@@ -312,7 +316,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   // const deployAndInitContractConstant = async (
   //   key = "deployer",
@@ -372,7 +376,7 @@ export default () => {
   //   }
 
   //   return contract;
-  // }
+  // };
 
   // const _deployTokenLinker = async (
   //   _signer = signer,
@@ -499,7 +503,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   // const deployTokenLinker = async (
   //   chain,
@@ -570,7 +574,7 @@ export default () => {
   //           response
   //     );
   //   }
-  // }
+  // };
   /*** deployment ***/
 
   /***** getter *****/
@@ -588,12 +592,13 @@ export default () => {
 
           return (
             id && chain_id && !deprecated &&
+            (process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet" ? !["binance", "fantom", "aurora", "arbitrum"].includes(c.id) : true) &&
             getContractAddressByChain(id, gateway_addresses_data) &&
             getContractAddressByChain(id, gas_service_addresses_data)
           );
         })
     );
-  }
+  };
 
   const getTokenLinker = async (
     _signer = signer,
@@ -628,7 +633,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
 
   const getTokenLinkerContract = (
     _signer = signer,
@@ -663,7 +668,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
 
   const getOriginTokenId = async (
     token_linker,
@@ -691,7 +696,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
   /***** getter *****/
 
   /***** setter *****/
@@ -729,7 +734,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   const deployRemoteTokens = async (
     token_linker,
@@ -741,7 +746,7 @@ export default () => {
     if (signer && token_linker && token_id && Array.isArray(chains) && chains.length > 0) {
       try {
         const {
-          id,
+          chain_name,
           provider_params,
         } = { ...getChain(chain_id, evm_chains_data) };
 
@@ -758,7 +763,21 @@ export default () => {
             .map(chain =>
               new Promise(
                 async resolve => {
-                  resolve(BigInt(await sdk.queryAPI.estimateGasFee(id, chain, symbol, GAS_LIMIT)))
+                  const gasToPay = BigInt(await sdk.queryAPI.estimateGasFee(chain_name, chain, symbol, GAS_LIMIT, GAS_MULTIPLIER));
+
+                  console.log(
+                    "[estimateGasFee]",
+                    {
+                      sourceChain: chain_name,
+                      destinationChain: chain,
+                      symbol,
+                      gasLimit: GAS_LIMIT,
+                      gasMultiplier: GAS_MULTIPLIER,
+                      gasToPay: gasToPay.toString(),
+                    },
+                  );
+
+                  resolve(gasToPay);
                 }
               )
             )
@@ -790,7 +809,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
 
   const registerOriginTokenAndDeployRemoteTokens = async (
     token_linker,
@@ -807,7 +826,7 @@ export default () => {
 
         if (!register_only) {
           const {
-            id,
+            chain_name,
             provider_params,
           } = { ...getChain(chain_id, evm_chains_data) };
 
@@ -824,7 +843,21 @@ export default () => {
               .map(chain =>
                 new Promise(
                   async resolve => {
-                    resolve(BigInt(await sdk.queryAPI.estimateGasFee(id, chain, symbol, GAS_LIMIT)))
+                    const gasToPay = BigInt(await sdk.queryAPI.estimateGasFee(chain_name, chain, symbol, GAS_LIMIT, GAS_MULTIPLIER));
+
+                    console.log(
+                      "[estimateGasFee]",
+                      {
+                        sourceChain: chain_name,
+                        destinationChain: chain,
+                        symbol,
+                        gasLimit: GAS_LIMIT,
+                        gasMultiplier: GAS_MULTIPLIER,
+                        gasToPay: gasToPay.toString(),
+                      },
+                    );
+
+                    resolve(gasToPay);
                   }
                 )
               )
@@ -859,7 +892,7 @@ export default () => {
     }
 
     return response;
-  }
+  };
   /***** setter *****/
 
   // load token linkers of supported chains
@@ -998,6 +1031,16 @@ export default () => {
                 }
               }
             })
+
+          if (refresh && chain && token_address) {
+            router.push(
+              `${pathname.replace("/[chain]", "").replace("/[token_address]", "")}/${chain}/${token_address}`,
+              undefined,
+              {
+                shallow: true,
+              },
+            );
+          }
         }
         else {
           dispatch(
@@ -1009,19 +1052,18 @@ export default () => {
         }
       }
     },
-    [evm_chains_data, rpcs, token_linkers_data, tokenId, address],
+    [evm_chains_data, rpcs, token_linkers_data, tokenId, address, refresh],
   )
 
   const chain_data = getChain(chain_id, getSupportedEvmChains()) || _.head(getSupportedEvmChains());
 
+  const deployable_chains = getSupportedEvmChains().filter(c => (!token_linkers_data || token_linkers_data[c.id]?.deployed) && (!token_addresses_data || !token_addresses_data[c.id] || token_addresses_data?.[c.id] === constants.AddressZero));
+  const undeployed_chains = getSupportedEvmChains().filter(c => token_linkers_data?.[c.id]?.deployed && token_addresses_data?.[c.id] === constants.AddressZero);
+
   return (
     <div
       className="flex justify-center my-4"
-      style={
-        {
-          minHeight: "65vh",
-        }
-      }
+      style={{ minHeight: "65vh" }}
     >
       {!signer ?
         <div className="min-h-full flex flex-col justify-center space-y-3">
@@ -1046,13 +1088,7 @@ export default () => {
                 buttonTitle="Deploy a new ERC-20 token"
                 buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full max-w-md rounded-lg text-white text-lg font-semibold py-3 px-4"
                 initialChainData={chain_data}
-                supportedEvmChains={
-                  getSupportedEvmChains()
-                    .filter(c =>
-                      (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
-                      (!token_addresses_data || !token_addresses_data[c.id] || token_addresses_data[c.id] === constants.AddressZero)
-                    )
-                }
+                supportedEvmChains={deployable_chains}
                 tokenLinker={
                   getTokenLinkerContract(
                     chain_data?.chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[chain_data?.chain_id]) : rpcs?.[chain_data?.chain_id],
@@ -1130,13 +1166,7 @@ export default () => {
                                   tooltip="Register origin token"
                                   placement="bottom"
                                   initialChainData={chain_data}
-                                  supportedEvmChains={
-                                    getSupportedEvmChains()
-                                      .filter(c =>
-                                        (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
-                                        (!token_addresses_data || !token_addresses_data[c.id] || token_addresses_data[c.id] === constants.AddressZero)
-                                      )
-                                  }
+                                  supportedEvmChains={deployable_chains}
                                   tokenLinker={
                                     getTokenLinkerContract(
                                       _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
@@ -1310,7 +1340,28 @@ export default () => {
                 </div>
               </div>
             */
-            <div className="w-full xl:px-1">
+            <div className="w-full space-y-3 xl:px-1">
+              <div className="flex items-center justify-between space-x-2">
+                <TokenInfo />
+                {
+                  undeployed_chains.length > 0 &&
+                  (
+                    <RegisterOriginTokenButton
+                      buttonTitle="Deploy on more chains"
+                      buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                      initialChainData={chain_data}
+                      supportedEvmChains={undeployed_chains}
+                      isOrigin={false}
+                      fixedTokenAddress={tokenAddress}
+                      initialRemoteChains={undeployed_chains.map(c => c.chain_name)}
+                      tokenId={tokenId}
+                      tokenLinker={getTokenLinkerContract(signer, token_linkers_data?.[chain_data?.id]?.token_linker_address)}
+                      deployRemoteTokens={deployRemoteTokens}
+                      registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
+                    />
+                  )
+                }
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
                 {getSupportedEvmChains()
                   .map(c => {
@@ -1333,7 +1384,7 @@ export default () => {
 
                     const {
                       id,
-                      chain_name,
+                      // chain_name,
                       name,
                       image,
                       explorer,
@@ -1347,7 +1398,7 @@ export default () => {
                     const _chain_data = getChain(chain, evm_chains_data);
 
                     const _id = _chain_data?.id;
-                    const _chain_id = _chain_data?.chain_id;
+                    // const _chain_id = _chain_data?.chain_id;
 
                     const is_origin = id === _id;
 
@@ -1455,30 +1506,31 @@ export default () => {
                                       Origin token not registered
                                     </span>
                                   </div> :
-                                  <RegisterOriginTokenButton
-                                    buttonTitle={is_origin ? "Register origin token" : "Deploy remote tokens"}
-                                    buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                                    initialChainData={_chain_data}
-                                    supportedEvmChains={
-                                      getSupportedEvmChains()
-                                        .filter(c =>
-                                          token_linkers_data[c.id]?.deployed &&
-                                          token_addresses_data?.[c.id] === constants.AddressZero
+                                  <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                                    <span className="text-sm font-medium">
+                                      Not deployed
+                                    </span>
+                                  </div>
+                                  /*
+                                    <RegisterOriginTokenButton
+                                      buttonTitle={is_origin ? "Register origin token" : "Deploy remote tokens"}
+                                      buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                      initialChainData={_chain_data}
+                                      supportedEvmChains={undeployed_chains}
+                                      isOrigin={is_origin}
+                                      fixedTokenAddress={tokenAddress}
+                                      initialRemoteChains={is_origin ? undefined : toArray(chain_name)}
+                                      tokenId={tokenId}
+                                      tokenLinker={
+                                        getTokenLinkerContract(
+                                          _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
+                                          token_linker_address,
                                         )
-                                    }
-                                    isOrigin={is_origin}
-                                    fixedTokenAddress={tokenAddress}
-                                    initialRemoteChains={is_origin ? undefined : toArray(chain_name)}
-                                    tokenId={tokenId}
-                                    tokenLinker={
-                                      getTokenLinkerContract(
-                                        _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
-                                        token_linker_address,
-                                      )
-                                    }
-                                    deployRemoteTokens={deployRemoteTokens}
-                                    registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
-                                  />
+                                      }
+                                      deployRemoteTokens={deployRemoteTokens}
+                                      registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
+                                    />
+                                  */
                             }
                           </div>
                         </div>

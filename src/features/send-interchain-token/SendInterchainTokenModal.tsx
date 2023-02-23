@@ -1,5 +1,11 @@
 import { FC, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
+import {
+  AxelarQueryAPI,
+  Environment,
+  GasToken,
+} from "@axelar-network/axelarjs-sdk";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { BigNumber, Contract } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
@@ -10,25 +16,18 @@ import {
   useMutation,
   useNetwork,
   useQuery,
+  useQueryClient,
   useSigner,
   useSwitchNetwork,
 } from "wagmi";
-import { ChainData } from "web3modal";
 
 import Chains from "~/components/interchain-token/chains";
 import Modal from "~/components/modal";
+import { EvmChainsData } from "~/interface/evm_chains";
 import { useERC20 } from "~/lib/contract/hooks/useERC20";
 import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainTokenLinker";
-import { toArray } from "~/lib/utils";
-import { EvmChainsData } from "~/interface/evm_chains";
-import {
-  AxelarQueryAPI,
-  Environment,
-  GasToken,
-} from "@axelar-network/axelarjs-sdk";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { ERC20 } from "~/lib/contract/abis";
+import { toArray } from "~/lib/utils";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
@@ -241,10 +240,18 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   const [sendStatus, setSendStatus] = useState<
     "idle" | "approving" | "sending"
   >("idle");
+
+  const wagmiChains = getWagmiChains();
+
   const provider = new JsonRpcProvider(
-    getWagmiChains().find((t) => t.id === props.fromNetworkId)?.rpcUrls.public
+    wagmiChains.find((t) => t.id === props.fromNetworkId)?.rpcUrls.public
       .http[0] as string
   );
+
+  const destinationProviderUrl = wagmiChains.find(
+    (t) => t.id === toChain?.chain_id
+  )?.rpcUrls.public.http[0] as string;
+
   const balance = useTokenBalance(props.tokenAddress, provider);
 
   const { switchNetwork } = useSwitchNetwork({
@@ -260,6 +267,10 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       );
     }
   }, [props.fromNetworkId, currentMMChain]);
+
+  const queryClient = useQueryClient();
+
+  // key: ["tokenBalance", tokenAddress, provider.connection.url],
 
   useContractEvent({
     once: true,
@@ -277,7 +288,12 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       });
       if (toAddress === recipientAddress) {
         console.log("DONE!", amount, fromAddress, toAddress);
-        balance.refetch();
+
+        queryClient.invalidateQueries([
+          "tokenBalance",
+          props.tokenAddress,
+          destinationProviderUrl,
+        ]);
       }
     },
   });

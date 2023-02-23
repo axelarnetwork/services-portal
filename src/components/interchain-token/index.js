@@ -1384,7 +1384,7 @@ export default () => {
 
                     const {
                       id,
-                      chain_name,
+                      // chain_name,
                       name,
                       image,
                       explorer,
@@ -1398,7 +1398,7 @@ export default () => {
                     const _chain_data = getChain(chain, evm_chains_data);
 
                     const _id = _chain_data?.id;
-                    const _chain_id = _chain_data?.chain_id;
+                    // const _chain_id = _chain_data?.chain_id;
 
                     const is_origin = id === _id;
 

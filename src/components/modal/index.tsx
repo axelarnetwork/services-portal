@@ -138,7 +138,7 @@ const Modal: FC<ModalProps> = ({
         <Tooltip
           placement={placement}
           content={tooltip}
-          className="z-50 bg-black text-xs text-white"
+          className="z-50 text-xs text-white bg-black"
         >
           {buttonComponent}
         </Tooltip>
@@ -158,12 +158,12 @@ const Modal: FC<ModalProps> = ({
                 modalClassName.includes("max-w-") ? "" : "max-w-sm lg:max-w-lg"
               } relative mx-auto lg:my-4 ${modalClassName}`}
             >
-              <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none dark:bg-slate-900 dark:bg-opacity-90">
+              <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none dark:bg-slate-900 dark:bg-opacity-90">
                 <div className="relative flex-auto p-4">
-                  <div className="flex items-start justify-start space-x-4 p-2">
-                    {icon && <div className="w-12 flex-shrink-0">{icon}</div>}
-                    <div className="flex w-full flex-col">
-                      <div className="mb-2 text-lg font-medium uppercase tracking-wider">
+                  <div className="flex items-start justify-start p-2 space-x-4">
+                    {icon && <div className="flex-shrink-0 w-12">{icon}</div>}
+                    <div className="flex flex-col w-full">
+                      <div className="mb-2 text-lg font-medium tracking-wider uppercase">
                         {title}
                       </div>
                       {body}

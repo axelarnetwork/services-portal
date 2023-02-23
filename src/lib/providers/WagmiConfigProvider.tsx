@@ -31,11 +31,13 @@ const chainConfigs = [
   arbitrumGoerli,
 ];
 
-const { webSocketProvider } = configureChains(chainConfigs, [publicProvider()]);
+const { webSocketProvider, provider } = configureChains(chainConfigs, [publicProvider()]);
+
+// const providersss = configureChains(chainConfigs, [publicProvider()]);
 
 const client = createClient({
   autoConnect: true,
-  provider: getDefaultProvider(),
+  provider,
   webSocketProvider,
   connectors: [new InjectedConnector()],
 });

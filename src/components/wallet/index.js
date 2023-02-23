@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { providers, utils } from "ethers";
 import _ from "lodash";
+import { useConnect } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import Web3Modal from "web3modal";
 
 import { getChain } from "~/lib/chain/utils";
@@ -107,6 +109,8 @@ const Wallet = ({
     update();
   }, [theme]);
 
+  const { connect: wagmiConnect } = useConnect();
+
   const connect = useCallback(async () => {
     const provider = await web3Modal.connect();
     const web3Provider = new providers.Web3Provider(provider);
@@ -118,6 +122,10 @@ const Wallet = ({
 
     const { chainId } = { ...network };
 
+    wagmiConnect({
+      connector: new InjectedConnector(),
+    });
+
     dispatch({
       type: WALLET_DATA,
       value: {
@@ -128,7 +136,7 @@ const Wallet = ({
         signer,
       },
     });
-  }, [web3Modal]);
+  }, [web3Modal, wagmiConnect]);
 
   const disconnect = useCallback(
     async (e, is_reestablish) => {

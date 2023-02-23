@@ -1,7 +1,8 @@
 module.exports = {
   content: [
-    "./src/components/**/*.js",
-    "./src/pages/**/*.js",
+    "./src/components/**/*.{js,jsx,ts,tsx}",
+    "./src/features/**/*.{js,jsx,ts,tsx}",
+    "./src/pages/**/*.{js,jsx,ts,tsx}",
     "./src/styles/globals.css",
   ],
   darkMode: "class",

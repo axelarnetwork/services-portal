@@ -1,10 +1,45 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode, FC } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { Tooltip } from "@material-tailwind/react";
+import { placement } from "@material-tailwind/react/types/components/menu";
 
 import Portal from "../portal";
 
-const Modal = ({
+type ModalProps = {
+  id?: string;
+  hidden?: boolean;
+  disabled?: boolean;
+  tooltip?: ReactNode;
+  placement?: placement;
+  // eslint-disable-next-line no-unused-vars
+  onClick?: (open: boolean) => void;
+  buttonTitle?: ReactNode;
+  buttonClassName?: string;
+  title?: ReactNode;
+  icon?: ReactNode;
+  body?: ReactNode;
+  noCancelOnClickOutside?: boolean;
+  cancelDisabled?: boolean;
+  onCancel?: () => void;
+  cancelButtonTitle?: ReactNode;
+  cancelButtonClassName?: string;
+  confirmDisabled?: boolean;
+  onConfirm?: () => void;
+  onConfirmHide?: boolean;
+  confirmButtonTitle?: ReactNode;
+  confirmButtonClassName?: string;
+  onClose?: () => void;
+  noButtons?: boolean;
+  modalClassName?: string;
+};
+
+type PartialState = {
+  preferences: {
+    theme: string;
+  };
+};
+
+const Modal: FC<ModalProps> = ({
   id = "portal",
   hidden,
   disabled,
@@ -30,17 +65,14 @@ const Modal = ({
   noButtons,
   modalClassName = "",
 }) => {
-  const { preferences } = useSelector(
-    (state) => ({
-      preferences: state.preferences,
-    }),
+  const theme = useSelector<PartialState>(
+    (state) => state.preferences.theme,
     shallowEqual
   );
-  const { theme } = { ...preferences };
 
   const [open, setOpen] = useState(false);
 
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const show = () => {
     if (onClick) {
@@ -56,12 +88,12 @@ const Modal = ({
   };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (!modalRef?.current) {
         return false;
       }
 
-      if (!open || modalRef.current.contains(e.target)) {
+      if (!open || modalRef.current.contains(e.target as Node)) {
         return false;
       }
 
@@ -94,7 +126,7 @@ const Modal = ({
       onClick={show}
       className={
         buttonClassName ||
-        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400"
+        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 w-full"
       }
     >
       {buttonTitle}
@@ -107,7 +139,7 @@ const Modal = ({
         <Tooltip
           placement={placement}
           content={tooltip}
-          className="z-50 bg-black text-xs text-white"
+          className="z-50 text-xs text-white bg-black"
         >
           {buttonComponent}
         </Tooltip>
@@ -127,12 +159,12 @@ const Modal = ({
                 modalClassName.includes("max-w-") ? "" : "max-w-sm lg:max-w-lg"
               } relative mx-auto lg:my-4 ${modalClassName}`}
             >
-              <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none dark:bg-slate-900 dark:bg-opacity-90">
+              <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none dark:bg-slate-900 dark:bg-opacity-90">
                 <div className="relative flex-auto p-4">
-                  <div className="flex items-start justify-start space-x-4 p-2">
-                    {icon && <div className="w-12 flex-shrink-0">{icon}</div>}
-                    <div className="flex w-full flex-col">
-                      <div className="mb-2 text-lg font-medium uppercase tracking-wider">
+                  <div className="flex items-start justify-start p-2 space-x-4">
+                    {icon && <div className="flex-shrink-0 w-12">{icon}</div>}
+                    <div className="flex flex-col w-full">
+                      <div className="mb-2 text-lg font-medium tracking-wider uppercase">
                         {title}
                       </div>
                       {body}

@@ -1,15 +1,18 @@
 import { useMemo } from "react";
 import { composeWithDevTools } from "@redux-devtools/extension";
-import { createStore, applyMiddleware } from "redux";
+import { createStore } from "@reduxjs/toolkit";
+import { applyMiddleware, Store } from "redux";
 
 import reducers from "./reducers";
 
-let store;
+let store: Store | undefined;
 
-const initStore = (preloadedState) =>
+type PreloadedState = Record<string, unknown>;
+
+const initStore = (preloadedState: PreloadedState) =>
   createStore(reducers, preloadedState, composeWithDevTools(applyMiddleware()));
 
-export const initializeStore = (preloadedState) => {
+export const initializeStore = (preloadedState: PreloadedState) => {
   let _store = store ?? initStore(preloadedState);
 
   // After navigating to a page with an initial Redux state, merge that state
@@ -37,7 +40,7 @@ export const initializeStore = (preloadedState) => {
   return _store;
 };
 
-export const useStore = (initialState) => {
+export const useStore = (initialState: PreloadedState) => {
   const store = useMemo(() => initializeStore(initialState), [initialState]);
 
   return store;

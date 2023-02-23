@@ -4,8 +4,11 @@ import { AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
 import { providers } from "ethers";
 import _ from "lodash";
 
-import { getAssetsPrice } from "~/lib/api/assets";
-import { getChains, getAssets } from "~/lib/api/config";
+import {
+  getChainConfigs,
+  getAssets,
+  getAssetPrices,
+} from "~/lib/api/axelarscan";
 import { getContracts } from "~/lib/api/contracts";
 import { equalsIgnoreCase, toArray, ellipse } from "~/lib/utils";
 import {
@@ -48,7 +51,7 @@ const Navbar = () => {
   // chains
   useEffect(() => {
     const getData = async () => {
-      const { evm, cosmos } = { ...(await getChains()) };
+      const { evm, cosmos } = { ...(await getChainConfigs()) };
 
       if (evm) {
         dispatch({
@@ -100,7 +103,7 @@ const Navbar = () => {
             });
 
           if (denoms.length > 0) {
-            const response = await getAssetsPrice({ denoms });
+            const response = await getAssetPrices({ denoms });
 
             if (Array.isArray(response)) {
               response.forEach((a) => {

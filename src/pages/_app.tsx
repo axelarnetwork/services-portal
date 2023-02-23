@@ -1,34 +1,35 @@
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Provider } from "react-redux";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import Router from "next/router";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import NProgress from "nprogress";
 
-import Layout from "../layouts";
-import * as ga from "../lib/ga";
-import { useStore } from "../store";
-import "../styles/globals.css";
-import "../styles/animate.css";
-import "../styles/layout.css";
-import "../styles/tailwind.css";
-import "../styles/components/button.css";
-import "../styles/components/dropdown.css";
-import "../styles/components/forms.css";
-import "../styles/components/modals.css";
-import "../styles/components/navbar.css";
-import "../styles/components/notifications.css";
-import "../styles/components/nprogress.css";
-import "../styles/components/skeleton.css";
-import "../styles/components/table.css";
+import Layout from "~/layouts";
+import * as ga from "~/lib/ga";
+import WagmiConfigProvider from "~/lib/providers/WagmiConfigProvider";
+import { useStore } from "~/store";
+
+import "~/styles/animate.css";
+import "~/styles/components/button.css";
+import "~/styles/components/dropdown.css";
+import "~/styles/components/forms.css";
+import "~/styles/components/modals.css";
+import "~/styles/components/navbar.css";
+import "~/styles/components/notifications.css";
+import "~/styles/components/nprogress.css";
+import "~/styles/components/skeleton.css";
+import "~/styles/components/table.css";
+import "~/styles/globals.css";
+import "~/styles/layout.css";
+import "~/styles/tailwind.css";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
   const store = useStore(pageProps.initialReduxState);
 
@@ -63,10 +64,12 @@ const App = ({ Component, pageProps }: AppProps) => {
         <meta name="theme-color" content="#050707" />
       </Head>
       <Provider store={store}>
-        <Layout>
-          <div id="portal" />
-          <Component {...pageProps} />
-        </Layout>
+        <WagmiConfigProvider>
+          <Layout>
+            <div id="portal" />
+            <Component {...pageProps} />
+          </Layout>
+        </WagmiConfigProvider>
       </Provider>
     </>
   );

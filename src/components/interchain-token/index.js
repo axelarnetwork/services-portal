@@ -18,7 +18,6 @@ import {
 } from "ethers";
 import _ from "lodash";
 
-import SendInterchainTokenModal from "~/features/send-interchain-token/SendInterchainTokenModal";
 import { getChain /*, switchChain*/ } from "~/lib/chain/utils";
 // import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
@@ -39,8 +38,10 @@ import Image from "../image";
 import Wallet from "../wallet";
 import InterchainTokenInputAddress from "./input-token-address";
 import RegisterOriginTokenButton from "./register-origin-token-button";
+import TokenInfo from "./token-info";
 
 const GAS_LIMIT = 2500000;
+const GAS_MULTIPLIER = 1.4;
 
 export default () => {
   const dispatch = useDispatch();
@@ -93,8 +94,8 @@ export default () => {
   } = { ...wallet_data };
 
   const router = useRouter();
-  const { query } = { ...router };
-  const { chain, token_address } = { ...query };
+  const { pathname, query } = { ...router };
+  const { chain, token_address, refresh } = { ...query };
 
   const [selectedChain, setSelectedChain] = useState(null);
   const [tokenAddress, setTokenAddress] = useState("");
@@ -188,7 +189,7 @@ export default () => {
   //   }
 
   //   return contract;
-  // }
+  // };
 
   // const upgradeUpgradable = async (
   //   proxy_contract_address,
@@ -285,7 +286,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   // const deployAndInitContractConstant = async (
   //   key = "deployer",
@@ -345,7 +346,7 @@ export default () => {
   //   }
 
   //   return contract;
-  // }
+  // };
 
   // const _deployTokenLinker = async (
   //   _signer = signer,
@@ -472,7 +473,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   // const deployTokenLinker = async (
   //   chain,
@@ -543,7 +544,7 @@ export default () => {
   //           response
   //     );
   //   }
-  // }
+  // };
   /*** deployment ***/
 
   /***** getter *****/
@@ -555,6 +556,9 @@ export default () => {
         id &&
         chain_id &&
         !deprecated &&
+        (process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet"
+          ? !["binance", "fantom", "aurora", "arbitrum"].includes(c.id)
+          : true) &&
         getContractAddressByChain(id, gateway_addresses_data) &&
         getContractAddressByChain(id, gas_service_addresses_data)
       );
@@ -689,7 +693,7 @@ export default () => {
   //   }
 
   //   return response;
-  // }
+  // };
 
   const deployRemoteTokens = async (token_linker, token_id, chains) => {
     let response = { token_id, chains };
@@ -702,7 +706,7 @@ export default () => {
       chains.length > 0
     ) {
       try {
-        const { id, provider_params } = {
+        const { chain_name, provider_params } = {
           ...getChain(chain_id, evm_chains_data),
         };
 
@@ -714,16 +718,26 @@ export default () => {
           chains.map(
             (chain) =>
               new Promise(async (resolve) => {
-                resolve(
-                  BigInt(
-                    await sdk.queryAPI.estimateGasFee(
-                      id,
-                      chain,
-                      symbol,
-                      GAS_LIMIT
-                    )
+                const gasToPay = BigInt(
+                  await sdk.queryAPI.estimateGasFee(
+                    chain_name,
+                    chain,
+                    symbol,
+                    GAS_LIMIT,
+                    GAS_MULTIPLIER
                   )
                 );
+
+                console.log("[estimateGasFee]", {
+                  sourceChain: chain_name,
+                  destinationChain: chain,
+                  symbol,
+                  gasLimit: GAS_LIMIT,
+                  gasMultiplier: GAS_MULTIPLIER,
+                  gasToPay: gasToPay.toString(),
+                });
+
+                resolve(gasToPay);
               })
           )
         );
@@ -775,7 +789,7 @@ export default () => {
         let gas_values;
 
         if (!register_only) {
-          const { id, provider_params } = {
+          const { chain_name, provider_params } = {
             ...getChain(chain_id, evm_chains_data),
           };
 
@@ -787,16 +801,26 @@ export default () => {
             chains.map(
               (chain) =>
                 new Promise(async (resolve) => {
-                  resolve(
-                    BigInt(
-                      await sdk.queryAPI.estimateGasFee(
-                        id,
-                        chain,
-                        symbol,
-                        GAS_LIMIT
-                      )
+                  const gasToPay = BigInt(
+                    await sdk.queryAPI.estimateGasFee(
+                      chain_name,
+                      chain,
+                      symbol,
+                      GAS_LIMIT,
+                      GAS_MULTIPLIER
                     )
                   );
+
+                  console.log("[estimateGasFee]", {
+                    sourceChain: chain_name,
+                    destinationChain: chain,
+                    symbol,
+                    gasLimit: GAS_LIMIT,
+                    gasMultiplier: GAS_MULTIPLIER,
+                    gasToPay: gasToPay.toString(),
+                  });
+
+                  resolve(gasToPay);
                 })
             )
           );
@@ -983,6 +1007,18 @@ export default () => {
             }
           }
         });
+
+        if (refresh && chain && token_address) {
+          router.push(
+            `${pathname
+              .replace("/[chain]", "")
+              .replace("/[token_address]", "")}/${chain}/${token_address}`,
+            undefined,
+            {
+              shallow: true,
+            }
+          );
+        }
       } else {
         dispatch({
           type: TOKEN_ADDRESSES_DATA,
@@ -990,21 +1026,29 @@ export default () => {
         });
       }
     }
-  }, [evm_chains_data, rpcs, token_linkers_data, tokenId, address]);
+  }, [evm_chains_data, rpcs, token_linkers_data, tokenId, address, refresh]);
 
   const chain_data =
     getChain(chain_id, getSupportedEvmChains()) ||
     _.head(getSupportedEvmChains());
 
+  const deployable_chains = getSupportedEvmChains().filter(
+    (c) =>
+      (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
+      (!token_addresses_data ||
+        !token_addresses_data[c.id] ||
+        token_addresses_data?.[c.id] === constants.AddressZero)
+  );
+  const undeployed_chains = getSupportedEvmChains().filter(
+    (c) =>
+      token_linkers_data?.[c.id]?.deployed &&
+      token_addresses_data?.[c.id] === constants.AddressZero
+  );
+
   return (
-    <div
-      className="flex justify-center my-4"
-      style={{
-        minHeight: "65vh",
-      }}
-    >
+    <div className="flex justify-center my-4" style={{ minHeight: "65vh" }}>
       {!signer ? (
-        <div className="flex flex-col justify-center min-h-full space-y-3">
+        <div className="min-h-full flex flex-col justify-center space-y-3">
           <Wallet />
           <span className="text-slate-400 dark:text-slate-600">
             Please connect your wallet to manage your contract
@@ -1012,25 +1056,19 @@ export default () => {
         </div>
       ) : !token_linkers_data ? (
         <div className="w-full">
-          <div className="flex items-center justify-center h-full">
+          <div className="h-full flex items-center justify-center">
             <Blocks />
           </div>
         </div>
       ) : !token_address ? (
-        <div className="flex flex-col items-center justify-center w-full space-y-8">
+        <div className="w-full flex flex-col items-center justify-center space-y-8">
           <InterchainTokenInputAddress />
           <span className="text-base font-medium">Or</span>
           <RegisterOriginTokenButton
             buttonTitle="Deploy a new ERC-20 token"
             buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full max-w-md rounded-lg text-white text-lg font-semibold py-3 px-4"
             initialChainData={chain_data}
-            supportedEvmChains={getSupportedEvmChains().filter(
-              (c) =>
-                (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
-                (!token_addresses_data ||
-                  !token_addresses_data[c.id] ||
-                  token_addresses_data[c.id] === constants.AddressZero)
-            )}
+            supportedEvmChains={deployable_chains}
             tokenLinker={getTokenLinkerContract(
               chain_data?.chain_id === chain_id
                 ? signer
@@ -1048,7 +1086,7 @@ export default () => {
       ) : (
         /*
               <div className="w-full xl:px-1">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
                   {getSupportedEvmChains()
                     .map(c => {
                       const {
@@ -1092,7 +1130,7 @@ export default () => {
                       return (
                         <div
                           key={i}
-                          className="px-4 py-5 space-y-5 bg-white bg-opacity-100 border dark:bg-slate-900 dark:bg-opacity-50 border-slate-200 dark:border-slate-800 rounded-xl"
+                          className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
                         >
                           <div className="flex items-center justify-between space-x-2.5">
                             <div className="flex items-center space-x-2.5">
@@ -1113,13 +1151,7 @@ export default () => {
                                   tooltip="Register origin token"
                                   placement="bottom"
                                   initialChainData={chain_data}
-                                  supportedEvmChains={
-                                    getSupportedEvmChains()
-                                      .filter(c =>
-                                        (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
-                                        (!token_addresses_data || !token_addresses_data[c.id] || token_addresses_data[c.id] === constants.AddressZero)
-                                      )
-                                  }
+                                  supportedEvmChains={deployable_chains}
                                   tokenLinker={
                                     getTokenLinkerContract(
                                       _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
@@ -1133,9 +1165,9 @@ export default () => {
                             }
                           </div>
                           <div>
-                            <div className="flex flex-col justify-between h-full space-y-5">
+                            <div className="h-full flex flex-col justify-between space-y-5">
                               <div className="space-y-1">
-                                <div className="text-sm text-slate-400 dark:text-slate-500">
+                                <div className="text-slate-400 dark:text-slate-500 text-sm">
                                   TokenLinker address
                                 </div>
                                 <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
@@ -1144,11 +1176,11 @@ export default () => {
                                       href={address_url}
                                       target="_blank"
                                       rel="noopenner noreferrer"
-                                      className="flex items-center text-base font-semibold text-blue-500 sm:h-5 dark:text-blue-200 sm:text-xs xl:text-sm"
+                                      className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
                                     >
                                       {ellipse(token_linker_address, 10)}
                                     </a> :
-                                    <span className="flex items-center text-base font-medium sm:h-5 text-slate-500 dark:text-slate-200 sm:text-xs xl:text-sm">
+                                    <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
                                       {ellipse(token_linker_address, 10)}
                                     </span>
                                   }
@@ -1217,14 +1249,14 @@ export default () => {
                                     {
                                       ["failed"].includes(tokenLinkerDeployStatus.status) &&
                                       (
-                                        <div className="flex items-center ml-auto space-x-1">
+                                        <div className="flex items-center space-x-1 ml-auto">
                                           {
                                             tokenLinkerDeployStatus.error_message &&
                                             (
                                               <Tooltip
                                                 placement="top"
                                                 content={tokenLinkerDeployStatus.error_message}
-                                                className="z-50 text-xs text-white bg-black"
+                                                className="z-50 bg-black text-white text-xs"
                                               >
                                                 <div>
                                                   <BiMessage
@@ -1293,8 +1325,31 @@ export default () => {
                 </div>
               </div>
             */
-        <div className="w-full xl:px-1">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+        <div className="w-full space-y-3 xl:px-1">
+          <div className="flex items-center justify-between space-x-2">
+            <TokenInfo />
+            {undeployed_chains.length > 0 && (
+              <RegisterOriginTokenButton
+                buttonTitle="Deploy on more chains"
+                buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
+                initialChainData={chain_data}
+                supportedEvmChains={undeployed_chains}
+                isOrigin={false}
+                fixedTokenAddress={tokenAddress}
+                initialRemoteChains={undeployed_chains.map((c) => c.chain_name)}
+                tokenId={tokenId}
+                tokenLinker={getTokenLinkerContract(
+                  signer,
+                  token_linkers_data?.[chain_data?.id]?.token_linker_address
+                )}
+                deployRemoteTokens={deployRemoteTokens}
+                registerOriginTokenAndDeployRemoteTokens={
+                  registerOriginTokenAndDeployRemoteTokens
+                }
+              />
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
             {getSupportedEvmChains()
               .map((c) => {
                 const { id } = { ...c };
@@ -1309,16 +1364,20 @@ export default () => {
               .map((tl, i) => {
                 const { chain_data, token_linker_address } = { ...tl };
 
-                const { id, chain_name, name, image, explorer } = {
-                  ...chain_data,
-                };
+                const {
+                  id,
+                  // chain_name,
+                  name,
+                  image,
+                  explorer,
+                } = { ...chain_data };
 
                 const { url, address_path } = { ...explorer };
 
                 const _chain_data = getChain(chain, evm_chains_data);
 
                 const _id = _chain_data?.id;
-                const _chain_id = _chain_data?.chain_id;
+                // const _chain_id = _chain_data?.chain_id;
 
                 const is_origin = id === _id;
 
@@ -1343,7 +1402,7 @@ export default () => {
                 return (
                   <div
                     key={i}
-                    className="px-4 py-5 space-y-5 bg-white bg-opacity-100 border dark:bg-slate-900 dark:bg-opacity-50 border-slate-200 dark:border-slate-800 rounded-xl"
+                    className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
                   >
                     <div className="flex items-center justify-between space-x-2.5">
                       <div className="flex items-center space-x-2.5">
@@ -1357,9 +1416,9 @@ export default () => {
                       </div>
                     </div>
                     <div>
-                      <div className="flex flex-col justify-between h-full space-y-5">
+                      <div className="h-full flex flex-col justify-between space-y-5">
                         <div className="space-y-1">
-                          <div className="text-sm text-slate-400 dark:text-slate-500">
+                          <div className="text-slate-400 dark:text-slate-500 text-sm">
                             {is_origin || registered_or_deployed_remote
                               ? "Token address"
                               : "Status"}
@@ -1370,16 +1429,16 @@ export default () => {
                                 href={address_url}
                                 target="_blank"
                                 rel="noopenner noreferrer"
-                                className="flex items-center text-base font-semibold text-blue-500 sm:h-5 dark:text-blue-200 sm:text-xs xl:text-sm"
+                                className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
                               >
                                 {ellipse(_tokenAddress, 10)}
                               </a>
                             ) : is_origin || registered_or_deployed_remote ? (
-                              <span className="flex items-center text-base font-medium sm:h-5 text-slate-500 dark:text-slate-200 sm:text-xs xl:text-sm">
+                              <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
                                 {ellipse(_tokenAddress, 10)}
                               </span>
                             ) : (
-                              <span className="flex items-center text-base font-medium sm:h-5 text-slate-400 dark:text-slate-500 sm:text-xs xl:text-sm">
+                              <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
                                 Remote token not deployed
                               </span>
                             )}
@@ -1387,15 +1446,9 @@ export default () => {
                               _tokenAddress && <Copy value={_tokenAddress} />}
                           </div>
                         </div>
-                        {registered_or_deployed_remote ? (
-                          <div className="flex flex-col">
-                            <SendInterchainTokenModal
-                              tokenAddress={_tokenAddress}
-                              tokenId={tokenId}
-                              fromNetworkId={tl.chain_data.chain_id}
-                              fromNetworkName={tl.chain_data.chain_name}
-                            />
-                            {address_url ? (
+                        {
+                          registered_or_deployed_remote ? (
+                            address_url ? (
                               <a
                                 href={address_url}
                                 target="_blank"
@@ -1414,62 +1467,54 @@ export default () => {
                                   {is_origin ? "Registered" : "Deployed"}
                                 </span>
                               </div>
-                            )}
-                          </div>
-                        ) : !token_linker_address ||
-                          !token_addresses_data ||
-                          (tokenId && !token_addresses_data[id]) ? (
-                          <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
-                            <div className="mr-1.5">
-                              <Oval
-                                width={14}
-                                height={14}
-                                color={loaderColor(theme)}
-                              />
+                            )
+                          ) : !token_linker_address ||
+                            !token_addresses_data ||
+                            (tokenId && !token_addresses_data[id]) ? (
+                            <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
+                              <div className="mr-1.5">
+                                <Oval
+                                  width={14}
+                                  height={14}
+                                  color={loaderColor(theme)}
+                                />
+                              </div>
+                              <span>Loading</span>
                             </div>
-                            <span>Loading</span>
-                          </div>
-                        ) : !registered && !is_origin ? (
-                          <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
-                            <span className="text-sm font-medium">
-                              Origin token not registered
-                            </span>
-                          </div>
-                        ) : (
-                          <RegisterOriginTokenButton
-                            buttonTitle={
-                              is_origin
-                                ? "Register origin token"
-                                : "Deploy remote tokens"
-                            }
-                            buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                            initialChainData={_chain_data}
-                            supportedEvmChains={getSupportedEvmChains().filter(
-                              (c) =>
-                                token_linkers_data[c.id]?.deployed &&
-                                token_addresses_data?.[c.id] ===
-                                  constants.AddressZero
-                            )}
-                            isOrigin={is_origin}
-                            fixedTokenAddress={tokenAddress}
-                            initialRemoteChains={
-                              is_origin ? undefined : toArray(chain_name)
-                            }
-                            tokenId={tokenId}
-                            tokenLinker={getTokenLinkerContract(
-                              _chain_id === chain_id
-                                ? signer
-                                : address
-                                ? new VoidSigner(address, rpcs?.[_chain_id])
-                                : rpcs?.[_chain_id],
-                              token_linker_address
-                            )}
-                            deployRemoteTokens={deployRemoteTokens}
-                            registerOriginTokenAndDeployRemoteTokens={
-                              registerOriginTokenAndDeployRemoteTokens
-                            }
-                          />
-                        )}
+                          ) : !registered && !is_origin ? (
+                            <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                              <span className="text-sm font-medium">
+                                Origin token not registered
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
+                              <span className="text-sm font-medium">
+                                Not deployed
+                              </span>
+                            </div>
+                          )
+                          /*
+                                    <RegisterOriginTokenButton
+                                      buttonTitle={is_origin ? "Register origin token" : "Deploy remote tokens"}
+                                      buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                      initialChainData={_chain_data}
+                                      supportedEvmChains={undeployed_chains}
+                                      isOrigin={is_origin}
+                                      fixedTokenAddress={tokenAddress}
+                                      initialRemoteChains={is_origin ? undefined : toArray(chain_name)}
+                                      tokenId={tokenId}
+                                      tokenLinker={
+                                        getTokenLinkerContract(
+                                          _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
+                                          token_linker_address,
+                                        )
+                                      }
+                                      deployRemoteTokens={deployRemoteTokens}
+                                      registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
+                                    />
+                                  */
+                        }
                       </div>
                     </div>
                   </div>

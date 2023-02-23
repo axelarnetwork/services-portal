@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { composeWithDevTools } from "@redux-devtools/extension";
-import { createStore, applyMiddleware } from "redux";
+import { createStore } from "@reduxjs/toolkit";
+import { applyMiddleware } from "redux";
 
 import reducers from "./reducers";
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Provider } from "react-redux";
 import Head from "next/head";
@@ -22,17 +22,20 @@ import "../styles/components/notifications.css";
 import "../styles/components/nprogress.css";
 import "../styles/components/skeleton.css";
 import "../styles/components/table.css";
+import { AppProps } from "next/app";
+
+import WagmiConfigProvider from "~/lib/providers/WagmiConfigProvider";
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
-const App = ({ Component, pageProps }) => {
+const App: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
   const store = useStore(pageProps.initialReduxState);
 
   useEffect(() => {
-    const handleRouteChange = (url) => ga.pageview(url);
+    const handleRouteChange = (url: string) => ga.pageview(url);
 
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);
@@ -62,11 +65,12 @@ const App = ({ Component, pageProps }) => {
         <meta name="theme-color" content="#050707" />
       </Head>
       <Provider store={store}>
-        <Layout>
-          <div id="portal" />
-          <Component {...pageProps} />
-        </Layout>
-        <div className="grid-cols-2 grid-cols-3 grid-cols-4" />
+        <WagmiConfigProvider>
+          <Layout>
+            <div id="portal" />
+            <Component {...pageProps} />
+          </Layout>
+        </WagmiConfigProvider>
       </Provider>
     </>
   );

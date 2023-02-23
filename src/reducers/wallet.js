@@ -1,6 +1,8 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 import { WALLET_DATA, WALLET_RESET } from "./types";
 
-const initial_wallet_data = {
+const INITIAL_STATE = {
   default_chain_id: null,
   chain_id: null,
   provider: null,
@@ -11,7 +13,7 @@ const initial_wallet_data = {
 
 export const wallet = (
   state = {
-    [WALLET_DATA]: initial_wallet_data,
+    [WALLET_DATA]: INITIAL_STATE,
   },
   action
 ) => {
@@ -27,9 +29,25 @@ export const wallet = (
     case WALLET_RESET:
       return {
         ...state,
-        [WALLET_DATA]: initial_wallet_data,
+        [WALLET_DATA]: INITIAL_STATE,
       };
     default:
       return state;
   }
 };
+
+export const walletSlice = createSlice({
+  name: "wallet",
+  initialState: INITIAL_STATE,
+  reducers: {
+    setWalletData: (state, action) => {
+      state = {
+        ...state,
+        ...action.payload,
+      };
+    },
+    resetWalletData: (state) => {
+      state = INITIAL_STATE;
+    },
+  },
+});

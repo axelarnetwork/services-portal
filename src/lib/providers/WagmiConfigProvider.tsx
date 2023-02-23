@@ -1,4 +1,5 @@
 import { FC, PropsWithChildren } from "react";
+import { getDefaultProvider } from "ethers";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import {
   mainnet,
@@ -13,9 +14,10 @@ import {
   arbitrum,
   arbitrumGoerli,
 } from "wagmi/chains";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 
-const chains = [
+const chainConfigs = [
   mainnet,
   goerli,
   moonbeam,
@@ -29,14 +31,13 @@ const chains = [
   arbitrumGoerli,
 ];
 
-const { provider, webSocketProvider } = configureChains(chains, [
-  publicProvider(),
-]);
+const { webSocketProvider } = configureChains(chainConfigs, [publicProvider()]);
 
 const client = createClient({
   autoConnect: true,
-  provider,
+  provider: getDefaultProvider(),
   webSocketProvider,
+  connectors: [new InjectedConnector()],
 });
 
 const WagmiConfigProvider: FC<PropsWithChildren> = ({ children }) => {

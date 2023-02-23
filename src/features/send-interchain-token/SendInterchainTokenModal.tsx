@@ -115,6 +115,8 @@ export function useSendInterchainTokenMutation(config: {
       toNetwork: string;
       fromNetwork: string;
       amount: string;
+      callback?: (param: any) => void;
+      updateStatus?: (status: any) => void;
     }) => {
       if (!(erc20 && address && tokenLinker)) {
         console.log(
@@ -132,7 +134,15 @@ export function useSendInterchainTokenMutation(config: {
         return;
       }
 
-      const { tokenAddress, tokenId, toNetwork, amount, fromNetwork } = input;
+      const {
+        tokenAddress,
+        tokenId,
+        toNetwork,
+        amount,
+        fromNetwork,
+        callback,
+        updateStatus,
+      } = input;
       console.log(
         "params",
         tokenAddress,
@@ -159,20 +169,37 @@ export function useSendInterchainTokenMutation(config: {
       console.log("fromNetwork", fromNetwork);
 
       //approve
-      const tx = await erc20.approve(tokenLinker.address, bn);
+      try {
+        updateStatus && updateStatus("approving");
+        const tx = await erc20.approve(tokenLinker.address, bn);
 
-      // wait for tx to be mined
-      await tx.wait(1);
+        // wait for tx to be mined
+        await tx.wait(1);
+      } catch (e) {
+        updateStatus && updateStatus("idle");
+        return;
+      }
 
-      //send token
-      const sendTokenTx = await tokenLinker.sendToken(
-        input.tokenId,
-        input.toNetwork,
-        address,
-        bn,
-        { value: BigNumber.from(gas) }
-      );
-      return await sendTokenTx.wait(1);
+      try {
+        updateStatus && updateStatus("sending");
+
+        //send token
+        const sendTokenTx = await tokenLinker.sendToken(
+          input.tokenId,
+          input.toNetwork,
+          address,
+          bn,
+          { value: BigNumber.from(gas) }
+        );
+        const sendTokenTxMined = await sendTokenTx.wait(1);
+
+        updateStatus && updateStatus("idle");
+
+        callback && callback(sendTokenTxMined);
+      } catch (e) {
+        updateStatus && updateStatus("idle");
+        return;
+      }
     }
   );
 }
@@ -209,6 +236,9 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<string>("");
   const [toChain, setToChain] = useState<EvmChainsData | null>(null);
+  const [sendStatus, setSendStatus] = useState<
+    "idle" | "approving" | "sending"
+  >("idle");
   const providerUrl = new JsonRpcProvider(
     getWagmiChains().find((t) => t.id === props.fromNetworkId)?.rpcUrls.public
       .http[0] as string
@@ -252,6 +282,8 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       toNetwork: toChain.chain_name,
       fromNetwork: props.fromNetworkName,
       amount,
+      callback: balance.refetch,
+      updateStatus: setSendStatus,
     });
   }, [
     props.tokenAddress,
@@ -291,9 +323,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
           </div>
         }
         buttonTitle={
-          currentMMChain?.id === props.fromNetworkId
-            ? "Send token cross-chain"
-            : `Switch wallet to ${props.fromNetworkName}`
+          sendStatus === "idle" ? "Send token cross-chain" : "Working on it"
         }
         onConfirm={handleConfirm}
       />
@@ -317,7 +347,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     <div className="mb-5">
       {showWalletSwitchButton()}
       {showModalButton()}
-      Balance: {balance?.data}
+      <StyledLabel>Balance: {balance?.data}</StyledLabel>
     </div>
   );
 };

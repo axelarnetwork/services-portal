@@ -6,7 +6,7 @@ import {
   GasToken,
 } from "@axelar-network/axelarjs-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
 import { Oval } from "react-loader-spinner";
@@ -29,7 +29,6 @@ import { useERC20 } from "~/lib/contract/hooks/useERC20";
 import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainTokenLinker";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 import { toArray } from "~/lib/utils";
-import { token_addresses } from "~/reducers/token-addresses";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
@@ -61,7 +60,7 @@ function ChainPicker(props: {
       chain={props.value}
       onSelect={(c: {}) => {
         const chainData = toArray(evm_chains_data).find((_c) => _c.id === c);
-        chainData && props.onChange?.(chainData);
+        if (chainData) props.onChange?.(chainData);
       }}
       displayName={true}
     />
@@ -103,7 +102,7 @@ export function useSendInterchainTokenMutation(config: {
     signerOrProvider: signer.data,
   });
 
-  const { address, isConnected, status } = useAccount();
+  const { address } = useAccount();
 
   const tokenLinker = useInterchainTokenLinker({
     address: String(process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS),
@@ -117,8 +116,9 @@ export function useSendInterchainTokenMutation(config: {
       toNetwork: string;
       fromNetwork: string;
       amount: string;
-      callback?: (param: any) => void;
-      updateStatus?: (status: any) => void;
+      callback?: () => void;
+      // eslint-disable-next-line
+      updateStatus?: (status: "idle" | "approving" | "sending") => void;
     }) => {
       if (!(erc20 && address && tokenLinker)) {
         console.log(
@@ -172,18 +172,18 @@ export function useSendInterchainTokenMutation(config: {
 
       //approve
       try {
-        updateStatus && updateStatus("approving");
+        if (updateStatus) updateStatus("approving");
         const tx = await erc20.approve(tokenLinker.address, bn);
 
         // wait for tx to be mined
         await tx.wait(1);
       } catch (e) {
-        updateStatus && updateStatus("idle");
+        if (updateStatus) updateStatus("idle");
         return;
       }
 
       try {
-        updateStatus && updateStatus("sending");
+        if (updateStatus) updateStatus("sending");
 
         //send token
         const sendTokenTx = await tokenLinker.sendToken(
@@ -193,13 +193,13 @@ export function useSendInterchainTokenMutation(config: {
           bn,
           { value: BigNumber.from(gas) }
         );
-        const sendTokenTxMined = await sendTokenTx.wait(1);
+        await sendTokenTx.wait(1);
 
-        updateStatus && updateStatus("idle");
+        if (updateStatus) updateStatus("idle");
 
-        callback && callback(sendTokenTxMined);
+        if (callback) callback();
       } catch (e) {
-        updateStatus && updateStatus("idle");
+        if (updateStatus) updateStatus("idle");
         return;
       }
     }
@@ -268,7 +268,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         getWagmiChains().find((t) => t.id === props.fromNetworkId)?.id
       );
     }
-  }, [props.fromNetworkId, currentMMChain]);
+  }, [props.fromNetworkId, currentMMChain, switchNetwork]);
 
   const destTokenAddress = useSelector(
     // @ts-ignore

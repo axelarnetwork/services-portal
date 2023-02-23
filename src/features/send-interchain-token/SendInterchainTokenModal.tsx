@@ -289,11 +289,15 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       if (toAddress === recipientAddress) {
         console.log("DONE!", amount, fromAddress, toAddress);
 
-        queryClient.invalidateQueries([
+        const queryKey = [
           "tokenBalance",
           props.tokenAddress,
           destinationProviderUrl,
-        ]);
+        ];
+
+        console.log("invalidating query:", queryKey);
+
+        queryClient.invalidateQueries(queryKey);
       }
     },
   });

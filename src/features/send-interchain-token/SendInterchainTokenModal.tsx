@@ -1,4 +1,6 @@
 import { FC, useCallback, useState } from "react";
+import { HiExternalLink } from "react-icons/hi";
+import { Oval } from "react-loader-spinner";
 import { useSelector } from "react-redux";
 import {
   AxelarQueryAPI,
@@ -9,7 +11,6 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
-import { Oval } from "react-loader-spinner";
 import {
   erc20ABI,
   useAccount,
@@ -92,6 +93,11 @@ export function useTokenBalance(
   );
 }
 
+type StatusUpdateMessage =
+  | { type: "idle" }
+  | { type: "approving" }
+  | { type: "sending"; txHash: string };
+
 export function useSendInterchainTokenMutation(config: {
   tokenAddress: `0x${string}`;
   tokenId: `0x${string}`;
@@ -118,7 +124,7 @@ export function useSendInterchainTokenMutation(config: {
       amount: string;
       callback?: () => void;
       // eslint-disable-next-line
-      updateStatus?: (status: "idle" | "approving" | "sending") => void;
+      onStatusUpdate?: (message: StatusUpdateMessage) => void;
     }) => {
       if (!(erc20 && address && tokenLinker)) {
         console.log(
@@ -136,30 +142,12 @@ export function useSendInterchainTokenMutation(config: {
         return;
       }
 
-      const {
-        tokenAddress,
-        tokenId,
-        toNetwork,
-        amount,
-        fromNetwork,
-        callback,
-        updateStatus,
-      } = input;
-      console.log(
-        "params",
-        tokenAddress,
-        tokenId,
-        toNetwork,
-        amount,
-        fromNetwork
-      );
+      const { toNetwork, fromNetwork, callback, onStatusUpdate } = input;
+
       const decimals = await erc20.decimals();
-      const bn = BigNumber.from(parseUnits(input.amount, decimals));
-
-      // console.log("decimals", decimals);
-      // console.log("amount", formatUnits(bn, decimals));
-
-      // console.log("environment", process.env.NEXT_PUBLIC_ENVIRONMENT);
+      const bigNumberAmount = BigNumber.from(
+        parseUnits(input.amount, decimals)
+      );
       const environment = process.env.NEXT_PUBLIC_ENVIRONMENT as Environment;
       const axelarQueryAPI = new AxelarQueryAPI({ environment });
       const gas = await axelarQueryAPI.estimateGasFee(
@@ -167,39 +155,39 @@ export function useSendInterchainTokenMutation(config: {
         toNetwork,
         gasTokenMap[fromNetwork.toLowerCase()]
       );
-      // console.log("gas", gas);
-      // console.log("fromNetwork", fromNetwork);
 
       //approve
       try {
-        if (updateStatus) updateStatus("approving");
-        const tx = await erc20.approve(tokenLinker.address, bn);
+        if (onStatusUpdate)
+          onStatusUpdate({
+            type: "approving",
+          });
+        const tx = await erc20.approve(tokenLinker.address, bigNumberAmount);
 
         // wait for tx to be mined
         await tx.wait(1);
       } catch (e) {
-        if (updateStatus) updateStatus("idle");
+        if (onStatusUpdate) onStatusUpdate({ type: "idle" });
         return;
       }
 
       try {
-        if (updateStatus) updateStatus("sending");
-
         //send token
         const sendTokenTx = await tokenLinker.sendToken(
           input.tokenId,
           input.toNetwork,
           address,
-          bn,
+          bigNumberAmount,
           { value: BigNumber.from(gas) }
         );
-        await sendTokenTx.wait(1);
+        if (onStatusUpdate)
+          onStatusUpdate({ type: "sending", txHash: sendTokenTx.hash });
 
-        // if (updateStatus) updateStatus("idle");
+        await sendTokenTx.wait(1);
 
         if (callback) callback();
       } catch (e) {
-        if (updateStatus) updateStatus("idle");
+        if (onStatusUpdate) onStatusUpdate({ type: "idle" });
         return;
       }
     }
@@ -218,7 +206,7 @@ const StyledInput = tw.input`
 `;
 
 const StyledLabel = tw.label`
-  text-slate-400 dark:text-slate-500 text-sm\
+  text-slate-400 dark:text-slate-500 text-sm
 `;
 
 type Props = {
@@ -239,9 +227,9 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<string>("");
   const [toChain, setToChain] = useState<EvmChainsData | null>(null);
-  const [sendStatus, setSendStatus] = useState<
-    "idle" | "approving" | "sending"
-  >("idle");
+  const [sendStatus, setSendStatus] = useState<StatusUpdateMessage>({
+    type: "idle",
+  });
 
   const wagmiChains = getWagmiChains();
 
@@ -249,10 +237,6 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     wagmiChains.find((t) => t.id === props.fromNetworkId)?.rpcUrls.public
       .http[0] as string
   );
-
-  // const destinationProviderUrl = wagmiChains.find(
-  //   (t) => t.id === toChain?.chain_id
-  // )?.rpcUrls.public.http[0] as string;
 
   const balance = useTokenBalance(props.tokenAddress, provider);
 
@@ -288,7 +272,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     eventName: "Transfer",
     listener(fromAddress, toAddress, amount) {
       console.log({
-        "Transfer(fromAddress, toAddress, amount, event)": {
+        "Transfer(fromAddress, toAddress, amount)": {
           fromAddress,
           toAddress,
           amount,
@@ -306,13 +290,13 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         ];
 
         queryClient.invalidateQueries(queryKey);
-        setSendStatus("idle");
+        setSendStatus({ type: "idle" });
       }
     },
   });
 
   const handleConfirm = useCallback(async () => {
-    if (!toChain || !amount) {
+    if (!(toChain && amount)) {
       console.log(
         "SendInterchainTokenModal toChain or amount not specified",
         toChain,
@@ -328,24 +312,27 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       fromNetwork: props.fromNetworkName,
       amount,
       callback: balance.refetch,
-      updateStatus: setSendStatus,
+      onStatusUpdate: setSendStatus,
     });
   }, [
+    toChain,
+    amount,
+    sendToken,
     props.tokenAddress,
     props.tokenId,
-    props.fromNetworkId,
-    sendToken,
-    amount,
-    toChain,
+    props.fromNetworkName,
+    balance.refetch,
   ]);
 
-  const showModalButton = () => {
+  const renderModalButton = () => {
     if (currentMMChain?.id !== props.fromNetworkId) return null;
-    let sendStatusTxtMap = {
+    const sendStatusTxtMap = {
       idle: "Send token cross-chain",
       approving: "Wait for approval",
       sending: "Sending in progress...",
     };
+
+    const isLoading = ["approving", "sending"].includes(sendStatus.type);
 
     return (
       <Modal
@@ -373,12 +360,11 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
             />
           </div>
         }
+        disabled={isLoading}
         buttonTitle={
           <div className="flex items-center justify-center gap-2">
-            {["approving", "sending"].includes(sendStatus) && (
-              <Oval width={16} height={16} color={"white"} />
-            )}
-            {sendStatusTxtMap[sendStatus]}
+            {isLoading && <Oval width={16} height={16} color={"white"} />}
+            {sendStatusTxtMap[sendStatus.type]}
           </div>
         }
         onConfirm={handleConfirm}
@@ -386,8 +372,8 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     );
   };
 
-  const showWalletSwitchButton = () => {
-    if (currentMMChain?.id == props.fromNetworkId) return null;
+  const renderWalletSwitchButton = () => {
+    if (currentMMChain?.id === props.fromNetworkId) return null;
 
     return (
       <button
@@ -400,44 +386,24 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   };
 
   return (
-    <div className="mb-5">
-      {showWalletSwitchButton()}
-      {showModalButton()}
-      <StyledLabel>Balance: {balance?.data}</StyledLabel>
+    <div className="mb-5 grid gap-1">
+      {renderWalletSwitchButton()}
+      {renderModalButton()}
+      <div className="flex items-center justify-between">
+        <StyledLabel>Balance: {balance?.data}</StyledLabel>
+        {sendStatus.type === "sending" && (
+          <a
+            href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${sendStatus.txHash}`}
+            className="flex items-center gap-1 hover:text-blue-500 hover:underline"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            axelarscan <HiExternalLink />
+          </a>
+        )}
+      </div>
     </div>
   );
 };
 
 export default SendInterchainTokenModal;
-
-/**
- * 
- * 
- * 
-   useContractEvent({
-    chainId: destChainId as number,
-    address: tokenAddress as string,
-    abi: erc20ABI,
-    eventName: "Transfer",
-    listener(fromAddress, toAddress, amount, event) {
-      if (event.blockNumber < Number(txInfo.destStartBlockNumber)) {
-        return;
-      }
-      console.log({
-        "Transfer(fromAddress, toAddress, amount, event)": {
-          fromAddress,
-          toAddress,
-          amount,
-          event,
-        },
-      });
-      if (toAddress === destAddress) {
-        setTxInfo({
-          destTxHash: event?.transactionHash,
-        });
-        setSwapStatus(SwapStatus.FINISHED);
-      }
-    },
-  });
- * 
- */

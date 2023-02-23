@@ -34,7 +34,7 @@ import Theme from "./theme";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { evm_chains, assets, rpc_providers, wallet } = useSelector(
+  const { evm_chains, rpc_providers, wallet } = useSelector(
     (state) => ({
       evm_chains: state.evm_chains,
       assets: state.assets,

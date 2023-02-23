@@ -1,7 +1,7 @@
 import { FC, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
+import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
 import { useAccount, useMutation, useQuery, useSigner } from "wagmi";
 import { ChainData } from "web3modal";
@@ -11,27 +11,27 @@ import Modal from "~/components/modal";
 import { useERC20 } from "~/lib/contract/hooks/useERC20";
 import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainTokenLinker";
 import { toArray } from "~/lib/utils";
+import { EvmChainsData } from "~/interface/evm_chains";
+import { AxelarQueryAPI, Environment, GasToken } from "@axelar-network/axelarjs-sdk";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
 function ChainPicker(props: {
   value: string;
   // eslint-disable-next-line no-unused-vars
-  onChange?: (chain: ChainData) => void;
+  onChange?: (chain: EvmChainsData) => void;
 }) {
   // @ts-ignore
-  const { evm_chains_data } = useSelector(
+  const {evm_chains_data} = useSelector(
     // @ts-ignore
-    ({ evm_chains }) => evm_chains.evm_chains_data
+    ( {evm_chains} ) => evm_chains
   );
   return (
     <Chains
       chain={props.value}
       onSelect={(c: {}) => {
         const chainData = toArray(evm_chains_data).find((_c) => _c.id === c);
-        if (chainData) {
-          props.onChange?.(chainData);
-        }
+        chainData && props.onChange?.(chainData);
       }}
       displayName={true}
     />
@@ -71,7 +71,8 @@ export function useSendInterchainTokenMutation(config: {
     signerOrProvider: signer.data,
   });
 
-  const { address } = useAccount();
+  const { address, isConnected, status } = useAccount();
+  // console.log("useSendInterchainTokenMutation address", address, isConnected, status);
 
   const tokenLinker = useInterchainTokenLinker({
     address: String(process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS),
@@ -83,13 +84,32 @@ export function useSendInterchainTokenMutation(config: {
       tokenAddress: `0x${string}`;
       tokenId: `0x${string}`;
       toNetwork: string;
+      amount: string;
     }) => {
-      if (!(erc20 && address && tokenLinker)) return;
+      if (!(erc20 && address && tokenLinker)) {
+        console.log("useMutation SendInterchainTokenModal: return erc20", erc20);
+        console.log("useMutation SendInterchainTokenModal: return address", address);
+        console.log("useMutation SendInterchainTokenModal: return tokenLInker", tokenLinker);
+        return;
+      }
 
-      const amount = BigNumber.from(100_000);
+      const {tokenAddress, tokenId, toNetwork, amount} = input;
+      
+      const decimals = await erc20.decimals();
+      const bn = BigNumber.from(parseUnits(input.amount, decimals));
+
+      console.log("decimals",decimals);
+      console.log("amount",formatUnits(bn, decimals));
+      console.log("params",tokenAddress, tokenId, toNetwork, amount)
+      console.log("environment",process.env.NEXT_PUBLIC_ENVIRONMENT);
+      const environment = process.env.NEXT_PUBLIC_ENVIRONMENT as Environment;
+      const axelarQueryAPI = new AxelarQueryAPI({ environment });
+      const gas = await axelarQueryAPI.estimateGasFee('Avalanche', toNetwork, GasToken.AVAX);
+      console.log("gas",gas);
+      // return;
 
       //approve
-      const tx = await erc20.approve(tokenLinker.address, amount);
+      const tx = await erc20.approve(tokenLinker.address, bn);
 
       // wait for tx to be mined
       await tx.wait(1);
@@ -99,10 +119,8 @@ export function useSendInterchainTokenMutation(config: {
         input.tokenId,
         input.toNetwork,
         address,
-        amount,
-        {
-          value: 3e6,
-        }
+        bn,
+        { value: BigNumber.from(gas) }
       );
       return await sendTokenTx.wait(1);
     }
@@ -137,14 +155,17 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   });
 
   const [amount, setAmount] = useState<string>("");
+  const [toChain, setToChain] = useState<EvmChainsData | null>(null);
 
   const handleConfirm = useCallback(async () => {
+    if (!toChain || !amount) return;
     await sendToken({
       tokenAddress: props.tokenAddress,
       tokenId: props.tokenId,
-      toNetwork: "Polygon",
+      toNetwork: toChain.chain_name,
+      amount
     });
-  }, [props.tokenAddress, props.tokenId, sendToken]);
+  }, [props.tokenAddress, props.tokenId, sendToken, amount, toChain]);
 
   return (
     <>
@@ -154,9 +175,10 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
           <div className="flex items-center gap-2">
             <div>Send Interchain Token to</div>
             <ChainPicker
-              value="Ethereum"
+              value={toChain?.chain_name || ""}
               onChange={(chain) => {
-                console.log(chain);
+                console.log("SendInterchainTokenModal onChange",chain);
+                setToChain(chain);
               }}
             />
           </div>

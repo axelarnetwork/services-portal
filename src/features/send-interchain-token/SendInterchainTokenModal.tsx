@@ -195,7 +195,7 @@ export function useSendInterchainTokenMutation(config: {
         );
         await sendTokenTx.wait(1);
 
-        if (updateStatus) updateStatus("idle");
+        // if (updateStatus) updateStatus("idle");
 
         if (callback) callback();
       } catch (e) {
@@ -306,6 +306,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         ];
 
         queryClient.invalidateQueries(queryKey);
+        setSendStatus("idle");
       }
     },
   });
@@ -373,7 +374,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
           </div>
         }
         buttonTitle={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             {["approving", "sending"].includes(sendStatus) && (
               <Oval width={16} height={16} color={"white"} />
             )}

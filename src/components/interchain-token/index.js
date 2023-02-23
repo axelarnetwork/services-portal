@@ -18,6 +18,7 @@ import {
 } from "ethers";
 import _ from "lodash";
 
+import SendInterchainTokenModal from "~/features/send-interchain-token/SendInterchainTokenModal";
 import { getChain /*, switchChain*/ } from "~/lib/chain/utils";
 // import IUpgradable from "~/lib/contract/json/IUpgradable.json";
 import InterchainTokenLinker from "~/lib/contract/json/InterchainTokenLinker.json";
@@ -1448,26 +1449,34 @@ export default () => {
                         </div>
                         {
                           registered_or_deployed_remote ? (
-                            address_url ? (
-                              <a
-                                href={address_url}
-                                target="_blank"
-                                rel="noopenner noreferrer"
-                                className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
-                              >
-                                <BiCheck size={16} />
-                                <span className="text-sm font-semibold">
-                                  {is_origin ? "Registered" : "Deployed"}
-                                </span>
-                              </a>
-                            ) : (
-                              <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
-                                <BiCheck size={16} />
-                                <span className="text-sm font-medium">
-                                  {is_origin ? "Registered" : "Deployed"}
-                                </span>
-                              </div>
-                            )
+                            <div className="flex flex-col">
+                              <SendInterchainTokenModal
+                                tokenAddress={_tokenAddress}
+                                tokenId={tokenId}
+                                fromNetworkId={tl.chain_data.chain_id}
+                                fromNetworkName={tl.chain_data.chain_name}
+                              />
+                              {address_url ? (
+                                <a
+                                  href={address_url}
+                                  target="_blank"
+                                  rel="noopenner noreferrer"
+                                  className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                                >
+                                  <BiCheck size={16} />
+                                  <span className="text-sm font-semibold">
+                                    {is_origin ? "Registered" : "Deployed"}
+                                  </span>
+                                </a>
+                              ) : (
+                                <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                  <BiCheck size={16} />
+                                  <span className="text-sm font-medium">
+                                    {is_origin ? "Registered" : "Deployed"}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           ) : !token_linker_address ||
                             !token_addresses_data ||
                             (tokenId && !token_addresses_data[id]) ? (

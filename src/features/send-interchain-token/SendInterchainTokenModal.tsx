@@ -2,24 +2,16 @@ import { FC, useCallback, useState } from "react";
 import { HiExternalLink } from "react-icons/hi";
 import { Oval } from "react-loader-spinner";
 import { useSelector } from "react-redux";
-import {
-  AxelarQueryAPI,
-  Environment,
-  GasToken,
-} from "@axelar-network/axelarjs-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { BigNumber } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils.js";
+import { formatUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
 import {
   erc20ABI,
   useAccount,
   useContractEvent,
-  useMutation,
   useNetwork,
   useQuery,
   useQueryClient,
-  useSigner,
   useSwitchNetwork,
 } from "wagmi";
 
@@ -27,24 +19,15 @@ import Chains from "~/components/interchain-token/chains";
 import Modal from "~/components/modal";
 import { EvmChainsData } from "~/interface/evm_chains";
 import { useERC20 } from "~/lib/contract/hooks/useERC20";
-import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainTokenLinker";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 import { toArray } from "~/lib/utils";
 
-export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
+import {
+  TransactionState,
+  useSendInterchainTokenMutation,
+} from "./hooks/useSendInterchainTokenMutation";
 
-export const gasTokenMap: Record<string, GasToken> = {
-  avalanche: GasToken.AVAX,
-  "ethereum-2": GasToken.ETH,
-  ethereum: GasToken.ETH,
-  moonbeam: GasToken.GLMR,
-  fantom: GasToken.FTM,
-  polygon: GasToken.MATIC,
-  aurora: GasToken.AURORA,
-  binance: GasToken.BINANCE,
-  celo: GasToken.CELO,
-  kava: GasToken.KAVA,
-};
+export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
 function ChainPicker(props: {
   value: string;
@@ -93,107 +76,6 @@ export function useTokenBalance(
   );
 }
 
-type StatusUpdateMessage =
-  | { type: "idle" }
-  | { type: "approving" }
-  | { type: "sending"; txHash: string };
-
-export function useSendInterchainTokenMutation(config: {
-  tokenAddress: `0x${string}`;
-  tokenId: `0x${string}`;
-}) {
-  const signer = useSigner();
-  const erc20 = useERC20({
-    address: config.tokenAddress,
-    signerOrProvider: signer.data,
-  });
-
-  const { address } = useAccount();
-
-  const tokenLinker = useInterchainTokenLinker({
-    address: String(process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS),
-    signerOrProvider: signer.data,
-  });
-
-  return useMutation(
-    async (input: {
-      tokenAddress: `0x${string}`;
-      tokenId: `0x${string}`;
-      toNetwork: string;
-      fromNetwork: string;
-      amount: string;
-      callback?: () => void;
-      // eslint-disable-next-line
-      onStatusUpdate?: (message: StatusUpdateMessage) => void;
-    }) => {
-      if (!(erc20 && address && tokenLinker)) {
-        console.log(
-          "useMutation SendInterchainTokenModal: return erc20",
-          erc20
-        );
-        console.log(
-          "useMutation SendInterchainTokenModal: return address",
-          address
-        );
-        console.log(
-          "useMutation SendInterchainTokenModal: return tokenLInker",
-          tokenLinker
-        );
-        return;
-      }
-
-      const { toNetwork, fromNetwork, callback, onStatusUpdate } = input;
-
-      const decimals = await erc20.decimals();
-      const bigNumberAmount = BigNumber.from(
-        parseUnits(input.amount, decimals)
-      );
-      const environment = process.env.NEXT_PUBLIC_ENVIRONMENT as Environment;
-      const axelarQueryAPI = new AxelarQueryAPI({ environment });
-      const gas = await axelarQueryAPI.estimateGasFee(
-        fromNetwork,
-        toNetwork,
-        gasTokenMap[fromNetwork.toLowerCase()]
-      );
-
-      //approve
-      try {
-        if (onStatusUpdate)
-          onStatusUpdate({
-            type: "approving",
-          });
-        const tx = await erc20.approve(tokenLinker.address, bigNumberAmount);
-
-        // wait for tx to be mined
-        await tx.wait(1);
-      } catch (e) {
-        if (onStatusUpdate) onStatusUpdate({ type: "idle" });
-        return;
-      }
-
-      try {
-        //send token
-        const sendTokenTx = await tokenLinker.sendToken(
-          input.tokenId,
-          input.toNetwork,
-          address,
-          bigNumberAmount,
-          { value: BigNumber.from(gas) }
-        );
-        if (onStatusUpdate)
-          onStatusUpdate({ type: "sending", txHash: sendTokenTx.hash });
-
-        await sendTokenTx.wait(1);
-
-        if (callback) callback();
-      } catch (e) {
-        if (onStatusUpdate) onStatusUpdate({ type: "idle" });
-        return;
-      }
-    }
-  );
-}
-
 const StyledInput = tw.input`
   className="w-full bg-slate-50 
   dark:bg-slate-900 border border-slate-200 
@@ -227,7 +109,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<string>("");
   const [toChain, setToChain] = useState<EvmChainsData | null>(null);
-  const [sendStatus, setSendStatus] = useState<StatusUpdateMessage>({
+  const [sendTxState, setSendTxState] = useState<TransactionState>({
     type: "idle",
   });
 
@@ -290,7 +172,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         ];
 
         queryClient.invalidateQueries(queryKey);
-        setSendStatus({ type: "idle" });
+        setSendTxState({ type: "idle" });
       }
     },
   });
@@ -311,8 +193,8 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       toNetwork: toChain.chain_name,
       fromNetwork: props.fromNetworkName,
       amount,
-      callback: balance.refetch,
-      onStatusUpdate: setSendStatus,
+      onFinished: balance.refetch,
+      onStatusUpdate: setSendTxState,
     });
   }, [
     toChain,
@@ -332,7 +214,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       sending: "Sending in progress...",
     };
 
-    const isLoading = ["approving", "sending"].includes(sendStatus.type);
+    const isLoading = ["approving", "sending"].includes(sendTxState.type);
 
     return (
       <Modal
@@ -364,7 +246,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         buttonTitle={
           <div className="flex items-center justify-center gap-2">
             {isLoading && <Oval width={16} height={16} color={"white"} />}
-            {sendStatusTxtMap[sendStatus.type]}
+            {sendStatusTxtMap[sendTxState.type]}
           </div>
         }
         onConfirm={handleConfirm}
@@ -386,22 +268,24 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   };
 
   return (
-    <div className="mb-5 grid gap-1">
+    <div className="mb-5 grid gap-2">
       {renderWalletSwitchButton()}
       {renderModalButton()}
-      <div className="flex items-center justify-between">
-        <StyledLabel>Balance: {balance?.data}</StyledLabel>
-        {sendStatus.type === "sending" && (
-          <a
-            href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${sendStatus.txHash}`}
-            className="flex items-center gap-1 hover:text-blue-500 hover:underline"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            axelarscan <HiExternalLink />
-          </a>
-        )}
-      </div>
+      {balance.data && (
+        <div className="flex items-center justify-between">
+          <StyledLabel>Balance: {balance?.data}</StyledLabel>
+          {sendTxState.type === "sending" && (
+            <a
+              href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${sendTxState.txHash}`}
+              className="flex items-center gap-1 hover:text-blue-500 hover:underline"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              axelarscan <HiExternalLink />
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 };

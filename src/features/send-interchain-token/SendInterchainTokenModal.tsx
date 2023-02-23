@@ -14,6 +14,7 @@ import { toArray } from "~/lib/utils";
 import { EvmChainsData } from "~/interface/evm_chains";
 import { AxelarQueryAPI, Environment, GasToken } from "@axelar-network/axelarjs-sdk";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
@@ -52,13 +53,14 @@ function ChainPicker(props: {
   );
 }
 
-export function useTokenBalance(tokenAddress: string) {
+export function useTokenBalance(tokenAddress: string, provider: JsonRpcProvider) {
   const { address } = useAccount();
-  const { data: signer } = useSigner();
 
+  
+  // console.log("providerUrl",providerUrl);
   const erc20 = useERC20({
     address: tokenAddress,
-    signerOrProvider: signer,
+    signerOrProvider: provider,
   });
 
   return useQuery(
@@ -67,10 +69,11 @@ export function useTokenBalance(tokenAddress: string) {
       if (!(erc20 && address)) return;
 
       const balance = await erc20.balanceOf(address);
-      return formatUnits(balance, 18);
+      const decimals = await erc20.decimals();
+      return formatUnits(balance, decimals);
     },
     {
-      enabled: !!address && !!signer && !!erc20,
+      enabled: !!address && !!provider && !!erc20,
     }
   );
 }
@@ -174,6 +177,9 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   const [amount, setAmount] = useState<string>("");
   const [toChain, setToChain] = useState<EvmChainsData | null>(null);
+  const providerUrl = new JsonRpcProvider((getWagmiChains().find(t => t.id === props.fromNetworkId)?.rpcUrls.public.http[0]) as string)
+  const balance = useTokenBalance(props.tokenAddress, providerUrl)
+  console.log("SendInterchainTokenModal balance",balance.data, balance.isSuccess, props.fromNetworkName, props.tokenAddress, providerUrl.connection.url);
 
   const { switchNetwork } = useSwitchNetwork({
     onSuccess(data) {
@@ -205,6 +211,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   return (
     <div className="mb-5">
+      
       <Modal
         tooltip={false}
         title={
@@ -234,6 +241,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         buttonClassName={currentMMChain?.id !== props.fromNetworkId ? "w-full btn btn-default btn-rounded bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-500 hover:border-transparent rounded" : ""}
         onConfirm={handleConfirm}
       />
+      Balance: {balance?.data}
     </div>
   );
 };

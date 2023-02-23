@@ -40,6 +40,7 @@ const getSteps = (
     {
       id: "select_pre_existing_token",
       title: "Select flow",
+      can_switch_chain: true,
       options: [
         {
           title: "New ERC20 token",
@@ -56,6 +57,7 @@ const getSteps = (
       title: preExistingToken ?
         `Validate${!isOrigin || hasDeployRemoteTokens ? "" : " your ERC20"} token` :
         `Deploy${!isOrigin || hasDeployRemoteTokens ? "" : " new"} ERC20 token`,
+      can_switch_chain: true,
     },
     isOrigin ?
       {
@@ -197,9 +199,16 @@ export default (
   useEffect(
     () => {
       setChainData(initialChainData);
-      setRemoteChains(getDefaultRemoteChains(supportedEvmChains, initialChainData));
+      setRemoteChains(remoteChains ? getDefaultRemoteChains(supportedEvmChains, initialChainData) : initialRemoteChains);
     },
     [initialChainData],
+  )
+
+  useEffect(
+    () => {
+      setRemoteChains(initialRemoteChains);
+    },
+    [initialRemoteChains],
   )
 
   useEffect(
@@ -486,7 +495,7 @@ export default (
               {!isOrigin ? "Deploy remote tokens from" : "Register origin token on"}
             </span>
             <Chains
-              disabled={disabled || currentStep > 1}
+              disabled={disabled || !steps[currentStep]?.can_switch_chain}
               chain={id}
               onSelect={
                 c => {
@@ -1035,10 +1044,11 @@ export default (
                               registerOrDeployRemoteResponse.status === "failed" ?
                                 <BiX
                                   size={18}
-                                  className="mt-0.5"
+                                  className="min-w-fit mt-0.5"
                                 /> :
                                 <BiCheck
                                   size={18}
+                                  className="min-w-fit"
                                 />
                             }
                             <span className="mx-0.5">
@@ -1070,7 +1080,7 @@ export default (
                   steps[currentStep]?.id === "remote_deployments" ?
                     <div className="w-full space-y-1.5">
                       <div className="whitespace-nowrap text-base font-bold">
-                        Deploy via GMP
+                        Deploy remote tokens via GMP
                       </div>
                       <div className="overflow-y-auto flex flex-col space-y-0.5">
                         {toArray(chains)
@@ -1125,7 +1135,7 @@ export default (
                                   default:
                                     break;
                                 }
-                                break
+                                break;
                             }
 
                             title = toArray(statuses).join(" & ")
@@ -1152,13 +1162,31 @@ export default (
                                 icon = (<BiX size={20} className="mt-0.5" />);
                                 break
                               default:
-                                icon = (
-                                  <Oval
-                                    width={20}
-                                    height={20}
-                                    color={loaderColor(theme)}
-                                  />
-                                );
+                                switch (gas_status) {
+                                  case "gas_paid_not_enough_gas":
+                                    icon = (
+                                      <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopenner noreferrer"
+                                        className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 rounded flex items-center justify-between text-blue-500 dark:text-blue-600 space-x-2.5 py-1.5 px-1"
+                                      >
+                                        <span className="text-sm font-medium">
+                                          Add gas
+                                        </span>
+                                      </a>
+                                    );
+                                    break;
+                                  default:
+                                  icon = (
+                                    <Oval
+                                      width={20}
+                                      height={20}
+                                      color={loaderColor(theme)}
+                                    />
+                                  );
+                                  break;
+                                }
                                 break;
                             }
 
@@ -1410,7 +1438,7 @@ export default (
                           await sleep(2 * 1000);
 
                           router.push(
-                            `${pathname.replace("/[chain]", "").replace("/[token_address]", "")}/${chainData.id}/${tokenAddress}`,
+                            `${pathname.replace("/[chain]", "").replace("/[token_address]", "")}/${chainData.id}/${tokenAddress}?refresh=true`,
                             undefined,
                             {
                               shallow: true,

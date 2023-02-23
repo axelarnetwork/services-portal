@@ -1004,7 +1004,7 @@ export default () => {
       }}
     >
       {!signer ? (
-        <div className="min-h-full flex flex-col justify-center space-y-3">
+        <div className="flex flex-col justify-center min-h-full space-y-3">
           <Wallet />
           <span className="text-slate-400 dark:text-slate-600">
             Please connect your wallet to manage your contract
@@ -1012,12 +1012,12 @@ export default () => {
         </div>
       ) : !token_linkers_data ? (
         <div className="w-full">
-          <div className="h-full flex items-center justify-center">
+          <div className="flex items-center justify-center h-full">
             <Blocks />
           </div>
         </div>
       ) : !token_address ? (
-        <div className="w-full flex flex-col items-center justify-center space-y-8">
+        <div className="flex flex-col items-center justify-center w-full space-y-8">
           <InterchainTokenInputAddress />
           <span className="text-base font-medium">Or</span>
           <RegisterOriginTokenButton
@@ -1048,7 +1048,7 @@ export default () => {
       ) : (
         /*
               <div className="w-full xl:px-1">
-                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
                   {getSupportedEvmChains()
                     .map(c => {
                       const {
@@ -1092,7 +1092,7 @@ export default () => {
                       return (
                         <div
                           key={i}
-                          className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                          className="px-4 py-5 space-y-5 bg-white bg-opacity-100 border dark:bg-slate-900 dark:bg-opacity-50 border-slate-200 dark:border-slate-800 rounded-xl"
                         >
                           <div className="flex items-center justify-between space-x-2.5">
                             <div className="flex items-center space-x-2.5">
@@ -1133,9 +1133,9 @@ export default () => {
                             }
                           </div>
                           <div>
-                            <div className="h-full flex flex-col justify-between space-y-5">
+                            <div className="flex flex-col justify-between h-full space-y-5">
                               <div className="space-y-1">
-                                <div className="text-slate-400 dark:text-slate-500 text-sm">
+                                <div className="text-sm text-slate-400 dark:text-slate-500">
                                   TokenLinker address
                                 </div>
                                 <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
@@ -1144,11 +1144,11 @@ export default () => {
                                       href={address_url}
                                       target="_blank"
                                       rel="noopenner noreferrer"
-                                      className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                      className="flex items-center text-base font-semibold text-blue-500 sm:h-5 dark:text-blue-200 sm:text-xs xl:text-sm"
                                     >
                                       {ellipse(token_linker_address, 10)}
                                     </a> :
-                                    <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                    <span className="flex items-center text-base font-medium sm:h-5 text-slate-500 dark:text-slate-200 sm:text-xs xl:text-sm">
                                       {ellipse(token_linker_address, 10)}
                                     </span>
                                   }
@@ -1217,14 +1217,14 @@ export default () => {
                                     {
                                       ["failed"].includes(tokenLinkerDeployStatus.status) &&
                                       (
-                                        <div className="flex items-center space-x-1 ml-auto">
+                                        <div className="flex items-center ml-auto space-x-1">
                                           {
                                             tokenLinkerDeployStatus.error_message &&
                                             (
                                               <Tooltip
                                                 placement="top"
                                                 content={tokenLinkerDeployStatus.error_message}
-                                                className="z-50 bg-black text-white text-xs"
+                                                className="z-50 text-xs text-white bg-black"
                                               >
                                                 <div>
                                                   <BiMessage
@@ -1294,7 +1294,7 @@ export default () => {
               </div>
             */
         <div className="w-full xl:px-1">
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
             {getSupportedEvmChains()
               .map((c) => {
                 const { id } = { ...c };
@@ -1343,7 +1343,7 @@ export default () => {
                 return (
                   <div
                     key={i}
-                    className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                    className="px-4 py-5 space-y-5 bg-white bg-opacity-100 border dark:bg-slate-900 dark:bg-opacity-50 border-slate-200 dark:border-slate-800 rounded-xl"
                   >
                     <div className="flex items-center justify-between space-x-2.5">
                       <div className="flex items-center space-x-2.5">
@@ -1357,9 +1357,9 @@ export default () => {
                       </div>
                     </div>
                     <div>
-                      <div className="h-full flex flex-col justify-between space-y-5">
+                      <div className="flex flex-col justify-between h-full space-y-5">
                         <div className="space-y-1">
-                          <div className="text-slate-400 dark:text-slate-500 text-sm">
+                          <div className="text-sm text-slate-400 dark:text-slate-500">
                             {is_origin || registered_or_deployed_remote
                               ? "Token address"
                               : "Status"}
@@ -1370,16 +1370,16 @@ export default () => {
                                 href={address_url}
                                 target="_blank"
                                 rel="noopenner noreferrer"
-                                className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                className="flex items-center text-base font-semibold text-blue-500 sm:h-5 dark:text-blue-200 sm:text-xs xl:text-sm"
                               >
                                 {ellipse(_tokenAddress, 10)}
                               </a>
                             ) : is_origin || registered_or_deployed_remote ? (
-                              <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                              <span className="flex items-center text-base font-medium sm:h-5 text-slate-500 dark:text-slate-200 sm:text-xs xl:text-sm">
                                 {ellipse(_tokenAddress, 10)}
                               </span>
                             ) : (
-                              <span className="sm:h-5 flex items-center text-slate-400 dark:text-slate-500 text-base sm:text-xs xl:text-sm font-medium">
+                              <span className="flex items-center text-base font-medium sm:h-5 text-slate-400 dark:text-slate-500 sm:text-xs xl:text-sm">
                                 Remote token not deployed
                               </span>
                             )}
@@ -1388,7 +1388,13 @@ export default () => {
                           </div>
                         </div>
                         {registered_or_deployed_remote ? (
-                          <div className="grid grid-cols-2">
+                          <div className="flex flex-col">
+                            <SendInterchainTokenModal
+                              tokenAddress={_tokenAddress}
+                              tokenId={tokenId}
+                              fromNetworkId={tl.chain_data.chain_id}
+                              fromNetworkName={tl.chain_data.chain_name}
+                            />
                             {address_url ? (
                               <a
                                 href={address_url}
@@ -1409,11 +1415,6 @@ export default () => {
                                 </span>
                               </div>
                             )}
-                            <SendInterchainTokenModal
-                              tokenAddress={_tokenAddress}
-                              tokenId={tokenId}
-                              fromNetwork={_chain_id}
-                            />
                           </div>
                         ) : !token_linker_address ||
                           !token_addresses_data ||

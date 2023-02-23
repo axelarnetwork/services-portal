@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
-import { useAccount, useMutation, useQuery, useSigner } from "wagmi";
+import { useAccount, useMutation, useNetwork, useQuery, useSigner, useSwitchNetwork } from "wagmi";
 import { ChainData } from "web3modal";
 
 import Chains from "~/components/interchain-token/chains";
@@ -13,8 +13,22 @@ import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainToke
 import { toArray } from "~/lib/utils";
 import { EvmChainsData } from "~/interface/evm_chains";
 import { AxelarQueryAPI, Environment, GasToken } from "@axelar-network/axelarjs-sdk";
+import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
+
+export const gasTokenMap: Record<string, GasToken> = {
+  "avalanche": GasToken.AVAX,
+  "ethereum-2": GasToken.ETH,
+  "ethereum": GasToken.ETH,
+  "moonbeam": GasToken.GLMR,
+  "fantom": GasToken.FTM,
+  "polygon": GasToken.MATIC,
+  "aurora": GasToken.AURORA,
+  "binance": GasToken.BINANCE,
+  "celo": GasToken.CELO,
+  "kava": GasToken.KAVA
+}
 
 function ChainPicker(props: {
   value: string;
@@ -72,7 +86,6 @@ export function useSendInterchainTokenMutation(config: {
   });
 
   const { address, isConnected, status } = useAccount();
-  // console.log("useSendInterchainTokenMutation address", address, isConnected, status);
 
   const tokenLinker = useInterchainTokenLinker({
     address: String(process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS),
@@ -84,6 +97,7 @@ export function useSendInterchainTokenMutation(config: {
       tokenAddress: `0x${string}`;
       tokenId: `0x${string}`;
       toNetwork: string;
+      fromNetwork: string;
       amount: string;
     }) => {
       if (!(erc20 && address && tokenLinker)) {
@@ -93,20 +107,20 @@ export function useSendInterchainTokenMutation(config: {
         return;
       }
 
-      const {tokenAddress, tokenId, toNetwork, amount} = input;
-      
+      const {tokenAddress, tokenId, toNetwork, amount, fromNetwork} = input;
+      console.log("params",tokenAddress, tokenId, toNetwork, amount, fromNetwork)      
       const decimals = await erc20.decimals();
       const bn = BigNumber.from(parseUnits(input.amount, decimals));
 
       console.log("decimals",decimals);
       console.log("amount",formatUnits(bn, decimals));
-      console.log("params",tokenAddress, tokenId, toNetwork, amount)
+
       console.log("environment",process.env.NEXT_PUBLIC_ENVIRONMENT);
       const environment = process.env.NEXT_PUBLIC_ENVIRONMENT as Environment;
       const axelarQueryAPI = new AxelarQueryAPI({ environment });
-      const gas = await axelarQueryAPI.estimateGasFee('Avalanche', toNetwork, GasToken.AVAX);
+      const gas = await axelarQueryAPI.estimateGasFee(fromNetwork, toNetwork, gasTokenMap[fromNetwork.toLowerCase()]);
       console.log("gas",gas);
-      // return;
+      console.log("fromNetwork",fromNetwork);
 
       //approve
       const tx = await erc20.approve(tokenLinker.address, bn);
@@ -145,7 +159,8 @@ const StyledLabel = tw.label`
 type Props = {
   tokenAddress: `0x${string}`;
   tokenId: `0x${string}`;
-  fromNetwork: string;
+  fromNetworkId: number;
+  fromNetworkName: string;
 };
 
 const SendInterchainTokenModal: FC<Props> = (props) => {
@@ -154,21 +169,42 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     tokenId: props.tokenId,
   });
 
+
+  const { chain: currentMMChain } = useNetwork()
+
   const [amount, setAmount] = useState<string>("");
   const [toChain, setToChain] = useState<EvmChainsData | null>(null);
 
+  const { switchNetwork } = useSwitchNetwork({
+    onSuccess(data) {
+      console.log("Success", data);
+      
+    },
+  });
+
   const handleConfirm = useCallback(async () => {
-    if (!toChain || !amount) return;
+
+    if (currentMMChain?.id !== props.fromNetworkId) {
+      await switchNetwork?.(getWagmiChains().find(t => t.id === props.fromNetworkId)?.id);
+      return;
+    }
+
+    if (!toChain || !amount) {
+      console.log("SendInterchainTokenModal toChain or amount not specified", toChain, amount);
+      return;
+    };
+
     await sendToken({
       tokenAddress: props.tokenAddress,
       tokenId: props.tokenId,
       toNetwork: toChain.chain_name,
+      fromNetwork: props.fromNetworkName,
       amount
     });
-  }, [props.tokenAddress, props.tokenId, sendToken, amount, toChain]);
+  }, [props.tokenAddress, props.tokenId, props.fromNetworkId, sendToken, amount, toChain]);
 
   return (
-    <>
+    <div className="mb-5">
       <Modal
         tooltip={false}
         title={
@@ -194,11 +230,14 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
             />
           </div>
         }
-        buttonTitle="Send"
+        buttonTitle={currentMMChain?.id === props.fromNetworkId ? "Send token cross-chain" : `Switch wallet to ${props.fromNetworkName}`}
+        buttonClassName={currentMMChain?.id !== props.fromNetworkId ? "w-full btn btn-default btn-rounded bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-500 hover:border-transparent rounded" : ""}
         onConfirm={handleConfirm}
       />
-    </>
+    </div>
   );
 };
 
 export default SendInterchainTokenModal;
+
+"btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400"

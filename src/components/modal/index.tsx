@@ -126,7 +126,7 @@ const Modal: FC<ModalProps> = ({
       onClick={show}
       className={
         buttonClassName ||
-        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400"
+        "btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 w-full"
       }
     >
       {buttonTitle}

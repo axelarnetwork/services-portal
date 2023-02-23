@@ -1,10 +1,12 @@
 import { FC, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
 import {
+  erc20ABI,
   useAccount,
+  useContractEvent,
   useMutation,
   useNetwork,
   useQuery,
@@ -26,6 +28,7 @@ import {
 } from "@axelar-network/axelarjs-sdk";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { ERC20 } from "~/lib/contract/abis";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
@@ -69,15 +72,13 @@ export function useTokenBalance(
   provider: JsonRpcProvider
 ) {
   const { address } = useAccount();
-
-  // console.log("providerUrl",providerUrl);
   const erc20 = useERC20({
     address: tokenAddress,
     signerOrProvider: provider,
   });
 
   return useQuery(
-    ["tokenBalance", tokenAddress],
+    ["tokenBalance", tokenAddress, provider.connection.url],
     async () => {
       if (!(erc20 && address)) return;
 
@@ -154,10 +155,10 @@ export function useSendInterchainTokenMutation(config: {
       const decimals = await erc20.decimals();
       const bn = BigNumber.from(parseUnits(input.amount, decimals));
 
-      console.log("decimals", decimals);
-      console.log("amount", formatUnits(bn, decimals));
+      // console.log("decimals", decimals);
+      // console.log("amount", formatUnits(bn, decimals));
 
-      console.log("environment", process.env.NEXT_PUBLIC_ENVIRONMENT);
+      // console.log("environment", process.env.NEXT_PUBLIC_ENVIRONMENT);
       const environment = process.env.NEXT_PUBLIC_ENVIRONMENT as Environment;
       const axelarQueryAPI = new AxelarQueryAPI({ environment });
       const gas = await axelarQueryAPI.estimateGasFee(
@@ -165,8 +166,8 @@ export function useSendInterchainTokenMutation(config: {
         toNetwork,
         gasTokenMap[fromNetwork.toLowerCase()]
       );
-      console.log("gas", gas);
-      console.log("fromNetwork", fromNetwork);
+      // console.log("gas", gas);
+      // console.log("fromNetwork", fromNetwork);
 
       //approve
       try {
@@ -231,6 +232,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     tokenAddress: props.tokenAddress,
     tokenId: props.tokenId,
   });
+  const { address: recipientAddress } = useAccount();
 
   const { chain: currentMMChain } = useNetwork();
 
@@ -239,19 +241,11 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   const [sendStatus, setSendStatus] = useState<
     "idle" | "approving" | "sending"
   >("idle");
-  const providerUrl = new JsonRpcProvider(
+  const provider = new JsonRpcProvider(
     getWagmiChains().find((t) => t.id === props.fromNetworkId)?.rpcUrls.public
       .http[0] as string
   );
-  const balance = useTokenBalance(props.tokenAddress, providerUrl);
-  console.log(
-    "SendInterchainTokenModal balance",
-    balance.data,
-    balance.isSuccess,
-    props.fromNetworkName,
-    props.tokenAddress,
-    providerUrl.connection.url
-  );
+  const balance = useTokenBalance(props.tokenAddress, provider);
 
   const { switchNetwork } = useSwitchNetwork({
     onSuccess(data) {
@@ -259,14 +253,36 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     },
   });
 
-  const handleConfirm = useCallback(async () => {
+  const switchWallet = useCallback(async () => {
     if (currentMMChain?.id !== props.fromNetworkId) {
       await switchNetwork?.(
         getWagmiChains().find((t) => t.id === props.fromNetworkId)?.id
       );
-      return;
     }
+  }, [props.fromNetworkId, currentMMChain]);
 
+  useContractEvent({
+    once: true,
+    chainId: toChain?.chain_id,
+    address: "0x116b38e954915312c58BD676ea9a2E17378d30E6",
+    abi: erc20ABI,
+    eventName: "Transfer",
+    listener(fromAddress, toAddress, amount) {
+      console.log({
+        "Transfer(fromAddress, toAddress, amount, event)": {
+          fromAddress,
+          toAddress,
+          amount,
+        },
+      });
+      if (toAddress === recipientAddress) {
+        console.log("DONE!", amount, fromAddress, toAddress);
+        balance.refetch();
+      }
+    },
+  });
+
+  const handleConfirm = useCallback(async () => {
     if (!toChain || !amount) {
       console.log(
         "SendInterchainTokenModal toChain or amount not specified",
@@ -335,10 +351,10 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
     return (
       <button
-        onClick={handleConfirm}
+        onClick={switchWallet}
         className="w-full text-blue-700 bg-transparent border border-blue-500 rounded btn btn-default btn-rounded hover:bg-blue-500 hover:text-white hover:border-transparent"
       >
-        Switch wallet to {props.fromNetworkName}
+        Switch to {props.fromNetworkName}
       </button>
     );
   };
@@ -354,4 +370,34 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
 export default SendInterchainTokenModal;
 
-("btn btn-default btn-rounded bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400");
+/**
+ * 
+ * 
+ * 
+   useContractEvent({
+    chainId: destChainId as number,
+    address: tokenAddress as string,
+    abi: erc20ABI,
+    eventName: "Transfer",
+    listener(fromAddress, toAddress, amount, event) {
+      if (event.blockNumber < Number(txInfo.destStartBlockNumber)) {
+        return;
+      }
+      console.log({
+        "Transfer(fromAddress, toAddress, amount, event)": {
+          fromAddress,
+          toAddress,
+          amount,
+          event,
+        },
+      });
+      if (toAddress === destAddress) {
+        setTxInfo({
+          destTxHash: event?.transactionHash,
+        });
+        setSwapStatus(SwapStatus.FINISHED);
+      }
+    },
+  });
+ * 
+ */

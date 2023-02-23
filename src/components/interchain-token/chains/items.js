@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 
 import Image from "../../image";
-import Wallet from "../../wallet";
 
 export default (
   {

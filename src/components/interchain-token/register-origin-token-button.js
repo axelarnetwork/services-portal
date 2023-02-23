@@ -100,9 +100,7 @@ const getDefaultRemoteChains = (
       c?.chain_name &&
       (!chainData || c.id !== chainData.id)
     )
-    .map(c =>
-      c.chain_name
-    )
+    .map(c => c.chain_name);
 
 export default (
   {
@@ -120,21 +118,20 @@ export default (
     deployToken,
     deployRemoteTokens,
     registerOriginTokenAndDeployRemoteTokens,
-    provider,
   },
 ) => {
   const {
     preferences,
     evm_chains,
+    rpc_providers,
     wallet,
-    token_linkers,
   } = useSelector(
     state => (
       {
         preferences: state.preferences,
         evm_chains: state.evm_chains,
+        rpc_providers: state.rpc_providers,
         wallet: state.wallet,
-        token_linkers: state.token_linkers,
       }
     ),
     shallowEqual,
@@ -146,15 +143,14 @@ export default (
     evm_chains_data,
   } = { ...evm_chains };
   const {
+    rpcs,
+  } = { ...rpc_providers };
+  const {
     wallet_data,
   } = { ...wallet };
   const {
-    token_linkers_data,
-  } = { ...token_linkers };
-  const {
     chain_id,
     signer,
-    address,
   } = { ...wallet_data };
 
   const router = useRouter();
@@ -171,7 +167,6 @@ export default (
 
   const [inputTokenAddress, setInputTokenAddress] = useState(fixedTokenAddress);
   const [tokenAddress, setTokenAddress] = useState(null);
-  const [validTokenAddress, setValidTokenAddress] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [remoteChains, setRemoteChains] = useState(null);
   const [calls, setCalls] = useState(null);
@@ -263,7 +258,6 @@ export default (
 
     setInputTokenAddress(fixedTokenAddress);
     setTokenAddress(null);
-    setValidTokenAddress(null);
     setTokenData(null);
     setRemoteChains(initialRemoteChains || getDefaultRemoteChains(supportedEvmChains, chainData));
     setCalls(null);
@@ -278,10 +272,9 @@ export default (
     setRegisterResponse(null);
   };
 
-  const validate = async () => {
+  const validate = async _chainData => {
     if (typeof inputTokenAddress === "string") {
       setTokenAddress(null);
-      setValidTokenAddress(null);
       setTokenData(null);
       setValidateResponse(null);
 
@@ -294,13 +287,13 @@ export default (
           setTokenAddress(_tokenAddress);
 
           try {
-            const contract = new Contract(tokenAddress, ERC20.abi, provider);
+            const provider = rpcs?.[(_chainData || chainData)?.chain_id];
+            const contract = new Contract(_tokenAddress, ERC20.abi, provider);
 
             const name = await contract.name();
             const symbol = await contract.symbol();
             const decimals = await contract.decimals();
 
-            setValidTokenAddress(true);
             setTokenData(
               {
                 name,
@@ -316,7 +309,6 @@ export default (
               }
             );
           } catch (error) {
-            setValidTokenAddress(false);
             setTokenData(null);
             setValidateResponse(
               {
@@ -327,7 +319,6 @@ export default (
           }
         } catch (error) {
           setTokenAddress(null);
-          setValidTokenAddress(false);
           setTokenData(null);
           setValidateResponse(
             {
@@ -361,7 +352,6 @@ export default (
       default:
         if (token_address) {
           setTokenAddress(token_address);
-          setValidTokenAddress(true);
           setTokenData(
             {
               ...response,
@@ -440,7 +430,6 @@ export default (
   const {
     id,
     name,
-    image,
     explorer,
   } = { ...chainData };
   const {
@@ -499,7 +488,14 @@ export default (
             <Chains
               disabled={disabled || currentStep > 1}
               chain={id}
-              onSelect={c => setChainData(toArray(evm_chains_data).find(_c => _c.id === c))}
+              onSelect={
+                c => {
+                  const chainData = toArray(evm_chains_data).find(_c => _c.id === c);
+
+                  setChainData(chainData);
+                  validate(chainData);
+                }
+              }
               displayName={true}
             />
           </div>
@@ -574,7 +570,6 @@ export default (
                 .map(s => {
                   const {
                     id,
-                    title,
                     step,
                   } = { ...s };
 
@@ -1231,7 +1226,6 @@ export default (
                     if (_preExistingToken !== preExistingToken) {
                       setInputTokenAddress(null);
                       setTokenAddress(null);
-                      setValidTokenAddress(null);
                       setTokenData(null);
 
                       setValidating(false);

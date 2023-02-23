@@ -191,7 +191,7 @@ const Navbar = () => {
 
   // rpcs
   useEffect(() => {
-    const init = (async) => {
+    const init = () => {
       if (evm_chains_data) {
         const _rpcs = {};
 
@@ -241,7 +241,7 @@ const Navbar = () => {
 
   // sdk
   useEffect(() => {
-    const init = (async) => {
+    const init = () => {
       dispatch({
         type: SDK,
         value: {

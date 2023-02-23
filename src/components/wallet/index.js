@@ -162,7 +162,7 @@ const Wallet = ({
         if (code === 4902) {
           try {
             const { provider_params } = {
-              ...getChain(connectChainId, chains_data),
+              ...getChain(connectChainId, evm_chains_data),
             };
 
             await provider.request({

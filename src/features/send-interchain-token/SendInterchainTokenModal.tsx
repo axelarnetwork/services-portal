@@ -9,6 +9,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { BigNumber, Contract } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils.js";
 import tw from "tailwind-styled-components";
+import { Oval } from "react-loader-spinner";
 import {
   erc20ABI,
   useAccount,
@@ -28,6 +29,7 @@ import { useERC20 } from "~/lib/contract/hooks/useERC20";
 import { useInterchainTokenLinker } from "~/lib/contract/hooks/useInterchainTokenLinker";
 import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 import { toArray } from "~/lib/utils";
+import { token_addresses } from "~/reducers/token-addresses";
 
 export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
@@ -248,9 +250,9 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       .http[0] as string
   );
 
-  const destinationProviderUrl = wagmiChains.find(
-    (t) => t.id === toChain?.chain_id
-  )?.rpcUrls.public.http[0] as string;
+  // const destinationProviderUrl = wagmiChains.find(
+  //   (t) => t.id === toChain?.chain_id
+  // )?.rpcUrls.public.http[0] as string;
 
   const balance = useTokenBalance(props.tokenAddress, provider);
 
@@ -268,14 +270,20 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     }
   }, [props.fromNetworkId, currentMMChain]);
 
+  const destTokenAddress = useSelector(
+    // @ts-ignore
+    ({ token_addresses }) =>
+      token_addresses.token_addresses_data[
+        String(toChain?.chain_name?.toLowerCase())
+      ]
+  );
+
   const queryClient = useQueryClient();
 
-  // key: ["tokenBalance", tokenAddress, provider.connection.url],
-
   useContractEvent({
-    once: true,
+    // once: true,
     chainId: toChain?.chain_id,
-    address: "0x116b38e954915312c58BD676ea9a2E17378d30E6",
+    address: destTokenAddress as `0x${string}`,
     abi: erc20ABI,
     eventName: "Transfer",
     listener(fromAddress, toAddress, amount) {
@@ -287,15 +295,15 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         },
       });
       if (toAddress === recipientAddress) {
-        console.log("DONE!", amount, fromAddress, toAddress);
+        const destinationProviderUrl = wagmiChains.find(
+          (t) => t.id === toChain?.chain_id
+        )?.rpcUrls.public.http[0] as string;
 
         const queryKey = [
           "tokenBalance",
-          props.tokenAddress,
+          destTokenAddress,
           destinationProviderUrl,
         ];
-
-        console.log("invalidating query:", queryKey);
 
         queryClient.invalidateQueries(queryKey);
       }
@@ -332,6 +340,12 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
 
   const showModalButton = () => {
     if (currentMMChain?.id !== props.fromNetworkId) return null;
+    let sendStatusTxtMap = {
+      idle: "Send token cross-chain",
+      approving: "Wait for approval",
+      sending: "Sending in progress...",
+    };
+
     return (
       <Modal
         tooltip={false}
@@ -359,7 +373,12 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
           </div>
         }
         buttonTitle={
-          sendStatus === "idle" ? "Send token cross-chain" : "Working on it"
+          <div className="flex items-center gap-2">
+            {["approving", "sending"].includes(sendStatus) && (
+              <Oval width={16} height={16} color={"white"} />
+            )}
+            {sendStatusTxtMap[sendStatus]}
+          </div>
         }
         onConfirm={handleConfirm}
       />

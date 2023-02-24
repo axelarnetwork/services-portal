@@ -20,6 +20,7 @@ const getNetwork = (chain_id) => {
     56: "binance",
     137: "matic",
     250: "fantom",
+    4002: "fantom-testnet",
     1284: "moonbeam",
     42161: "arbitrum",
     42220: "celo",

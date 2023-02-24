@@ -141,7 +141,13 @@ export default () => {
     }
 
     if (contract && tokensToMint) {
-      await mintToken(contract, decimals, tokensToMint, _signer, response);
+      response = await mintToken(
+        contract,
+        decimals,
+        tokensToMint,
+        _signer,
+        response
+      );
     }
 
     return response;

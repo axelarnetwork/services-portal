@@ -95,10 +95,11 @@ const getSteps = (
       };
     });
 
-const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
-  supportedEvmChains
-    .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
-    .map((c) => c.chain_name);
+// const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
+//   supportedEvmChains
+//     .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
+//     .map((c) => c.chain_name);
+const getDefaultRemoteChains = () => [];
 
 export default ({
   buttonTitle = <MdAdd size={18} />,
@@ -313,6 +314,7 @@ export default ({
         tokenData.name,
         tokenData.symbol,
         tokenData.decimals,
+        tokenData.tokensToMint,
         signer
       ));
 
@@ -455,7 +457,7 @@ export default ({
       buttonTitle={buttonTitle}
       buttonClassName={buttonClassName}
       title={
-        <div className="flex items-center justify-between normal-case space-x-2">
+        <div className="flex items-center justify-between space-x-2 normal-case">
           <div className="flex items-center space-x-2">
             <span className="text-base font-medium">
               {!isOrigin
@@ -479,14 +481,14 @@ export default ({
           <button
             disabled={disabled}
             onClick={() => reset()}
-            className="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-500 dark:text-slate-200 p-2"
+            className="p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-200"
           >
             <IoClose size={18} />
           </button>
         </div>
       }
       body={
-        <div className="space-y-8 mt-4">
+        <div className="mt-4 space-y-8">
           <div className="space-y-1">
             <div className={`grid grid-cols-${steps.length} gap-1.5`}>
               {steps.map((s) => {
@@ -622,10 +624,10 @@ export default ({
               </div>
             ) : steps[currentStep]?.id === "input_token" ? (
               <div className="w-full space-y-5">
-                <div className="w-full flex flex-col space-y-3">
+                <div className="flex flex-col w-full space-y-3">
                   {preExistingToken && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Token address
                       </div>
                       <DebounceInput
@@ -674,7 +676,7 @@ export default ({
                   {(!preExistingToken || tokenData) && (
                     <>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token name
                         </div>
                         <DebounceInput
@@ -698,7 +700,7 @@ export default ({
                         />
                       </div>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token symbol
                         </div>
                         <DebounceInput
@@ -722,7 +724,7 @@ export default ({
                         />
                       </div>
                       <div className="w-full space-y-1">
-                        <div className="text-slate-400 dark:text-slate-500 text-sm">
+                        <div className="text-sm text-slate-400 dark:text-slate-500">
                           Token decimals
                         </div>
                         <DebounceInput
@@ -759,6 +761,47 @@ export default ({
                           className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
                         />
                       </div>
+
+                      {!preExistingToken && (
+                        <div className="w-full space-y-1">
+                          <div className="text-sm text-slate-400 dark:text-slate-500">
+                            Initial supply to mint (&apos;0&apos; to skip)
+                          </div>
+                          <DebounceInput
+                            disabled={disabled || preExistingToken}
+                            debounceTimeout={500}
+                            size="small"
+                            type="number"
+                            placeholder={`${
+                              preExistingToken ? "Your" : "Input your"
+                            } token initial supply${name ? ` on ${name}` : ""}`}
+                            value={tokenData?.tokensToMint}
+                            onChange={(e) => {
+                              const regex = /^[0-9.\b]+$/;
+
+                              let value;
+
+                              if (
+                                e.target.value === "" ||
+                                regex.test(e.target.value)
+                              ) {
+                                value = e.target.value;
+                              }
+
+                              setTokenData({
+                                ...tokenData,
+                                tokensToMint: value ? Number(value) : null,
+                              });
+                            }}
+                            onWheel={(e) => e.target.blur()}
+                            onKeyDown={(e) =>
+                              ["e", "E", "-"].includes(e.key) &&
+                              e.preventDefault()
+                            }
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between text-black dark:text-white text-base font-medium space-x-1 py-1.5 px-2.5"
+                          />
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -803,12 +846,12 @@ export default ({
                             href={contract_url}
                             target="_blank"
                             rel="noopenner noreferrer"
-                            className="text-blue-500 dark:text-blue-200 text-sm sm:text-base font-semibold"
+                            className="text-sm font-semibold text-blue-500 dark:text-blue-200 sm:text-base"
                           >
                             {ellipse(deployResponse.token_address, 16)}
                           </a>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-200 text-sm sm:text-base font-medium">
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-200 sm:text-base">
                             {ellipse(deployResponse.token_address, 16)}
                           </span>
                         )}
@@ -822,10 +865,10 @@ export default ({
                 steps[currentStep]?.id
               ) ? (
               <div className="w-full space-y-5">
-                <div className="w-full flex flex-col space-y-3">
+                <div className="flex flex-col w-full space-y-3">
                   <div className="border border-slate-200 dark:border-slate-800 rounded-lg space-y-3 py-3.5 px-3">
                     <div className="flex items-center space-x-2.5">
-                      <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                      <div className="w-20 text-sm sm:w-24 text-slate-400 dark:text-slate-500 sm:text-base">
                         Token:
                       </div>
                       <div className="flex items-center">
@@ -841,7 +884,7 @@ export default ({
                     </div>
                     {tokenData?.decimals && (
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-20 sm:w-24 text-slate-400 dark:text-slate-500 text-sm sm:text-base">
+                        <div className="w-20 text-sm sm:w-24 text-slate-400 dark:text-slate-500 sm:text-base">
                           Decimals:
                         </div>
                         <span className="text-base font-semibold">
@@ -852,7 +895,7 @@ export default ({
                   </div>
                   {tokenAddress && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Token address
                       </div>
                       <div className="border border-slate-200 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-2.5 pr-1.5">
@@ -861,12 +904,12 @@ export default ({
                             href={contract_url}
                             target="_blank"
                             rel="noopenner noreferrer"
-                            className="text-blue-500 dark:text-blue-200 text-sm sm:text-base font-semibold"
+                            className="text-sm font-semibold text-blue-500 dark:text-blue-200 sm:text-base"
                           >
                             {ellipse(tokenAddress, 16)}
                           </a>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-200 text-sm sm:text-base font-medium">
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-200 sm:text-base">
                             {ellipse(tokenAddress, 16)}
                           </span>
                         )}
@@ -877,7 +920,7 @@ export default ({
                   {supportedEvmChains.filter((c) => c?.id !== chainData?.id)
                     .length > 0 && (
                     <div className="w-full space-y-1">
-                      <div className="text-slate-400 dark:text-slate-500 text-sm">
+                      <div className="text-sm text-slate-400 dark:text-slate-500">
                         Chains to deploy remote tokens
                       </div>
                       <div className="flex flex-wrap items-center">
@@ -984,7 +1027,7 @@ export default ({
               </div>
             ) : steps[currentStep]?.id === "remote_deployments" ? (
               <div className="w-full space-y-1.5">
-                <div className="whitespace-nowrap text-base font-bold">
+                <div className="text-base font-bold whitespace-nowrap">
                   Deploy remote tokens via GMP
                 </div>
                 <div className="overflow-y-auto flex flex-col space-y-0.5">

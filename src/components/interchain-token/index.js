@@ -40,6 +40,7 @@ import Wallet from "../wallet";
 import InterchainTokenInputAddress from "./input-token-address";
 import RegisterOriginTokenButton from "./register-origin-token-button";
 import TokenInfo from "./token-info";
+import { parseUnits } from "ethers/lib/utils.js";
 
 const GAS_LIMIT = 2500000;
 const GAS_MULTIPLIER = 1.4;
@@ -105,7 +106,13 @@ export default () => {
   // const [tokenLinkerDeployStatus, setTokenLinkerDeployStatus] = useState(null);
 
   /*** deployment ***/
-  const deployToken = async (name, symbol, decimals = 18, _signer = signer) => {
+  const deployToken = async (
+    name,
+    symbol,
+    decimals = 18,
+    tokensToMint = 0,
+    _signer = signer
+  ) => {
     let response, contract;
 
     if (_signer && name && symbol) {
@@ -133,8 +140,8 @@ export default () => {
       }
     }
 
-    if (contract) {
-      await mintToken(contract, decimals, _signer, response);
+    if (contract && tokensToMint) {
+      await mintToken(contract, decimals, tokensToMint, _signer, response);
     }
 
     return response;
@@ -143,12 +150,17 @@ export default () => {
   const mintToken = async (
     contract,
     decimals,
+    tokensToMint,
     _signer = signer,
     response = {}
   ) => {
+    if (Number(tokensToMint) <= 0) return response;
     try {
       const minted = await (
-        await contract.mint(_signer.address, parseUnits("1000000", decimals))
+        await contract.mint(
+          _signer.address,
+          parseUnits(String(tokensToMint), decimals)
+        )
       ).wait(1);
       console.log("minted token!", minted);
 

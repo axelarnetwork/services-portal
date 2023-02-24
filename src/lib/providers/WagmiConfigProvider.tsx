@@ -18,6 +18,7 @@ import {
   auroraTestnet,
   optimism,
   optimismGoerli,
+  moonbaseAlpha,
 } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
@@ -25,7 +26,8 @@ import { publicProvider } from "wagmi/providers/public";
 const chainConfigs = [
   { ...mainnet, networkNameOnAxelar: "ethereum", environment: "mainnet" },
   { ...goerli, networkNameOnAxelar: "ethereum-2", environment: "testnet" },
-  { ...moonbeam, networkNameOnAxelar: "moonbeam", environment: "testnet" },
+  { ...moonbeam, networkNameOnAxelar: "moonbeam", environment: "mainnet" },
+  { ...moonbaseAlpha, networkNameOnAxelar: "moonbeam", environment: "testnet" },
   { ...avalanche, networkNameOnAxelar: "avalanche", environment: "mainnet" },
   {
     ...avalancheFuji,

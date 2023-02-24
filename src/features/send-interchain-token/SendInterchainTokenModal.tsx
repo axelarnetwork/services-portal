@@ -259,7 +259,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
         confirmButtonTitle={confirmButtonTitle}
         buttonTitle={
           <div className="flex items-center justify-center gap-2">
-            {isLoading && <Oval width={16} height={16} color={"white"} />}
+            {isLoading && <Oval width={10} height={10} color={"white"} />}
             {sendStatusTxtMap[sendTxState.type]}
           </div>
         }
@@ -282,7 +282,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
   };
 
   return (
-    <div className="mb-5 grid gap-2">
+    <div className="grid gap-2 mb-5">
       {renderWalletSwitchButton()}
       {renderModalButton()}
       {balance.data && (
@@ -295,7 +295,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
               rel="noreferrer noopener"
               target="_blank"
             >
-              axelarscan <HiExternalLink />
+              Track Progress... <HiExternalLink />
             </a>
           )}
         </div>

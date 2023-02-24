@@ -1030,6 +1030,8 @@ export default () => {
     getChain(chain_id, getSupportedEvmChains()) ||
     _.head(getSupportedEvmChains());
 
+  const origin_chain_data = getChain(chain, getSupportedEvmChains());
+
   const deployable_chains = getSupportedEvmChains().filter(
     (c) =>
       (!token_linkers_data || token_linkers_data[c.id]?.deployed) &&
@@ -1332,7 +1334,7 @@ export default () => {
               <RegisterOriginTokenButton
                 buttonTitle={registered ? "Deploy on more chains" : "Register token"}
                 buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
-                initialChainData={chain_data}
+                initialChainData={origin_chain_data}
                 supportedEvmChains={undeployed_chains}
                 isOrigin={!registered}
                 fixedTokenAddress={tokenAddress}
@@ -1340,7 +1342,7 @@ export default () => {
                 tokenId={tokenId}
                 tokenLinker={getTokenLinkerContract(
                   signer,
-                  token_linkers_data?.[chain_data?.id]?.token_linker_address
+                  token_linkers_data?.[origin_chain_data?.id]?.token_linker_address
                 )}
                 deployRemoteTokens={deployRemoteTokens}
                 registerOriginTokenAndDeployRemoteTokens={

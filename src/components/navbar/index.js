@@ -258,12 +258,12 @@ const Navbar = () => {
   return (
     <>
       <div className="navbar">
-        <div className="navbar-inner flex w-full items-center justify-between sm:h-20">
+        <div className="flex items-center justify-between w-full navbar-inner sm:h-20">
           <div className="flex items-center">
             <Logo />
             <DropdownNavigations />
           </div>
-          <div className="mx-0 flex w-full items-center justify-center sm:mx-4 xl:mx-8">
+          <div className="flex items-center justify-center w-full mx-0 sm:mx-4 xl:mx-8">
             <Navigations />
           </div>
           <div className="flex items-center justify-end">

@@ -72,9 +72,15 @@ export const getChainConfigs = async () => {
     .post("", { json })
     .json<GetChainConfigsResponse>();
 
+  const disabledChains = process.env.NEXT_PUBLIC_DISABLED_CHAINS;
+
   return {
     ...result,
-    evm: toArray(evm).filter((a) => !a?.is_staging || isStaging),
-    cosmos: toArray(cosmos).filter((a) => !a?.is_staging || isStaging),
+    evm: toArray(evm).filter(
+      (a) => (!a?.is_staging || isStaging) && !disabledChains?.includes(a.id)
+    ),
+    cosmos: toArray(cosmos).filter(
+      (a) => (!a?.is_staging || isStaging) && !disabledChains?.includes(a.id)
+    ),
   };
 };

@@ -15,8 +15,8 @@ const providerOptions = {};
 const getNetwork = (chain_id) => {
   return {
     1: "mainnet",
-    10: "optimism",
-    420: "optimism-goerli",
+    // 10: "optimism",
+    // 420: "optimism-goerli",
     56: "binance",
     137: "matic",
     250: "fantom",

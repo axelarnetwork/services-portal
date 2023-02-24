@@ -764,7 +764,7 @@ export default ({
                       {!preExistingToken && (
                         <div className="w-full space-y-1">
                           <div className="text-sm text-slate-400 dark:text-slate-500">
-                            Initial supply to mint ('0' to skip)
+                            Initial supply to mint (&apos;0&apos; to skip)
                           </div>
                           <DebounceInput
                             disabled={disabled || preExistingToken}

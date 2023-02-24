@@ -95,10 +95,11 @@ const getSteps = (
       };
     });
 
-const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
-  supportedEvmChains
-    .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
-    .map((c) => c.chain_name);
+// const getDefaultRemoteChains = (supportedEvmChains = [], chainData) =>
+//   supportedEvmChains
+//     .filter((c) => c?.chain_name && (!chainData || c.id !== chainData.id))
+//     .map((c) => c.chain_name);
+const getDefaultRemoteChains = (supportedEvmChains = [], chainData) => [];
 
 export default ({
   buttonTitle = <MdAdd size={18} />,

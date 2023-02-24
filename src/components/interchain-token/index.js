@@ -146,8 +146,6 @@ export default () => {
     _signer = signer,
     response = {}
   ) => {
-    let response;
-
     try {
       const minted = await (
         await contract.mint(_signer.address, parseUnits("1000000", decimals))

@@ -87,19 +87,24 @@ export default ({
             className={`text-slate-400 dark:text-slate-400 mr-2`}
           />
         )}
-        {displayName && !exclude.includes(name) ? (
+
+        {displayName && (
           <>
-            <span className="whitespace-nowrap text-base font-bold">
-              {name}
-            </span>
-            {!disabled && <RxCaretDown size={18} className="ml-1" />}
-          </>
-        ) : (
-          <>
-            <span className="whitespace-nowrap text-base font-bold">
-              Select Chain
-            </span>
-            {!disabled && <RxCaretDown size={18} className="ml-1" />}
+            {!exclude.includes(name) ? (
+              <>
+                <span className="whitespace-nowrap text-base font-bold">
+                  {name}
+                </span>
+                {!disabled && <RxCaretDown size={18} className="ml-1" />}
+              </>
+            ) : (
+              <>
+                <span className="whitespace-nowrap text-base font-bold">
+                  Select Chain
+                </span>
+                {!disabled && <RxCaretDown size={18} className="ml-1" />}
+              </>
+            )}
           </>
         )}
       </button>

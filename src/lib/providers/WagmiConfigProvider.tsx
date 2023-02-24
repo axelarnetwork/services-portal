@@ -14,6 +14,10 @@ import {
   arbitrumGoerli,
   celo,
   celoAlfajores,
+  aurora,
+  auroraTestnet,
+  optimism,
+  optimismGoerli,
 } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
@@ -40,6 +44,14 @@ const chainConfigs = [
   },
   { ...celo, networkNameOnAxelar: "celo", environment: "mainnet" },
   { ...celoAlfajores, networkNameOnAxelar: "celo", environment: "testnet" },
+  { ...aurora, networkNameOnAxelar: "aurora", environment: "mainnet" },
+  { ...auroraTestnet, networkNameOnAxelar: "aurora", environment: "testnet" },
+  { ...optimism, networkNameOnAxelar: "optimism", environment: "mainnet" },
+  {
+    ...optimismGoerli,
+    networkNameOnAxelar: "optimism",
+    environment: "testnet",
+  },
   {
     id: 2222,
     name: "Kava EVM",

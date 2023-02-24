@@ -1075,7 +1075,7 @@ export default ({
                                 href={url}
                                 target="_blank"
                                 rel="noopenner noreferrer"
-                                className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 rounded flex items-center justify-between text-blue-500 dark:text-blue-600 space-x-2.5 py-1.5 px-1"
+                                className="text-blue-500 dark:text-blue-600"
                               >
                                 <span className="text-sm font-medium">
                                   Add gas

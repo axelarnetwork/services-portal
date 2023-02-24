@@ -3,11 +3,12 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { providers, utils } from "ethers";
 import _ from "lodash";
 import { useConnect } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import Web3Modal from "web3modal";
 
 import { getChain } from "~/lib/chain/utils";
 import { WALLET_DATA, WALLET_RESET } from "~/reducers/types";
+import { getWagmiChains } from "~/lib/providers/WagmiConfigProvider";
 
 const providerOptions = {};
 
@@ -124,7 +125,13 @@ const Wallet = ({
     const { chainId } = { ...network };
 
     wagmiConnect({
-      connector: new InjectedConnector(),
+      connector: new MetaMaskConnector({
+        chains: getWagmiChains(),
+        options: {
+          shimDisconnect: false,
+          shimChainChangedDisconnect: false,
+        },
+      }),
     });
 
     dispatch({

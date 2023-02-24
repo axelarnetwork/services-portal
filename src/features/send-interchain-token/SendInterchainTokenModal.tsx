@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { HiExternalLink } from "react-icons/hi";
 import { Oval } from "react-loader-spinner";
 import { useSelector } from "react-redux";
@@ -31,6 +31,7 @@ export const SAMPLE_TOKEN = "0x5425890298aed601595a70AB815c96711a31Bc65";
 
 function ChainPicker(props: {
   value: string;
+  exclude?: string[];
   // eslint-disable-next-line no-unused-vars
   onChange?: (chain: EvmChainsData) => void;
 }) {
@@ -42,6 +43,7 @@ function ChainPicker(props: {
   return (
     <Chains
       chain={props.value}
+      exclude={props.exclude}
       onSelect={(c: {}) => {
         const chainData = toArray(evm_chains_data).find((_c) => _c.id === c);
         if (chainData) props.onChange?.(chainData);
@@ -177,8 +179,10 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
     },
   });
 
+  const isModalConfirmDisable = !(toChain && Number(amount));
+
   const handleConfirm = useCallback(async () => {
-    if (!(toChain && amount)) {
+    if (isModalConfirmDisable) {
       console.log(
         "SendInterchainTokenModal toChain or amount not specified",
         toChain,
@@ -197,14 +201,21 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       onStatusUpdate: setSendTxState,
     });
   }, [
-    toChain,
-    amount,
+    isModalConfirmDisable,
     sendToken,
     props.tokenAddress,
     props.tokenId,
     props.fromNetworkName,
+    toChain,
+    amount,
     balance.refetch,
   ]);
+
+  const confirmButtonTitle = useMemo(() => {
+    if (!toChain) return "Select destination chain";
+    if (!Number(amount)) return "Enter amount";
+    return "Send token";
+  }, [toChain, amount]);
 
   const renderModalButton = () => {
     if (currentMMChain?.id !== props.fromNetworkId) return null;
@@ -224,6 +235,7 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
             <div>Send Interchain Token to</div>
             <ChainPicker
               value={toChain?.chain_name || ""}
+              exclude={[props.fromNetworkName]}
               onChange={(chain) => {
                 console.log("SendInterchainTokenModal onChange", chain);
                 setToChain(chain);
@@ -243,6 +255,8 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
           </div>
         }
         disabled={isLoading}
+        confirmDisabled={isModalConfirmDisable}
+        confirmButtonTitle={confirmButtonTitle}
         buttonTitle={
           <div className="flex items-center justify-center gap-2">
             {isLoading && <Oval width={16} height={16} color={"white"} />}

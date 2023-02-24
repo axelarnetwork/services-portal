@@ -20,7 +20,7 @@ import {
   optimismGoerli,
   moonbaseAlpha,
 } from "wagmi/chains";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { publicProvider } from "wagmi/providers/public";
 
 const chainConfigs = [
@@ -112,7 +112,15 @@ const client = createClient({
   autoConnect: true,
   provider,
   webSocketProvider,
-  connectors: [new InjectedConnector()],
+  connectors: [
+    new MetaMaskConnector({
+      chains: chainConfigs,
+      options: {
+        shimDisconnect: false,
+        shimChainChangedDisconnect: false,
+      },
+    }),
+  ],
 });
 
 const WagmiConfigProvider: FC<PropsWithChildren> = ({ children }) => {

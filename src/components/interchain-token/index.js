@@ -1386,7 +1386,7 @@ export default () => {
                 supportedEvmChains={undeployed_chains}
                 isOrigin={!registered}
                 fixedTokenAddress={tokenAddress}
-                initialRemoteChains={undeployed_chains.map((c) => c.chain_name)}
+                initialRemoteChains={[]}
                 tokenId={tokenId}
                 tokenLinker={getTokenLinkerContract(
                   signer,

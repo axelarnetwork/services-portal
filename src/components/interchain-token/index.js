@@ -106,11 +106,11 @@ export default () => {
 
   /*** deployment ***/
   const deployToken = async (name, symbol, decimals = 18, _signer = signer) => {
-    let response;
+    let response, contract;
 
     if (_signer && name && symbol) {
       try {
-        const contract = await deployContract(ERC20MintableBurnable, _signer, [
+        contract = await deployContract(ERC20MintableBurnable, _signer, [
           name,
           symbol,
           decimals,
@@ -131,6 +131,40 @@ export default () => {
           ...parseError(error),
         };
       }
+    }
+
+    if (contract) {
+      await mintToken(contract, decimals, _signer, response);
+    }
+
+    return response;
+  };
+
+  const mintToken = async (
+    contract,
+    decimals,
+    _signer = signer,
+    response = {}
+  ) => {
+    let response;
+
+    try {
+      const minted = await (
+        await contract.mint(_signer.address, parseUnits("1000000", decimals))
+      ).wait(1);
+      console.log("minted token!", minted);
+
+      response = {
+        ...response,
+        mintStatus: "success",
+        mintMessage: "mint token successful",
+      };
+    } catch (error) {
+      response = {
+        ...response,
+        mintStatus: "failed",
+        ...parseError(error),
+      };
     }
 
     return response;

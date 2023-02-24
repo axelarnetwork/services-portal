@@ -1042,6 +1042,10 @@ export default ({
 
                     title = toArray(statuses).join(" & ");
 
+                    const url = `${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${
+                      transactionHash || receipt?.transactionHash
+                    }${typeof logIndex === "number" ? `:${logIndex}` : ""}`;
+
                     switch (status) {
                       case "executed":
                       case "express_executed":
@@ -1091,10 +1095,6 @@ export default ({
                         }
                         break;
                     }
-
-                    const url = `${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${
-                      transactionHash || receipt?.transactionHash
-                    }${typeof logIndex === "number" ? `:${logIndex}` : ""}`;
 
                     return (
                       <a

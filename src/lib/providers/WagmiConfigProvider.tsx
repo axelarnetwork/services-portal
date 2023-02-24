@@ -12,6 +12,8 @@ import {
   bscTestnet,
   arbitrum,
   arbitrumGoerli,
+  celo,
+  celoAlfajores,
 } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
@@ -35,6 +37,54 @@ const chainConfigs = [
     ...arbitrumGoerli,
     networkNameOnAxelar: "arbitrum",
     environment: "testnet",
+  },
+  { ...celo, networkNameOnAxelar: "celo", environment: "mainnet" },
+  { ...celoAlfajores, networkNameOnAxelar: "celo", environment: "testnet" },
+  {
+    id: 2222,
+    name: "Kava EVM",
+    network: "kava",
+    networkNameOnAxelar: "kava",
+    environment: "mainnet",
+    nativeCurrency: {
+      name: "KAVA",
+      symbol: "KAVA",
+      decimals: 18,
+    },
+    blockExplorers: {
+      default: {
+        name: "Kava Explorer",
+        url: "https://explorer.kava.io/",
+      },
+    },
+    rpcUrls: {
+      default: { http: ["https://evm.kava.io"] },
+      public: { http: ["https://evm.kava.io"] },
+    },
+    testnet: false,
+  },
+  {
+    id: 2221,
+    name: "Kava EVM Testnet",
+    network: "kava",
+    networkNameOnAxelar: "kava",
+    environment: "testnet",
+    nativeCurrency: {
+      name: "KAVA",
+      symbol: "KAVA",
+      decimals: 18,
+    },
+    blockExplorers: {
+      default: {
+        name: "Kava EVM Explorer",
+        url: "https://explorer.evm-alpha.kava.io/",
+      },
+    },
+    rpcUrls: {
+      default: { http: ["https://evm.testnet.kava.io"] },
+      public: { http: ["https://evm.testnet.kava.io"] },
+    },
+    testnet: true,
   },
 ];
 

@@ -19,6 +19,8 @@ import {
   optimism,
   optimismGoerli,
   moonbaseAlpha,
+  fantom,
+  fantomTestnet,
 } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { publicProvider } from "wagmi/providers/public";
@@ -28,6 +30,8 @@ const chainConfigs = [
   { ...goerli, networkNameOnAxelar: "ethereum-2", environment: "testnet" },
   { ...moonbeam, networkNameOnAxelar: "moonbeam", environment: "mainnet" },
   { ...moonbaseAlpha, networkNameOnAxelar: "moonbeam", environment: "testnet" },
+  { ...fantom, networkNameOnAxelar: "fantom", environment: "mainnet" },
+  { ...fantomTestnet, networkNameOnAxelar: "fantom", environment: "testnet" },
   { ...avalanche, networkNameOnAxelar: "avalanche", environment: "mainnet" },
   {
     ...avalancheFuji,

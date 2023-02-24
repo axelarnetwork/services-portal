@@ -286,16 +286,16 @@ const SendInterchainTokenModal: FC<Props> = (props) => {
       {renderWalletSwitchButton()}
       {renderModalButton()}
       {balance.data && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col justify-between">
           <StyledLabel>Balance: {balance?.data}</StyledLabel>
           {sendTxState.type === "sending" && (
             <a
               href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/gmp/${sendTxState.txHash}`}
-              className="flex items-center gap-1 hover:text-blue-500 hover:underline"
+              className="right-0 flex items-center gap-1 hover:text-blue-500 hover:underline"
               rel="noreferrer noopener"
               target="_blank"
             >
-              Track Progress... <HiExternalLink />
+              View progress on Axelarscan... <HiExternalLink />
             </a>
           )}
         </div>

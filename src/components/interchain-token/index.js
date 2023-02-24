@@ -42,7 +42,37 @@ import RegisterOriginTokenButton from "./register-origin-token-button";
 import TokenInfo from "./token-info";
 import { parseUnits } from "ethers/lib/utils.js";
 
-const GAS_LIMIT = 2500000;
+const getGasLimit = chain => {
+  return {
+    mainnet: {
+      ethereum: 1000000,
+      binance: 1000000,
+      polygon: 1000000,
+      avalanche: 400000,
+      fantom: 1300000,
+      moonbeam: 1000000,
+      aurora: 6000000,
+      arbitrum: 2000000,
+      optimism: 2000000,
+      celo: 1000000,
+      kava: 2000000,
+    },
+    testnet: {
+      "ethereum-2": 1000000,
+      binance: 1000000,
+      polygon: 1000000,
+      avalanche: 400000,
+      fantom: 1300000,
+      moonbeam: 1000000,
+      aurora: 8000000,
+      arbitrum: 3000000,
+      optimism: 2000000,
+      celo: 1000000,
+      kava: 2000000,
+    },
+  }[process.env.NEXT_PUBLIC_ENVIRONMENT][chain?.toLowerCase()];
+};
+
 const GAS_MULTIPLIER = 1.4;
 
 export default () => {
@@ -754,7 +784,7 @@ export default () => {
       chains.length > 0
     ) {
       try {
-        const { chain_name, provider_params } = {
+        const { id, chain_name, provider_params } = {
           ...getChain(chain_id, evm_chains_data),
         };
 
@@ -766,12 +796,14 @@ export default () => {
           chains.map(
             (chain) =>
               new Promise(async (resolve) => {
+                const gasLimit = getGasLimit(id);
+
                 const gasToPay = BigInt(
                   await sdk.queryAPI.estimateGasFee(
                     chain_name,
                     chain,
                     symbol,
-                    GAS_LIMIT,
+                    gasLimit,
                     GAS_MULTIPLIER
                   )
                 );
@@ -780,7 +812,7 @@ export default () => {
                   sourceChain: chain_name,
                   destinationChain: chain,
                   symbol,
-                  gasLimit: GAS_LIMIT,
+                  gasLimit,
                   gasMultiplier: GAS_MULTIPLIER,
                   gasToPay: gasToPay.toString(),
                 });
@@ -837,7 +869,7 @@ export default () => {
         let gas_values;
 
         if (!register_only) {
-          const { chain_name, provider_params } = {
+          const { id, chain_name, provider_params } = {
             ...getChain(chain_id, evm_chains_data),
           };
 
@@ -849,12 +881,14 @@ export default () => {
             chains.map(
               (chain) =>
                 new Promise(async (resolve) => {
+                  const gasLimit = getGasLimit(id);
+
                   const gasToPay = BigInt(
                     await sdk.queryAPI.estimateGasFee(
                       chain_name,
                       chain,
                       symbol,
-                      GAS_LIMIT,
+                      gasLimit,
                       GAS_MULTIPLIER
                     )
                   );
@@ -863,7 +897,7 @@ export default () => {
                     sourceChain: chain_name,
                     destinationChain: chain,
                     symbol,
-                    gasLimit: GAS_LIMIT,
+                    gasLimit,
                     gasMultiplier: GAS_MULTIPLIER,
                     gasToPay: gasToPay.toString(),
                   });

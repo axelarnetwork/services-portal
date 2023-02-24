@@ -557,9 +557,6 @@ export default () => {
         id &&
         chain_id &&
         !deprecated &&
-        (process.env.NEXT_PUBLIC_ENVIRONMENT === "testnet"
-          ? !["binance", "fantom", "aurora", "arbitrum"].includes(c.id)
-          : true) &&
         getContractAddressByChain(id, gateway_addresses_data) &&
         getContractAddressByChain(id, gas_service_addresses_data)
       );
@@ -1046,6 +1043,8 @@ export default () => {
       token_addresses_data?.[c.id] === constants.AddressZero
   );
 
+  const registered = token_addresses_data?.[chain_data?.id] && token_addresses_data[chain_data?.id] !== constants.AddressZero;
+
   return (
     <div className="flex justify-center my-4" style={{ minHeight: "65vh" }}>
       {!signer ? (
@@ -1086,256 +1085,256 @@ export default () => {
         </div>
       ) : (
         /*
-              <div className="w-full xl:px-1">
-                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
-                  {getSupportedEvmChains()
-                    .map(c => {
-                      const {
-                        id,
-                      } = { ...c };
+          <div className="w-full xl:px-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+              {getSupportedEvmChains()
+                .map(c => {
+                  const {
+                    id,
+                  } = { ...c };
 
-                      return {
-                        chain: id,
-                        chain_data: c,
-                        ...token_linkers_data[id],
-                      };
-                    })
-                    .filter(tl => !process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS || tl?.deployed)
-                    .map((tl, i) => {
-                      const {
-                        chain_data,
-                        token_linker_address,
-                        deployed,
-                      } = { ...tl };
+                  return {
+                    chain: id,
+                    chain_data: c,
+                    ...token_linkers_data[id],
+                  };
+                })
+                .filter(tl => !process.env.NEXT_PUBLIC_TOKEN_LINKER_ADDRESS || tl?.deployed)
+                .map((tl, i) => {
+                  const {
+                    chain_data,
+                    token_linker_address,
+                    deployed,
+                  } = { ...tl };
 
-                      const {
-                        id,
-                        name,
-                        image,
-                        explorer,
-                      } = { ...chain_data };
+                  const {
+                    id,
+                    name,
+                    image,
+                    explorer,
+                  } = { ...chain_data };
 
-                      const {
-                        url,
-                        address_path,
-                      } = { ...explorer };
+                  const {
+                    url,
+                    address_path,
+                  } = { ...explorer };
 
-                      const _chain_id = chain_data?.chain_id;
+                  const _chain_id = chain_data?.chain_id;
 
-                      const address_url =
-                        url && address_path && token_linker_address &&
-                        `${url}${address_path.replace("{address}", token_linker_address)}`;
+                  const address_url =
+                    url && address_path && token_linker_address &&
+                    `${url}${address_path.replace("{address}", token_linker_address)}`;
 
-                      const must_switch_network = _chain_id && _chain_id !== chain_id;
+                  const must_switch_network = _chain_id && _chain_id !== chain_id;
 
-                      return (
-                        <div
-                          key={i}
-                          className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
-                        >
-                          <div className="flex items-center justify-between space-x-2.5">
-                            <div className="flex items-center space-x-2.5">
-                              <Image
-                                src={image}
-                                width={32}
-                                height={32}
-                                className="w-8 h-8 rounded-full"
-                              />
-                              <span className="text-lg font-bold">
-                                {name}
-                              </span>
+                  return (
+                    <div
+                      key={i}
+                      className="bg-white dark:bg-slate-900 bg-opacity-100 dark:bg-opacity-50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-5 py-5 px-4"
+                    >
+                      <div className="flex items-center justify-between space-x-2.5">
+                        <div className="flex items-center space-x-2.5">
+                          <Image
+                            src={image}
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <span className="text-lg font-bold">
+                            {name}
+                          </span>
+                        </div>
+                        {
+                          deployed &&
+                          (
+                            <RegisterOriginTokenButton
+                              tooltip="Register origin token"
+                              placement="bottom"
+                              initialChainData={chain_data}
+                              supportedEvmChains={deployable_chains}
+                              tokenLinker={
+                                getTokenLinkerContract(
+                                  _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
+                                  token_linker_address,
+                                )
+                              }
+                              deployToken={deployToken}
+                              registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
+                            />
+                          )
+                        }
+                      </div>
+                      <div>
+                        <div className="h-full flex flex-col justify-between space-y-5">
+                          <div className="space-y-1">
+                            <div className="text-slate-400 dark:text-slate-500 text-sm">
+                              TokenLinker address
                             </div>
-                            {
-                              deployed &&
-                              (
-                                <RegisterOriginTokenButton
-                                  tooltip="Register origin token"
-                                  placement="bottom"
-                                  initialChainData={chain_data}
-                                  supportedEvmChains={deployable_chains}
-                                  tokenLinker={
-                                    getTokenLinkerContract(
-                                      _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
-                                      token_linker_address,
-                                    )
-                                  }
-                                  deployToken={deployToken}
-                                  registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
-                                />
-                              )
-                            }
-                          </div>
-                          <div>
-                            <div className="h-full flex flex-col justify-between space-y-5">
-                              <div className="space-y-1">
-                                <div className="text-slate-400 dark:text-slate-500 text-sm">
-                                  TokenLinker address
-                                </div>
-                                <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
-                                  {address_url ?
-                                    <a
-                                      href={address_url}
-                                      target="_blank"
-                                      rel="noopenner noreferrer"
-                                      className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
-                                    >
-                                      {ellipse(token_linker_address, 10)}
-                                    </a> :
-                                    <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
-                                      {ellipse(token_linker_address, 10)}
-                                    </span>
-                                  }
-                                  {
-                                    token_linker_address &&
-                                    (
-                                      <Copy
-                                        value={token_linker_address}
-                                      />
-                                    )
-                                  }
-                                </div>
-                              </div>
-                              {deployed ?
-                                address_url ?
-                                  <a
-                                    href={address_url}
-                                    target="_blank"
-                                    rel="noopenner noreferrer"
-                                    className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
-                                  >
-                                    <BsFileEarmarkCheckFill
-                                      size={16}
-                                    />
-                                    <span className="text-sm font-semibold">
-                                      Deployed
-                                    </span>
-                                  </a> :
-                                  <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
-                                    <BsFileEarmarkCheckFill
-                                      size={16}
-                                    />
-                                    <span className="text-sm font-medium">
-                                      Deployed
-                                    </span>
-                                  </div> :
-                                tokenLinkerDeployStatus?.chain === id ?
-                                  <div
-                                    className={
-                                      `${
-                                        ["failed"].includes(tokenLinkerDeployStatus.status) ?
-                                          "bg-red-500 dark:bg-red-600" :
-                                          "bg-blue-500 dark:bg-blue-600"
-                                      } w-full ${
-                                        ["switching", "pending", "waiting"].includes(tokenLinkerDeployStatus.status) ?
-                                          "cursor-wait" :
-                                          "cursor-default"
-                                      } rounded flex items-center justify-center text-white font-medium p-1.5`
-                                    }
-                                  >
-                                    {
-                                      ["switching", "pending", "waiting"].includes(tokenLinkerDeployStatus.status) &&
-                                      (
-                                        <div className="mr-1.5">
-                                          <Oval
-                                            width={14}
-                                            height={14}
-                                            color="white"
-                                          />
-                                        </div>
-                                      )
-                                    }
-                                    <span className={`text-sm ${["failed"].includes(tokenLinkerDeployStatus.status) ? "ml-1 mr-0.5" : ""}`}>
-                                      {tokenLinkerDeployStatus.message}
-                                    </span>
-                                    {
-                                      ["failed"].includes(tokenLinkerDeployStatus.status) &&
-                                      (
-                                        <div className="flex items-center space-x-1 ml-auto">
-                                          {
-                                            tokenLinkerDeployStatus.error_message &&
-                                            (
-                                              <Tooltip
-                                                placement="top"
-                                                content={tokenLinkerDeployStatus.error_message}
-                                                className="z-50 bg-black text-white text-xs"
-                                              >
-                                                <div>
-                                                  <BiMessage
-                                                    size={14}
-                                                  />
-                                                </div>
-                                              </Tooltip>
-                                            )
-                                          }
-                                          <button
-                                            onClick={() => setTokenLinkerDeployStatus(null)}
-                                            className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
-                                          >
-                                            <IoClose
-                                              size={12}
-                                            />
-                                          </button>
-                                        </div>
-                                      )
-                                    }
-                                  </div> :
-                                  !token_linker_address ?
-                                    <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
-                                      <div className="mr-1.5">
-                                        <Oval
-                                          width={14}
-                                          height={14}
-                                          color={loaderColor(theme)}
-                                        />
-                                      </div>
-                                      <span>
-                                        Loading
-                                      </span>
-                                    </div> :
-                                    must_switch_network ?
-                                      <Wallet
-                                        connectChainId={_chain_id}
-                                        className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                                      >
-                                        <span className="text-sm">
-                                          Switch network to deploy
-                                        </span>
-                                      </Wallet> :
-                                      <button
-                                        disabled={tokenLinkerDeployStatus && tokenLinkerDeployStatus.status !== "failed"}
-                                        onClick={() => deployTokenLinker(id)}
-                                        className={
-                                          `bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full ${
-                                            tokenLinkerDeployStatus?.chain && tokenLinkerDeployStatus.chain !== id && tokenLinkerDeployStatus.status !== "failed" ?
-                                              "cursor-not-allowed" :
-                                              "cursor-pointer"
-                                          } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
-                                        }
-                                      >
-                                        <span className="text-sm">
-                                          Deploy
-                                        </span>
-                                      </button>
+                            <div className="border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between space-x-1 py-1.5 pl-1.5 pr-1">
+                              {address_url ?
+                                <a
+                                  href={address_url}
+                                  target="_blank"
+                                  rel="noopenner noreferrer"
+                                  className="sm:h-5 flex items-center text-blue-500 dark:text-blue-200 text-base sm:text-xs xl:text-sm font-semibold"
+                                >
+                                  {ellipse(token_linker_address, 10)}
+                                </a> :
+                                <span className="sm:h-5 flex items-center text-slate-500 dark:text-slate-200 text-base sm:text-xs xl:text-sm font-medium">
+                                  {ellipse(token_linker_address, 10)}
+                                </span>
+                              }
+                              {
+                                token_linker_address &&
+                                (
+                                  <Copy
+                                    value={token_linker_address}
+                                  />
+                                )
                               }
                             </div>
                           </div>
+                          {deployed ?
+                            address_url ?
+                              <a
+                                href={address_url}
+                                target="_blank"
+                                rel="noopenner noreferrer"
+                                className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5"
+                              >
+                                <BsFileEarmarkCheckFill
+                                  size={16}
+                                />
+                                <span className="text-sm font-semibold">
+                                  Deployed
+                                </span>
+                              </a> :
+                              <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full rounded flex items-center justify-center text-green-500 dark:text-green-500 space-x-1.5 p-1.5">
+                                <BsFileEarmarkCheckFill
+                                  size={16}
+                                />
+                                <span className="text-sm font-medium">
+                                  Deployed
+                                </span>
+                              </div> :
+                            tokenLinkerDeployStatus?.chain === id ?
+                              <div
+                                className={
+                                  `${
+                                    ["failed"].includes(tokenLinkerDeployStatus.status) ?
+                                      "bg-red-500 dark:bg-red-600" :
+                                      "bg-blue-500 dark:bg-blue-600"
+                                  } w-full ${
+                                    ["switching", "pending", "waiting"].includes(tokenLinkerDeployStatus.status) ?
+                                      "cursor-wait" :
+                                      "cursor-default"
+                                  } rounded flex items-center justify-center text-white font-medium p-1.5`
+                                }
+                              >
+                                {
+                                  ["switching", "pending", "waiting"].includes(tokenLinkerDeployStatus.status) &&
+                                  (
+                                    <div className="mr-1.5">
+                                      <Oval
+                                        width={14}
+                                        height={14}
+                                        color="white"
+                                      />
+                                    </div>
+                                  )
+                                }
+                                <span className={`text-sm ${["failed"].includes(tokenLinkerDeployStatus.status) ? "ml-1 mr-0.5" : ""}`}>
+                                  {tokenLinkerDeployStatus.message}
+                                </span>
+                                {
+                                  ["failed"].includes(tokenLinkerDeployStatus.status) &&
+                                  (
+                                    <div className="flex items-center space-x-1 ml-auto">
+                                      {
+                                        tokenLinkerDeployStatus.error_message &&
+                                        (
+                                          <Tooltip
+                                            placement="top"
+                                            content={tokenLinkerDeployStatus.error_message}
+                                            className="z-50 bg-black text-white text-xs"
+                                          >
+                                            <div>
+                                              <BiMessage
+                                                size={14}
+                                              />
+                                            </div>
+                                          </Tooltip>
+                                        )
+                                      }
+                                      <button
+                                        onClick={() => setTokenLinkerDeployStatus(null)}
+                                        className="hover:bg-red-400 dark:hover:bg-red-500 rounded-full p-0.5"
+                                      >
+                                        <IoClose
+                                          size={12}
+                                        />
+                                      </button>
+                                    </div>
+                                  )
+                                }
+                              </div> :
+                              !token_linker_address ?
+                                <div className="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-50 w-full cursor-wait rounded flex items-center justify-center text-blue-500 dark:text-blue-600 font-medium p-1.5">
+                                  <div className="mr-1.5">
+                                    <Oval
+                                      width={14}
+                                      height={14}
+                                      color={loaderColor(theme)}
+                                    />
+                                  </div>
+                                  <span>
+                                    Loading
+                                  </span>
+                                </div> :
+                                must_switch_network ?
+                                  <Wallet
+                                    connectChainId={_chain_id}
+                                    className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                                  >
+                                    <span className="text-sm">
+                                      Switch network to deploy
+                                    </span>
+                                  </Wallet> :
+                                  <button
+                                    disabled={tokenLinkerDeployStatus && tokenLinkerDeployStatus.status !== "failed"}
+                                    onClick={() => deployTokenLinker(id)}
+                                    className={
+                                      `bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full ${
+                                        tokenLinkerDeployStatus?.chain && tokenLinkerDeployStatus.chain !== id && tokenLinkerDeployStatus.status !== "failed" ?
+                                          "cursor-not-allowed" :
+                                          "cursor-pointer"
+                                      } rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5`
+                                    }
+                                  >
+                                    <span className="text-sm">
+                                      Deploy
+                                    </span>
+                                  </button>
+                          }
                         </div>
-                      )
-                    })
-                  }
-                </div>
-              </div>
-            */
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </div>
+        */
         <div className="w-full space-y-3 xl:px-1">
           <div className="flex items-center justify-between space-x-2">
             <TokenInfo />
             {undeployed_chains.length > 0 && (
               <RegisterOriginTokenButton
-                buttonTitle="Deploy on more chains"
+                buttonTitle={registered ? "Deploy on more chains" : "Register token"}
                 buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 py-1 px-2.5"
                 initialChainData={chain_data}
                 supportedEvmChains={undeployed_chains}
-                isOrigin={false}
+                isOrigin={!registered}
                 fixedTokenAddress={tokenAddress}
                 initialRemoteChains={undeployed_chains.map((c) => c.chain_name)}
                 tokenId={tokenId}
@@ -1499,30 +1498,30 @@ export default () => {
                           ) : (
                             <div className="bg-slate-50 dark:bg-slate-900 dark:bg-opacity-75 w-full cursor-not-allowed rounded flex items-center justify-center text-slate-400 dark:text-slate-500 space-x-1.5 p-1.5">
                               <span className="text-sm font-medium">
-                                Not deployed
+                                Not {is_origin ? "registered" : "deployed"}
                               </span>
                             </div>
                           )
                           /*
-                                    <RegisterOriginTokenButton
-                                      buttonTitle={is_origin ? "Register origin token" : "Deploy remote tokens"}
-                                      buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
-                                      initialChainData={_chain_data}
-                                      supportedEvmChains={undeployed_chains}
-                                      isOrigin={is_origin}
-                                      fixedTokenAddress={tokenAddress}
-                                      initialRemoteChains={is_origin ? undefined : toArray(chain_name)}
-                                      tokenId={tokenId}
-                                      tokenLinker={
-                                        getTokenLinkerContract(
-                                          _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
-                                          token_linker_address,
-                                        )
-                                      }
-                                      deployRemoteTokens={deployRemoteTokens}
-                                      registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
-                                    />
-                                  */
+                            <RegisterOriginTokenButton
+                              buttonTitle={is_origin ? "Register origin token" : "Deploy remote tokens"}
+                              buttonClassName="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 w-full cursor-pointer rounded flex items-center justify-center text-white font-medium hover:font-semibold space-x-1.5 p-1.5"
+                              initialChainData={_chain_data}
+                              supportedEvmChains={undeployed_chains}
+                              isOrigin={is_origin}
+                              fixedTokenAddress={tokenAddress}
+                              initialRemoteChains={is_origin ? undefined : toArray(chain_name)}
+                              tokenId={tokenId}
+                              tokenLinker={
+                                getTokenLinkerContract(
+                                  _chain_id === chain_id ? signer : address ? new VoidSigner(address, rpcs?.[_chain_id]) : rpcs?.[_chain_id],
+                                  token_linker_address,
+                                )
+                              }
+                              deployRemoteTokens={deployRemoteTokens}
+                              registerOriginTokenAndDeployRemoteTokens={registerOriginTokenAndDeployRemoteTokens}
+                            />
+                          */
                         }
                       </div>
                     </div>

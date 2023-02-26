@@ -4,6 +4,7 @@ import services from "~/config/services";
 
 export default _.concat(
   [
+    services.length > 1 &&
     {
       id: "dashboard",
       title: "Dashboard",

@@ -19,5 +19,6 @@ export default [
     tags: ["GMP", "GMP Express", "Cross Chain"],
     navbar_visible: true,
     coming_soon: true,
+    disabled: true,
   },
-].filter((s) => s?.path);
+].filter((s) => s?.path && !s.disabled);

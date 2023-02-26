@@ -60,6 +60,12 @@ const Dashboard = () => {
     );
   }, [inputSearch]);
 
+  useEffect(() => {
+    if (services.length === 1) {
+      router.push(_.head(services)?.path);
+    }
+  }, [services]);
+
   return (
     <div className="mt-0 grid grid-cols-1 gap-4 sm:mt-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
       {filteredServices.map((s, i) => {

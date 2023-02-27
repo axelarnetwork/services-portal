@@ -784,7 +784,7 @@ export default () => {
       chains.length > 0
     ) {
       try {
-        const { id, chain_name, provider_params } = {
+        const { chain_name, provider_params } = {
           ...getChain(chain_id, evm_chains_data),
         };
 
@@ -796,6 +796,8 @@ export default () => {
           chains.map(
             (chain) =>
               new Promise(async (resolve) => {
+                const { id } = { ...getChain(chain, evm_chains_data) };
+
                 const gasLimit = getGasLimit(id);
 
                 const gasToPay = BigInt(
@@ -869,7 +871,7 @@ export default () => {
         let gas_values;
 
         if (!register_only) {
-          const { id, chain_name, provider_params } = {
+          const { chain_name, provider_params } = {
             ...getChain(chain_id, evm_chains_data),
           };
 
@@ -881,6 +883,8 @@ export default () => {
             chains.map(
               (chain) =>
                 new Promise(async (resolve) => {
+                  const { id } = { ...getChain(chain, evm_chains_data) };
+
                   const gasLimit = getGasLimit(id);
 
                   const gasToPay = BigInt(
